@@ -15,7 +15,7 @@ class Signup extends Component {
 
   handleSubmit(event) {
     console.log("heyho");
-    if (this.state.name!="" && this.state.email!="" && this.state.password!="") {
+    if (this.state.name!=="" && this.state.email!=="" && this.state.password!=="") {
     let data = {
       name: this.state.name,
       email: this.state.email,

@@ -1,0 +1,44 @@
+.login-container {
+    max-width: 420px;
+    margin: 0 auto;
+    margin: 0 auto;
+    margin-top: 40px;
+}
+
+.login-form-button {
+    width: 100%;
+}
+
+.mfa-button {
+   width: 100%;
+}
+
+
+.service-label {
+  float: left;
+  font-weight: bold;
+}
+
+.slider-label {
+  height: fit-content;
+  margin-bottom:14px;
+}
+
+.slider-label p {
+  float: left;
+  font-weight: bold;
+}
+
+.dates-label {
+  display: grid;
+}
+
+.dates-label p {
+  width: fit-content;
+  float: left;
+  font-weight: bold;
+}
+
+.date-picker div.ant-form-item-control {
+  float: left;
+}

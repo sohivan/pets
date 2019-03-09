@@ -1,3 +1,6 @@
+
+@import '~antd/dist/antd.css';
+
 .App {
   text-align: center;
 }
@@ -9,12 +12,8 @@
 }
 
 .App-header {
-  background-color:#41f4e2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
+  background-color:bisque;
+  height: 8vh;
 }
 
 .Button-app {
