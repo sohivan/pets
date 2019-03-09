@@ -1,27 +1,31 @@
 
 @import '~antd/dist/antd.css';
 
-.App {
+/* .App {
   text-align: center;
-}
+} */
 
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
+  /* animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
-  pointer-events: none;
+  pointer-events: none; */
+  margin-top: 10px;
+  margin-left: 20px;
 }
 
 .App-header {
-  background-color:bisque;
+  background-image: linear-gradient(to right, #FF986A, #FFC371);
   height: 8vh;
 }
 
 .Button-app {
-  float: right
+  float: right;
 }
-.App-link {
+
+/* .App-link {
   color: #61dafb;
-}
+} */
+
 .div {
   padding-bottom: 50px;
 }
