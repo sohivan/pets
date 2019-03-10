@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox} from 'antd';
-import Script from 'react-load-script';
-import Autocomplete from 'react-google-autocomplete';
-
-
+import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button} from 'antd';
+import AlgoliaPlaces from 'algolia-places-react';
 import './SearchForm.css';
-
 
 const Option = Select.Option;
 const services = [
@@ -25,6 +21,7 @@ const houseOptions = ['Able to visit owner\'s house',
                     'Don\'t cage pets'];
 const miscOptions = ['Takes care of one client at a time',
 'Dog First-Aid certified'];
+
 
 
 
@@ -50,25 +47,21 @@ class Search extends Component {
         0: '$10',
         100: '$150'
       },
-      city: '',
-      query: ''
+      location: {},
     }
   }
-
-
 
   onSelect(value) {
     console.log('onSelect', value);
   }
 
 
-  handleSubmit = name => event => {
-      this.setState({
-        [name]: event.target.value,
-      });
-    };
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log(this.state);
+  }
 
-    onChange(value) {
+  onRateChange(value) {
       let newVal = "$"+value;
       this.setState({
         marks: {
@@ -97,52 +90,31 @@ class Search extends Component {
 
   onPetNoChange(value) {
     console.log(value);
-}
+  }
 
   onHousingChange(checkedValues) {
-  console.log(checkedValues);
-}
+    console.log(checkedValues);
+  }
 
   onMiscChange(checkedValues) {
-console.log(checkedValues);
-}
-  handleScriptLoad() {
+    console.log(checkedValues);
+  }
 
-  // Initialize Google Autocomplete
-  /*global google*/
-  this.autocomplete = new google.maps.places.Autocomplete(
-                        document.getElementById('autocomplete'),
-                        this.state.dataSource);
-  // Fire Event when a suggested name is selected
-  this.autocomplete.addListener('place_changed',
-                                this.handlePlaceSelect);
-}
+  onLocationChange(suggestion) {
+    console.log(suggestion);
+    this.setState({
+      location: suggestion
+    })
+  }
 
-handlePlaceSelect() {
-   // Extract City From Address Object
-   let addressObject = this.autocomplete.getPlace();
-   let address = addressObject.address_components;
 
-   // Check if address is valid
-   if (address) {
-     // Set State
-     this.setState(
-       {
-         dataSource: address[0].long_name,
-         query: addressObject.formatted_address,
-       }
-     );
-   }
- }
   render() {
-
-
     return (
       <div>
       <Row>
        <Col span={8}>
         <h3> Find A Sitter </h3>
-        <Form>
+        <Form onSubmit={this.handleSubmit.bind(this)}>
           <div>
           <p className="service-label">Service</p>
           </div>
@@ -160,6 +132,24 @@ handlePlaceSelect() {
           <div className="slider-label">
             <p>Location</p>
           </div>
+          <div className="algolia">
+          <AlgoliaPlaces
+              placeholder='Address'
+              options={{
+               appId: 'pl4X3CET64PO',
+               apiKey: '810117f3a4fd4815c33232c31f02cf48',
+               countries: ['sg']
+              }}
+              onChange={({ query, rawAnswer, suggestion, suggestionIndex }) => {
+               this.onLocationChange(suggestion);
+              }}
+              onClear={() => {
+                this.onLocationChange({});
+              }}
+              onLimit={({ message }) =>
+               console.log('Fired when you reached your current rate limit.')}
+            />
+         </div>
           <div className="slider-label">
             <p>Rate</p>
           </div>
@@ -168,7 +158,7 @@ handlePlaceSelect() {
               marks={this.state.marks}
               defaultValue={150}
               tipFormatter={(value) => `$${value}`}
-              onChange={this.onChange.bind(this)}/>
+              onChange={this.onRateChange.bind(this)}/>
           </Form.Item>
           <div className="dates-label">
             <p>Dates</p>
@@ -215,7 +205,6 @@ handlePlaceSelect() {
               defaultValue={1}
               style={{ width: '100%', marginBottom: '25px'}}
               onChange={this.onPetNoChange.bind(this)} />
-
           <div className="slider-label">
             <p>Housing</p>
           </div>
@@ -230,13 +219,12 @@ handlePlaceSelect() {
             options={miscOptions}
             onChange={this.onMiscChange.bind(this)} />
             <br /><br />
+          <Button type="primary" htmlType="submit">Search</Button>
             </Form>
           </Col>
           <Col span={16}>Results</Col>
       </Row>
       </div>
-
-
     );
   }
 }

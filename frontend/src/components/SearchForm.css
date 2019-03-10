@@ -45,3 +45,7 @@
 .date-picker div.ant-form-item-control {
   float: left;
 }
+
+.algolia {
+  margin-bottom: 24px;
+}

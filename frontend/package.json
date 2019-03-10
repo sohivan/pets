@@ -5,7 +5,9 @@
   "dependencies": {
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
+    "algolia-places-react": "^1.4.0",
     "antd": "^3.14.1",
+    "places.js": "^1.16.1",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-google-autocomplete": "^1.0.18",
