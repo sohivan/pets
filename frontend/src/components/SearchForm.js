@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Select, Slider, DatePicker} from 'antd';
+import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox} from 'antd';
 import Script from 'react-load-script';
 import Autocomplete from 'react-google-autocomplete';
 
@@ -9,8 +9,22 @@ import './SearchForm.css';
 
 const Option = Select.Option;
 const services = [
-  "Dog Boarding", "Dog Sitting", "Dog Pooping"
+  "Pet Boarding", "House Sitting", "Dog Walking",  "Drop In Visits",
+  "Pet Day Care"
 ]
+const pettype = [
+  "Dog", "Cat", "Hamster", "Rabbit"
+]
+const petsize = [
+  "Small: 0 - 5kg", "Medium: 6 - 15kg", "Large: 16 - 45kg", "Giant: > 45kg"
+]
+const CheckboxGroup = Checkbox.Group;
+const houseOptions = ['Able to visit owner\'s house',
+                      'Allow pets to stay in sitter\'s house',
+                      'Lives with other pets in their house',
+                    'Don\'t cage pets'];
+const miscOptions = ['Takes care of one client at a time',
+'Dog First-Aid certified'];
 
 
 
@@ -73,6 +87,25 @@ class Search extends Component {
     console.log(value);
   }
 
+  onPetTypeChange(value) {
+    console.log(value);
+  }
+
+  onPetSizeChange(value) {
+    console.log(value);
+  }
+
+  onPetNoChange(value) {
+    console.log(value);
+}
+
+  onHousingChange(checkedValues) {
+  console.log(checkedValues);
+}
+
+  onMiscChange(checkedValues) {
+console.log(checkedValues);
+}
   handleScriptLoad() {
 
   // Initialize Google Autocomplete
@@ -106,6 +139,8 @@ handlePlaceSelect() {
 
     return (
       <div>
+      <Row>
+       <Col span={8}>
         <h3> Find A Sitter </h3>
         <Form>
           <div>
@@ -123,6 +158,9 @@ handlePlaceSelect() {
             </Select>
           </Form.Item>
           <div className="slider-label">
+            <p>Location</p>
+          </div>
+          <div className="slider-label">
             <p>Rate</p>
           </div>
           <Form.Item>
@@ -133,14 +171,69 @@ handlePlaceSelect() {
               onChange={this.onChange.bind(this)}/>
           </Form.Item>
           <div className="dates-label">
-            <p>Service</p>
+            <p>Dates</p>
           </div>
           <Form.Item className="date-picker">
              <DatePicker.RangePicker
                 onChange={this.onDateChange.bind(this)}
                 placeholder={['Drop off', 'Pick up']}/>
           </Form.Item>
-          </Form>
+          <div className="slider-label">
+            <p>Pet Type</p>
+          </div>
+          <Form.Item>
+            <Select
+              size="large"
+              name="role"
+              autoComplete="off"
+              style={{ width: '100%' }}
+              defaultValue={['Dog']}
+              onChange={this.onPetTypeChange.bind(this)}>
+              {pettype.map(pettype => <Option key={pettype}>{pettype}</Option>)}
+            </Select>
+          </Form.Item>
+          <div className="slider-label">
+            <p>Pet Size</p>
+          </div>
+          <Form.Item>
+            <Select
+              size="large"
+              name="role"
+              autoComplete="off"
+              style={{ width: '100%' }}
+              defaultValue={['Small: 0 - 5kg']}
+              onChange={this.onPetSizeChange.bind(this)}>
+              {petsize.map(petsize => <Option key={petsize}>{petsize}</Option>)}
+            </Select>
+          </Form.Item>
+          <div className="slider-label">
+            <p>Number of Pets</p>
+          </div>
+          <InputNumber
+              min={1}
+              max={10}
+              defaultValue={1}
+              style={{ width: '100%', marginBottom: '25px'}}
+              onChange={this.onPetNoChange.bind(this)} />
+
+          <div className="slider-label">
+            <p>Housing</p>
+          </div>
+          <CheckboxGroup
+            options={houseOptions}
+            onChange={this.onHousingChange.bind(this)} />
+            <br /><br />
+          <div className="slider-label">
+            <p>Miscellaneous</p>
+          </div>
+          <CheckboxGroup
+            options={miscOptions}
+            onChange={this.onMiscChange.bind(this)} />
+            <br /><br />
+            </Form>
+          </Col>
+          <Col span={16}>Results</Col>
+      </Row>
       </div>
 
 

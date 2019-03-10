@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import Signup from './components/Signup';
 import SearchForm from './components/SearchForm';
+import Logo from './image/pet-bay-sands-logo.svg';
 
 
 
@@ -15,7 +16,7 @@ class App extends Component {
       <BrowserRouter>
         <div className="App">
           <div className="App-header">
-
+             <img src={Logo} className="App-logo"/>
              <Button color="inherit" className="Button-app">
              <NavLink to="/login" style={{textDecoration: 'none'}}> Login</NavLink>
              </Button>
