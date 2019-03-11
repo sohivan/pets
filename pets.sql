@@ -9,11 +9,12 @@ CREATE TABLE Users (
 
 DROP TABLE if exists PetOwners;
 CREATE TABLE PetOwners (
-	id 				SERIAL,
+	id 				SERIAL not null
+	oid				SERIAL
 	description 	text not null,
 	numofpets		integer not null,
 	name			text not null
-	PRIMARY KEY (id),
+	PRIMARY KEY (oid),
 	FOREIGN KEY (id) REFERENCES Users
 );
 
@@ -25,9 +26,9 @@ CREATE TABLE Pets (
 	breed			text not null,
 	name			text not null,
 	typeofpet		text not null,
-	id				SERIAL
+	oid				SERIAL
 	PRIMARY KEY (pid),
-	FOREIGN KEY (id) REFERENCES PetOwners
+	FOREIGN KEY (oid) REFERENCES PetOwners
 );
 
 DROP TABLE if exists Homes;
@@ -39,3 +40,4 @@ CREATE TABLE Homes (
 	PRIMARY KEY (address),
 	FOREIGN KEY (id) REFERENCES Users
 );
+
