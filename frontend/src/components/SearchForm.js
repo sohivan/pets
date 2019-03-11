@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button} from 'antd';
+import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button, Card, Rate} from 'antd';
 import AlgoliaPlaces from 'algolia-places-react';
 import './SearchForm.css';
 
@@ -21,8 +21,6 @@ const houseOptions = ['Able to visit owner\'s house',
                     'Don\'t cage pets'];
 const miscOptions = ['Takes care of one client at a time',
 'Dog First-Aid certified'];
-
-
 
 
 class SearchForm extends Component {
@@ -48,7 +46,8 @@ class Search extends Component {
         100: '$150'
       },
       location: {},
-    }
+      results:[],
+  };
   }
 
   onSelect(value) {
@@ -59,6 +58,38 @@ class Search extends Component {
   handleSubmit(event) {
     event.preventDefault();
     console.log(this.state);
+    this.makeFakeDataFirst();
+  }
+
+  makeFakeDataFirst() {
+     this.setState({
+       results: [
+         {name: "Jason",
+         rate: 35,
+         location: "Bishan",
+         ratings: 3},
+         {name: "Blue",
+         rate: 37,
+         location: "AMK",
+         ratings: 5},
+         {name: "Red",
+         rate: 37,
+         location: "TPY",
+         ratings: 4},
+         {name: "Jason",
+         rate: 35,
+         location: "Bishan",
+         ratings: 3},
+         {name: "Blue",
+         rate: 37,
+         location: "AMK",
+         ratings: 5},
+         {name: "Red",
+         rate: 37,
+         location: "TPY",
+         ratings: 4}
+     ]
+     })
   }
 
   onRateChange(value) {
@@ -108,10 +139,95 @@ class Search extends Component {
   }
 
 
+
   render() {
+    const resultsDisplay = [];
+    const results = this.state.results.map((result, i, array) =>  {
+      if (i%2===0 && i+1<array.length) {
+        resultsDisplay.push(
+          <Row key={i}>
+           <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i].name} </span>
+                     <p className="results-location">{array[i].location}</p>
+                     <Rate value={array[i].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+             </Col>
+             <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i+1].name} </span>
+                     <p className="results-location">{array[i+1].location}</p>
+                     <Rate value={array[i+1].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i+1].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+               </Col>
+            </Row>
+          );
+    } else if (i%2===0 && i+1>=array.length) {
+        resultsDisplay.push(
+          <Row key={i}>
+           <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i].name} </span>
+                     <p className="results-location">{array[i].location}</p>
+                     <Rate value={array[i].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+            </Col>
+          </Row>
+           );
+         }
+       }
+     );
     return (
       <div>
-      <Row>
+      <Row gutter={16}>
        <Col span={8}>
         <h3> Find A Sitter </h3>
         <Form onSubmit={this.handleSubmit.bind(this)}>
@@ -222,8 +338,13 @@ class Search extends Component {
           <Button type="primary" htmlType="submit">Search</Button>
             </Form>
           </Col>
-          <Col span={16}>Results</Col>
-      </Row>
+          <Col span={16}>
+            Results
+            <div className="results">
+              {resultsDisplay}
+            </div>
+          </Col>
+          </Row>
       </div>
     );
   }
