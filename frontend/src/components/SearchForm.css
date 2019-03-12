@@ -49,3 +49,44 @@
 .algolia {
   margin-bottom: 24px;
 }
+
+.results {
+  overflow: scroll;
+  height: 984px;
+}
+
+.results-rate {
+  color: #FF986A;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: -5px;
+}
+
+.results-name-div {
+  display: inline-block;
+  vertical-align: top;
+}
+.results-rate-div {
+  display: inline-block;
+  vertical-align: top;
+  float: right;
+  text-align: end;
+}
+
+.results-card .ant-card-body {
+  padding-top: 15px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.results-location {
+  color: rgba(0, 0, 0, 0.50);
+  font-size: 11px;
+  margin: 0px;
+}
+
+.results-from {
+  color: rgba(0, 0, 0, 0.50);
+  font-size: 11px;
+  margin-bottom:-5px;
+}
