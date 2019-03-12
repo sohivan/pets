@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button, Card, Rate} from 'antd';
+import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button, Card, Rate, Pagination} from 'antd';
 import AlgoliaPlaces from 'algolia-places-react';
 import './SearchForm.css';
 
@@ -40,6 +40,7 @@ class SearchForm extends Component {
 class Search extends Component {
   constructor(props) {
     super(props);
+    this.myRef = React.createRef();
     this.state = {
      marks: {
         0: '$10',
@@ -47,8 +48,24 @@ class Search extends Component {
       },
       location: {},
       results:[],
+      totalResultsDisplay:[],
+      currentResultsDisplay:[],
+      current: 1,
   };
   }
+
+  onPageChange = (page) => {
+   let currentResultsDisplay = [];
+   for (let i=(page-1)*3; i<page*3; i++) {
+      currentResultsDisplay.push(this.state.totalResultsDisplay[i]);
+   }
+   this.setState({
+     current: page,
+     currentResultsDisplay: currentResultsDisplay,
+   });
+   window.scrollTo(0, 0);
+   this.myRef.current.scrollTo(0, 0);
+ }
 
   onSelect(value) {
     console.log('onSelect', value);
@@ -62,33 +79,151 @@ class Search extends Component {
   }
 
   makeFakeDataFirst() {
+    let results = [
+      {name: "One",
+      rate: 35,
+      location: "Bishan",
+      ratings: 3},
+      {name: "Two",
+      rate: 37,
+      location: "AMK",
+      ratings: 5},
+      {name: "Three",
+      rate: 37,
+      location: "TPY",
+      ratings: 4},
+      {name: "Four",
+      rate: 35,
+      location: "Bishan",
+      ratings: 3},
+      {name: "Five",
+      rate: 37,
+      location: "AMK",
+      ratings: 5},
+      {name: "Six",
+      rate: 37,
+      location: "TPY",
+      ratings: 4},
+      {name: "Seven",
+      rate: 35,
+      location: "Bishan",
+      ratings: 3},
+      {name: "Eight",
+      rate: 37,
+      location: "AMK",
+      ratings: 5},
+      {name: "Nine",
+      rate: 37,
+      location: "TPY",
+      ratings: 4},
+      {name: "Ten",
+      rate: 35,
+      location: "Bishan",
+      ratings: 3},
+      {name: "Eleven",
+      rate: 37,
+      location: "AMK",
+      ratings: 5},
+      {name: "Twelve",
+      rate: 37,
+      location: "TPY",
+      ratings: 4}
+  ];
+  let totalResultsDisplay = [];
+  let currentResultsDisplay = [];
+
+    results.map((result, i, array) =>  {
+      if (i%2===0 && i+1<array.length) {
+        totalResultsDisplay.push(
+          <Row key={i}>
+           <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i].name} </span>
+                     <p className="results-location">{array[i].location}</p>
+                     <Rate value={array[i].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+             </Col>
+             <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i+1].name} </span>
+                     <p className="results-location">{array[i+1].location}</p>
+                     <Rate value={array[i+1].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i+1].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+               </Col>
+            </Row>
+          );
+    } else if (i%2===0 && i+1>=array.length) {
+        totalResultsDisplay.push(
+          <Row key={i}>
+           <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i].name} </span>
+                     <p className="results-location">{array[i].location}</p>
+                     <Rate value={array[i].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+            </Col>
+          </Row>
+           );
+         }
+       }
+     );
+     for (let i=(this.state.current-1)*3; i<this.state.current*3; i++) {
+       console.log(i);
+        currentResultsDisplay.push(totalResultsDisplay[i]);
+     }
+
      this.setState({
-       results: [
-         {name: "Jason",
-         rate: 35,
-         location: "Bishan",
-         ratings: 3},
-         {name: "Blue",
-         rate: 37,
-         location: "AMK",
-         ratings: 5},
-         {name: "Red",
-         rate: 37,
-         location: "TPY",
-         ratings: 4},
-         {name: "Jason",
-         rate: 35,
-         location: "Bishan",
-         ratings: 3},
-         {name: "Blue",
-         rate: 37,
-         location: "AMK",
-         ratings: 5},
-         {name: "Red",
-         rate: 37,
-         location: "TPY",
-         ratings: 4}
-     ]
+       results: results,
+       totalResultsDisplay: totalResultsDisplay,
+       currentResultsDisplay: currentResultsDisplay
      })
   }
 
@@ -141,90 +276,6 @@ class Search extends Component {
 
 
   render() {
-    const resultsDisplay = [];
-    const results = this.state.results.map((result, i, array) =>  {
-      if (i%2===0 && i+1<array.length) {
-        resultsDisplay.push(
-          <Row key={i}>
-           <Col span={12}>
-             <Card className="results-card"
-               bordered={false}
-               style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
-             <Card.Meta
-               title= {
-                 <div>
-                   <div className="results-name-div">
-                     <span> {array[i].name} </span>
-                     <p className="results-location">{array[i].location}</p>
-                     <Rate value={array[i].ratings}/>
-                   </div>
-                   <div className="results-rate-div">
-                     <p className="results-from"> from </p>
-                     <p className="results-rate"> ${array[i].rate} </p>
-                     <p className="results-location"> per day </p>
-                   </div>
-                 </div>
-               }
-               />
-             </Card>
-             </Col>
-             <Col span={12}>
-             <Card className="results-card"
-               bordered={false}
-               style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
-             <Card.Meta
-               title= {
-                 <div>
-                   <div className="results-name-div">
-                     <span> {array[i+1].name} </span>
-                     <p className="results-location">{array[i+1].location}</p>
-                     <Rate value={array[i+1].ratings}/>
-                   </div>
-                   <div className="results-rate-div">
-                     <p className="results-from"> from </p>
-                     <p className="results-rate"> ${array[i+1].rate} </p>
-                     <p className="results-location"> per day </p>
-                   </div>
-                 </div>
-               }
-               />
-             </Card>
-               </Col>
-            </Row>
-          );
-    } else if (i%2===0 && i+1>=array.length) {
-        resultsDisplay.push(
-          <Row key={i}>
-           <Col span={12}>
-             <Card className="results-card"
-               bordered={false}
-               style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
-             <Card.Meta
-               title= {
-                 <div>
-                   <div className="results-name-div">
-                     <span> {array[i].name} </span>
-                     <p className="results-location">{array[i].location}</p>
-                     <Rate value={array[i].ratings}/>
-                   </div>
-                   <div className="results-rate-div">
-                     <p className="results-from"> from </p>
-                     <p className="results-rate"> ${array[i].rate} </p>
-                     <p className="results-location"> per day </p>
-                   </div>
-                 </div>
-               }
-               />
-             </Card>
-            </Col>
-          </Row>
-           );
-         }
-       }
-     );
     return (
       <div>
       <Row gutter={16}>
@@ -340,9 +391,14 @@ class Search extends Component {
           </Col>
           <Col span={16}>
             Results
-            <div className="results">
-              {resultsDisplay}
+            <div className="results" ref={this.myRef}>
+              {this.state.currentResultsDisplay}
             </div>
+            <Pagination
+              current={this.state.current}
+              pageSize={6}
+              onChange={this.onPageChange.bind(this)}
+              total={this.state.results.length} />
           </Col>
           </Row>
       </div>
