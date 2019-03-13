@@ -279,8 +279,9 @@ class Search extends Component {
     return (
       <div>
       <Row gutter={16}>
-       <Col span={8}>
-        <h3> Find A Sitter </h3>
+       <Col span={8} className="search-filters">
+       <div className="inner-filters">
+        <h3 className="title-label">Find A Sitter </h3>
         <Form onSubmit={this.handleSubmit.bind(this)}>
           <div>
           <p className="service-label">Service</p>
@@ -290,7 +291,7 @@ class Search extends Component {
               size="large"
               name="role"
               autoComplete="off"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '14px' }}
               defaultValue={['Dog Boarding']}
               onChange={this.onServiceChange.bind(this)}>
               {services.map(service => <Option key={service}>{service}</Option>)}
@@ -332,6 +333,7 @@ class Search extends Component {
           </div>
           <Form.Item className="date-picker">
              <DatePicker.RangePicker
+                style={{ fontSize: '14px' }}
                 onChange={this.onDateChange.bind(this)}
                 placeholder={['Drop off', 'Pick up']}/>
           </Form.Item>
@@ -343,7 +345,7 @@ class Search extends Component {
               size="large"
               name="role"
               autoComplete="off"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '14px'  }}
               defaultValue={['Dog']}
               onChange={this.onPetTypeChange.bind(this)}>
               {pettype.map(pettype => <Option key={pettype}>{pettype}</Option>)}
@@ -357,7 +359,7 @@ class Search extends Component {
               size="large"
               name="role"
               autoComplete="off"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '14px' }}
               defaultValue={['Small: 0 - 5kg']}
               onChange={this.onPetSizeChange.bind(this)}>
               {petsize.map(petsize => <Option key={petsize}>{petsize}</Option>)}
@@ -370,7 +372,7 @@ class Search extends Component {
               min={1}
               max={10}
               defaultValue={1}
-              style={{ width: '100%', marginBottom: '25px'}}
+              style={{ width: '100%', marginBottom: '25px', fontSize: '14px' }}
               onChange={this.onPetNoChange.bind(this)} />
           <div className="slider-label">
             <p>Housing</p>
@@ -386,11 +388,13 @@ class Search extends Component {
             options={miscOptions}
             onChange={this.onMiscChange.bind(this)} />
             <br /><br />
-          <Button type="primary" htmlType="submit">Search</Button>
+          <Button className= "search-button" type="primary" htmlType="submit">Search</Button>
             </Form>
+            </div>
           </Col>
           <Col span={16}>
-            Results
+
+            <h3 className="results-label">Results</h3>
             <div className="results" ref={this.myRef}>
               {this.state.currentResultsDisplay}
             </div>
