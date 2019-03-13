@@ -52,12 +52,12 @@ app.post('/signup', function(request, response) {
 })
 
 
-app.get('/getUsers', function(request, response) {
+app.get('/getCaretakers', function(request, response) {
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from pizzas", function(err, table) {
+      db.query("SELECT * from caretaker natural join services", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);

@@ -75,64 +75,84 @@ class Search extends Component {
   handleSubmit(event) {
     event.preventDefault();
     console.log(this.state);
-    this.makeFakeDataFirst();
-  }
+    // this.makeFakeDataFirst();
+    var request = new Request("http://localhost:3001/getCaretakers", {
+      method: 'GET',
+      headers: new Headers({'Content-Type': 'application/json'})
+    });
+  let results = []
+  fetch(request)
+      .then((response) =>
+        response.json())
+        .then((data) => {
+          results = data
+          console.log(results)
+          this.displayResults(results)
+        })
+      
+      .catch(function(err) {
+        console.log(err);
+      })}
 
-  makeFakeDataFirst() {
-    let results = [
-      {name: "One",
-      rate: 35,
-      location: "Bishan",
-      ratings: 3},
-      {name: "Two",
-      rate: 37,
-      location: "AMK",
-      ratings: 5},
-      {name: "Three",
-      rate: 37,
-      location: "TPY",
-      ratings: 4},
-      {name: "Four",
-      rate: 35,
-      location: "Bishan",
-      ratings: 3},
-      {name: "Five",
-      rate: 37,
-      location: "AMK",
-      ratings: 5},
-      {name: "Six",
-      rate: 37,
-      location: "TPY",
-      ratings: 4},
-      {name: "Seven",
-      rate: 35,
-      location: "Bishan",
-      ratings: 3},
-      {name: "Eight",
-      rate: 37,
-      location: "AMK",
-      ratings: 5},
-      {name: "Nine",
-      rate: 37,
-      location: "TPY",
-      ratings: 4},
-      {name: "Ten",
-      rate: 35,
-      location: "Bishan",
-      ratings: 3},
-      {name: "Eleven",
-      rate: 37,
-      location: "AMK",
-      ratings: 5},
-      {name: "Twelve",
-      rate: 37,
-      location: "TPY",
-      ratings: 4}
-  ];
+
+  // makeFakeDataFirst() {
+  //   let results = [
+  //     {name: "One",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Two",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Three",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4},
+  //     {name: "Four",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Five",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Six",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4},
+  //     {name: "Seven",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Eight",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Nine",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4},
+  //     {name: "Ten",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Eleven",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Twelve",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4}
+  // ];
+
+displayResults(results){
+    console.log("I am here 2")
   let totalResultsDisplay = [];
   let currentResultsDisplay = [];
-
     results.map((result, i, array) =>  {
+      console.log("i am here")
       if (i%2===0 && i+1<array.length) {
         totalResultsDisplay.push(
           <Row key={i}>
@@ -146,8 +166,8 @@ class Search extends Component {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
-                     <p className="results-location">{array[i].location}</p>
-                     <Rate value={array[i].ratings}/>
+                     <p className="results-location">{"Bishan"}</p>
+                     <Rate value={4}/>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -169,8 +189,8 @@ class Search extends Component {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i+1].name} </span>
-                     <p className="results-location">{array[i+1].location}</p>
-                     <Rate value={array[i+1].ratings}/>
+                     <p className="results-location">{"Pasir Ris"}</p>
+                     <Rate value={5}/>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -388,7 +408,8 @@ class Search extends Component {
             options={miscOptions}
             onChange={this.onMiscChange.bind(this)} />
             <br /><br />
-          <Button className= "search-button" type="primary" htmlType="submit">Search</Button>
+          <Button className= "search-button" type="primary" htmlType="submit" onClick={this.handleSubmit.bind(this)}>
+            Search</Button>
             </Form>
             </div>
           </Col>
