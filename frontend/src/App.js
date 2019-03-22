@@ -7,6 +7,7 @@ import { Route } from 'react-router-dom';
 import Signup from './components/Signup';
 import SearchForm from './components/SearchForm';
 import AddPet from './components/AddPet';
+import AddBid from './components/AddBid';
 import Logo from './image/pet-bay-sands-logo.svg';
 
 
@@ -28,6 +29,7 @@ class App extends Component {
          <Route path="/signup" component={Signup} />
          <Route exact path="/" component={SearchForm} />
          <Route exact path="/add-pet" component={AddPet} />
+         <Route exact path="/add-bid" component={AddBid} />
          </div>
       </BrowserRouter>
     );
