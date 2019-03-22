@@ -89,7 +89,7 @@ class Search extends Component {
           console.log(results)
           this.displayResults(results)
         })
-      
+
       .catch(function(err) {
         console.log(err);
       })}

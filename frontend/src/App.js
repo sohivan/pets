@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import Signup from './components/Signup';
 import SearchForm from './components/SearchForm';
+import AddPet from './components/AddPet';
 import Logo from './image/pet-bay-sands-logo.svg';
 
 
@@ -26,6 +27,7 @@ class App extends Component {
           </div>
          <Route path="/signup" component={Signup} />
          <Route exact path="/" component={SearchForm} />
+         <Route exact path="/add-pet" component={AddPet} />
          </div>
       </BrowserRouter>
     );
