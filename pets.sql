@@ -170,9 +170,10 @@ CREATE TABLE Bid (
 	BidTimestamp	timestamp not null,
 	BidAmount		smallint not null,
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
-	PetOnwner		SERIAL not null REFERENCES PetOwners(oid),
-	BidderID		SERIAL not null REFERENCES CareTaker(cid),
-	serviceid		serial not null REFERENCES Services(serviceid)
+	PetOwnerID		SERIAL not null REFERENCES PetOwners(oid),
+	CareTakerID		SERIAL not null REFERENCES CareTaker(cid),
+	ServiceID		serial not null REFERENCES Services(serviceid),
+	bidrequest		text
 );
 
 
