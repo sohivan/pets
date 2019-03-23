@@ -10,6 +10,11 @@ const petname = [
   "Furball", "Snow", "Starry", "Leo"
 ]
 
+const services = [
+  "Pet Boarding", "House Sitting", "Dog Walking",  "Drop In Visits",
+  "Pet Day Care"
+]
+
 function onChange(value) {
   console.log('changed', value);
 }
@@ -29,13 +34,29 @@ class AddBid extends Component {
    console.log(dateString);
  }
 
+ onServiceChange(value) {
+   console.log(value);
+ }
+
   render() {
     return (
       <div className = "addbid">
           <h1 className = "addbid-title"> Make a Bid </h1>
           <h3 className="addbid-label">Pet Owner</h3>
-
           <Input className="addbid-petowner" placeholder="Pet Owner" />
+          <h3 className="addbid-label">Select Service</h3>
+              <Form.Item>
+              <Select
+                mode="multiple"
+                size="large"
+                name="role"
+                autoComplete="off"
+                style={{ width: '100%', fontSize: '14px' }}
+                placeholder = "Select your service"
+                onChange={this.onServiceChange.bind(this)}>
+                {services.map(services => <Option key={services}>{services}</Option>)}
+              </Select>
+              </Form.Item>
           <h3 className="addbid-label">Amount per day</h3>
           <InputNumber
              className="addbid-petowner"
