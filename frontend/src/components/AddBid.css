@@ -1,0 +1,40 @@
+.addbid {
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.addbid-title {
+  text-align: center;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 45px;
+  margin-top: 50px;
+}
+
+.addbid-label{
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.addbid-petowner {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.ant-form-item-control {
+  width:100%;
+}
+
+.addbid-button{
+  background: #FF676D;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  width: 30%;
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  float:right;
+}

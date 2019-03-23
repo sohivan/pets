@@ -16,10 +16,17 @@
    width: 100%;
 }
 
+.title-label{
+  font-weight: 600;
+  font-size: 23px;
+  margin-bottom: 30px;
+}
 
 .service-label {
   float: left;
   font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+
 }
 
 .slider-label {
@@ -48,4 +55,76 @@
 
 .algolia {
   margin-bottom: 24px;
+}
+
+.search-filters{
+border-right: solid 1.5px #D3D3D3;
+padding: 10px;
+}
+
+.inner-filters{
+  width: 95%;
+}
+
+.search-button{
+  background: #FF676D;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  width: 35%;
+  float: right;
+}
+
+.results {
+overflow: scroll;
+height: 984px;
+margin-left: 30px;
+margin-right: auto;
+}
+
+.results-label{
+  font-weight: 600;
+  font-size: 23px;
+  margin-top: 10px;
+  margin-left: 30px;
+
+}
+
+.results-rate {
+  color: #FF676D;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: -5px;
+}
+
+.results-name-div {
+  display: inline-block;
+  vertical-align: top;
+}
+.results-rate-div {
+  display: inline-block;
+  vertical-align: top;
+  float: right;
+  text-align: end;
+
+}
+
+.results-card .ant-card-body {
+  padding-top: 15px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.results-location {
+  color: rgba(0, 0, 0, 0.50);
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0px;
+}
+
+.results-from {
+  color: rgba(0, 0, 0, 0.50);
+  font-size: 11px;
+  margin-bottom:-5px;
+  font-weight: 600;
 }

@@ -52,12 +52,47 @@ app.post('/signup', function(request, response) {
 })
 
 
-app.get('/getUsers', function(request, response) {
+app.post('/addpet', function(request, response) {
+  var petname = request.body.petname;
+  var petage = request.body.petage;
+  var petsize = request.body.petsize;
+  var petgender = request.body.petgender;
+  var pettype = request.body.pettype;
+  var petbreed = request.body.petbreed;
+  var petdesc = request.body.petdesc;
+  var petmed = request.body.petmed;
+  var petoid = 255;
+  let values = [petname, petage, petgender, pettype, petbreed, petdesc, petmed, petoid];
+  console.log("i am here in serverjs")
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    }
+    else {
+      db.query(`
+        INSERT INTO PETS(name, weight, age, breed, typeofpet, gender, descrip, med, oid)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, petoid], (err, table) => {
+        done();
+        if (err) {
+          console.log(err)
+          return response.status(400).send(err);
+        }
+        else {
+          console.log("i added a new pet");
+          response.status(200).send({message:"new pet added"});
+        }
+      })
+    }
+  })
+})
+
+
+app.get('/getCaretakers', function(request, response) {
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from pizzas", function(err, table) {
+      db.query("SELECT * from caretaker natural join services", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);

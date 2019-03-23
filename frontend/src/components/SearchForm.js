@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button} from 'antd';
+import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button, Card, Rate, Pagination} from 'antd';
 import AlgoliaPlaces from 'algolia-places-react';
 import './SearchForm.css';
 
@@ -23,8 +23,6 @@ const miscOptions = ['Takes care of one client at a time',
 'Dog First-Aid certified'];
 
 
-
-
 class SearchForm extends Component {
     render() {
         const AntWrappedLoginForm = Form.create()(Search)
@@ -42,14 +40,32 @@ class SearchForm extends Component {
 class Search extends Component {
   constructor(props) {
     super(props);
+    this.myRef = React.createRef();
     this.state = {
      marks: {
         0: '$10',
         100: '$150'
       },
       location: {},
-    }
+      results:[],
+      totalResultsDisplay:[],
+      currentResultsDisplay:[],
+      current: 1,
+  };
   }
+
+  onPageChange = (page) => {
+   let currentResultsDisplay = [];
+   for (let i=(page-1)*3; i<page*3; i++) {
+      currentResultsDisplay.push(this.state.totalResultsDisplay[i]);
+   }
+   this.setState({
+     current: page,
+     currentResultsDisplay: currentResultsDisplay,
+   });
+   window.scrollTo(0, 0);
+   this.myRef.current.scrollTo(0, 0);
+ }
 
   onSelect(value) {
     console.log('onSelect', value);
@@ -59,6 +75,176 @@ class Search extends Component {
   handleSubmit(event) {
     event.preventDefault();
     console.log(this.state);
+    // this.makeFakeDataFirst();
+    var request = new Request("http://localhost:3001/getCaretakers", {
+      method: 'GET',
+      headers: new Headers({'Content-Type': 'application/json'})
+    });
+  let results = []
+  fetch(request)
+      .then((response) =>
+        response.json())
+        .then((data) => {
+          results = data
+          console.log(results)
+          this.displayResults(results)
+        })
+
+      .catch(function(err) {
+        console.log(err);
+      })}
+
+
+  // makeFakeDataFirst() {
+  //   let results = [
+  //     {name: "One",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Two",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Three",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4},
+  //     {name: "Four",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Five",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Six",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4},
+  //     {name: "Seven",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Eight",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Nine",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4},
+  //     {name: "Ten",
+  //     rate: 35,
+  //     location: "Bishan",
+  //     ratings: 3},
+  //     {name: "Eleven",
+  //     rate: 37,
+  //     location: "AMK",
+  //     ratings: 5},
+  //     {name: "Twelve",
+  //     rate: 37,
+  //     location: "TPY",
+  //     ratings: 4}
+  // ];
+
+displayResults(results){
+    console.log("I am here 2")
+  let totalResultsDisplay = [];
+  let currentResultsDisplay = [];
+    results.map((result, i, array) =>  {
+      console.log("i am here")
+      if (i%2===0 && i+1<array.length) {
+        totalResultsDisplay.push(
+          <Row key={i}>
+           <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i].name} </span>
+                     <p className="results-location">{"Bishan"}</p>
+                     <Rate value={4}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+             </Col>
+             <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i+1].name} </span>
+                     <p className="results-location">{"Pasir Ris"}</p>
+                     <Rate value={5}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i+1].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+               </Col>
+            </Row>
+          );
+    } else if (i%2===0 && i+1>=array.length) {
+        totalResultsDisplay.push(
+          <Row key={i}>
+           <Col span={12}>
+             <Card className="results-card"
+               bordered={false}
+               style={{ width: 240 }}
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+             <Card.Meta
+               title= {
+                 <div>
+                   <div className="results-name-div">
+                     <span> {array[i].name} </span>
+                     <p className="results-location">{array[i].location}</p>
+                     <Rate value={array[i].ratings}/>
+                   </div>
+                   <div className="results-rate-div">
+                     <p className="results-from"> from </p>
+                     <p className="results-rate"> ${array[i].rate} </p>
+                     <p className="results-location"> per day </p>
+                   </div>
+                 </div>
+               }
+               />
+             </Card>
+            </Col>
+          </Row>
+           );
+         }
+       }
+     );
+     for (let i=(this.state.current-1)*3; i<this.state.current*3; i++) {
+       console.log(i);
+        currentResultsDisplay.push(totalResultsDisplay[i]);
+     }
+
+     this.setState({
+       results: results,
+       totalResultsDisplay: totalResultsDisplay,
+       currentResultsDisplay: currentResultsDisplay
+     })
   }
 
   onRateChange(value) {
@@ -108,12 +294,14 @@ class Search extends Component {
   }
 
 
+
   render() {
     return (
       <div>
-      <Row>
-       <Col span={8}>
-        <h3> Find A Sitter </h3>
+      <Row gutter={16}>
+       <Col span={8} className="search-filters">
+       <div className="inner-filters">
+        <h3 className="title-label">Find A Sitter </h3>
         <Form onSubmit={this.handleSubmit.bind(this)}>
           <div>
           <p className="service-label">Service</p>
@@ -123,7 +311,7 @@ class Search extends Component {
               size="large"
               name="role"
               autoComplete="off"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '14px' }}
               defaultValue={['Dog Boarding']}
               onChange={this.onServiceChange.bind(this)}>
               {services.map(service => <Option key={service}>{service}</Option>)}
@@ -165,6 +353,7 @@ class Search extends Component {
           </div>
           <Form.Item className="date-picker">
              <DatePicker.RangePicker
+                style={{ fontSize: '14px' }}
                 onChange={this.onDateChange.bind(this)}
                 placeholder={['Drop off', 'Pick up']}/>
           </Form.Item>
@@ -176,7 +365,7 @@ class Search extends Component {
               size="large"
               name="role"
               autoComplete="off"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '14px'  }}
               defaultValue={['Dog']}
               onChange={this.onPetTypeChange.bind(this)}>
               {pettype.map(pettype => <Option key={pettype}>{pettype}</Option>)}
@@ -190,7 +379,7 @@ class Search extends Component {
               size="large"
               name="role"
               autoComplete="off"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '14px' }}
               defaultValue={['Small: 0 - 5kg']}
               onChange={this.onPetSizeChange.bind(this)}>
               {petsize.map(petsize => <Option key={petsize}>{petsize}</Option>)}
@@ -203,7 +392,7 @@ class Search extends Component {
               min={1}
               max={10}
               defaultValue={1}
-              style={{ width: '100%', marginBottom: '25px'}}
+              style={{ width: '100%', marginBottom: '25px', fontSize: '14px' }}
               onChange={this.onPetNoChange.bind(this)} />
           <div className="slider-label">
             <p>Housing</p>
@@ -219,11 +408,24 @@ class Search extends Component {
             options={miscOptions}
             onChange={this.onMiscChange.bind(this)} />
             <br /><br />
-          <Button type="primary" htmlType="submit">Search</Button>
+          <Button className= "search-button" type="primary" htmlType="submit" onClick={this.handleSubmit.bind(this)}>
+            Search</Button>
             </Form>
+            </div>
           </Col>
-          <Col span={16}>Results</Col>
-      </Row>
+          <Col span={16}>
+
+            <h3 className="results-label">Results</h3>
+            <div className="results" ref={this.myRef}>
+              {this.state.currentResultsDisplay}
+            </div>
+            <Pagination
+              current={this.state.current}
+              pageSize={6}
+              onChange={this.onPageChange.bind(this)}
+              total={this.state.results.length} />
+          </Col>
+          </Row>
       </div>
     );
   }
