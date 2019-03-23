@@ -6,6 +6,11 @@ import './AddPet.css';
 const Option = Select.Option;
 const { TextArea } = Input;
 
+// const petgender = [
+//   { value: 'female', label: 'Female' },
+//   { value: 'male', label: 'Male' }
+// ];
+//
 const petgender = [
   "Male", "Female"
 ]
@@ -109,8 +114,18 @@ const petbreed = [{
 
 
 class AddPet extends Component {
-
-  state = {
+  constructor() {
+    super();
+    this.state = {
+      petid: 0,
+      petname: '',
+      petage: '',
+      petsize: '',
+      petgender: '',
+      pettype: '',
+      petbreed: '',
+      petdesc: '',
+      petmed: '',
       previewVisible: false,
       previewImage: '',
       fileList: [{
@@ -118,20 +133,141 @@ class AddPet extends Component {
         name: 'xxx.png',
         status: 'done',
         url: 'https://images.prop24.com/196811060',
-      }],
-    };
+      }]
+    }
+  }
+
+  // onPetNameChange(petname) {
+  //   var petName = event.target.value;
+  //   console.log(petName);
+  //   this.setState({
+  //     petname: petName,
+  //   });
+  // }
+
+
+  onPetNameChange(event, petname) {
+    console.log(petname);
+    this.setState({
+      [petname]: event.target.value
+    })
+  }
 
   onPetAgeChange(value) {
     console.log(value);
-  }
+    if(value === "0 - 3 months old"){
+        this.setState({
+          petage: 1
+        })
+   } if(value === "4 - 6 months old"){
+       this.setState({
+         petage: 2
+
+       })
+  } if(value === "7 - 12 months old"){
+      this.setState({
+        petage: 3
+
+      })
+ } if(value === "Less than 2 years old"){
+     this.setState({
+       petage: 4
+
+     })
+} if(value ===  "3 years old"){
+    this.setState({
+      petage: 5
+
+    })
+} if(value === "4 years old"){
+    this.setState({
+      petage: 6
+
+    })
+} if(value === "5 years old"){
+    this.setState({
+      petage: 7
+
+    })
+} if(value === "6 years old"){
+    this.setState({
+      petage: 8
+
+    })
+} if(value === "7 years old"){
+    this.setState({
+      petage: 9
+    })
+} if(value === "8 years old"){
+    this.setState({
+      petage: 10
+
+    })
+} if(value === "9 years old"){
+    this.setState({
+      petage: 11
+
+    })
+} if(value === "10 years and above"){
+    this.setState({
+      petage: 12
+
+    })
+} else {
+  console.log("error the age doesn't fall into any category")
+}
+ }
+
   onPetGenderChange(value) {
-    console.log(value);
+    console.log(value)
+    this.setState({
+      petgender: value
+    })
   }
+
   onPetSizeChange(value) {
-    console.log(value);
+    if(value === "Small: 0 - 5kg"){
+        this.setState({
+          petsize: 1
+        })
+     } if(value === "Medium: 6 - 15kg"){
+         this.setState({
+           petsize: 2
+         })
+    } if(value === "Large: 16 - 45kg"){
+        this.setState({
+          petsize: 3
+        })
+   } if(value === "Giant: > 45kg"){
+       this.setState({
+         petsize: 4
+       })
+     } else {
+       console.log("error! does not fall into any weight groups")
   }
-  onPetTypeChange(value) {
+  }
+
+  onPetTypeBreedChange(value, selectedOptions) {
     console.log(value);
+    console.log(selectedOptions);
+    this.setState({
+      pettype: value[0],
+      petbreed: selectedOptions[1]["label"]
+    })
+  }
+
+  onPetDescChange(event, petdesc) {
+    console.log(petdesc);
+    this.setState({
+      [petdesc]: event.target.value
+    })
+  }
+
+  onPetMedChange(event, petmed) {
+    console.log(petmed);
+    this.setState({
+      [petmed]: event.target.value
+    })
   }
 
   handleCancel = () => this.setState({ previewVisible: false })
@@ -144,6 +280,38 @@ class AddPet extends Component {
    }
 
    handleChange = ({ fileList }) => this.setState({ fileList })
+
+   handleSubmit(event) {
+     let data = {
+       petname: this.state.petname,
+       petage: this.state.petage,
+       petsize: this.state.petsize,
+       petgender: this.state.petgender,
+       pettype: this.state.pettype,
+       petbreed:this.state.petbreed,
+       petdesc: this.state.petdesc,
+       petmed: this.state.petmed
+     }
+      // console.log(data)
+     var request = new Request("http://localhost:3001/addpet", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       body: JSON.stringify(data)
+     });
+
+     fetch(request)
+     .then(function(response) {
+       console.log(request)
+       response.json()
+       .then(function(data) {
+         console.log(data)
+
+       })
+     })
+     .catch(function(err) {
+       console.log(err);
+     })
+   }
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -161,7 +329,11 @@ class AddPet extends Component {
       <Form>
          <Col span={8} className = "addpet-col">
          <Form.Item>
-         <Input placeholder="Your pet's name" />
+         <Input
+            placeholder="Your pet's name"
+            petname={this.state.petname}
+            onChange={event => this.onPetNameChange(event, 'petname')}
+            />
          </Form.Item>
          <Form.Item>
               <Select
@@ -170,7 +342,8 @@ class AddPet extends Component {
                 autoComplete="off"
                 style={{ width: '100%', fontSize: '14px' }}
                 placeholder = "Select your pet's age"
-                onChange={this.onPetAgeChange.bind(this)}>
+                petage={this.state.petage}
+                onChange = {event => this.onPetAgeChange(event)}>
                 {petage.map(petage => <Option key={petage}>{petage}</Option>)}
               </Select>
             </Form.Item>
@@ -181,8 +354,8 @@ class AddPet extends Component {
                 autoComplete="off"
                 style={{ width: '100%', fontSize: '14px' }}
                 placeholder = "Select your pet's gender"
-                onChange={this.onPetGenderChange.bind(this)}>
-                {petgender.map(petgender => <Option key={petgender}>{petgender}</Option>)}
+                onChange={event => this.onPetGenderChange(event)}>
+                {petgender.map(petgender => <Option value={petgender}>{petgender}</Option>)}
               </Select>
             </Form.Item>
          <Form.Item>
@@ -191,7 +364,8 @@ class AddPet extends Component {
         })(
           <Cascader
           placeholder = "Select your pet type and breed"
-          options={petbreed} />
+          options={petbreed}
+          onChange={(value, selectedOptions) => this.onPetTypeBreedChange(value, selectedOptions)} />
         )}
       </Form.Item>
       <Form.Item>
@@ -201,7 +375,7 @@ class AddPet extends Component {
              autoComplete="off"
              style={{ width: '100%', fontSize: '14px' }}
              placeholder = "Select your pet size"
-             onChange={this.onPetSizeChange.bind(this)}>
+             onChange={event => this.onPetSizeChange(event)}>
              {petsize.map(petsize => <Option key={petsize}>{petsize}</Option>)}
            </Select>
          </Form.Item>
@@ -222,13 +396,17 @@ class AddPet extends Component {
         </Modal>
       </div>
          </Col>
-         <div className ="addpet-text">
-         <TextArea className = "addpet-textsub" rows={4} placeholder="Description (habits, likes, dislikes)"/>
-         <TextArea className = "addpet-textsub" rows={4} placeholder="Dietary requirements / Medical conditions"/>
-         </div>
          </Form>
       </Row>
-      <Button className="addpet-button" type="primary">Submit</Button>
+      <div className ="addpet-text">
+      <TextArea className = "addpet-textsub" rows={4} placeholder="Description (habits, likes, dislikes)"
+          petdesc={this.state.petdesc}
+          onChange={event => this.onPetDescChange(event, 'petdesc')}/>
+      <TextArea className = "addpet-textsub" rows={4} placeholder="Dietary requirements / Medical conditions"
+          petmed={this.state.petmed}
+          onChange={event => this.onPetMedChange(event, 'petmed')}/>
+      </div>
+      <Button className="addpet-button" type="primary" onClick={this.handleSubmit.bind(this)}>Submit</Button>
       </div>
     );
   }

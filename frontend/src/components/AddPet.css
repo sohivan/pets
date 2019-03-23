@@ -18,6 +18,7 @@
 .addpet-text {
   margin-left: 200px;
   margin-right: 200px;
+  overflow: inherit;
 }
 
 .addpet-textsub {
