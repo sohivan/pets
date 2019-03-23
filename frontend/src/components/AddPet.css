@@ -1,0 +1,52 @@
+.addpet-title {
+  text-align: center;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 45px;
+  margin-top: 50px;
+}
+
+.addpet-col {
+  margin-left: 200px
+}
+
+.addpet-colright {
+  margin-left: 20px;
+  text-align: center;
+}
+
+.addpet-text {
+  margin-left: 200px;
+  margin-right: 200px;
+  overflow: inherit;
+}
+
+.addpet-textsub {
+  margin-top: 20px;
+}
+
+.ant-upload.ant-upload-select-picture-card {
+  width: 130px;
+  height: 130px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.ant-upload-list-picture-card .ant-upload-list-item {
+  width: 130px;
+  height: 130px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.addpet-button{
+  background: #FF676D;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  width: 15%;
+  float: right;
+  margin-top: 80px;
+  margin-bottom: 50px;
+  margin-right: 200px;
+}

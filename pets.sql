@@ -57,24 +57,27 @@ CREATE TABLE Pets (
 	age				smallint not null,
 	breed			VARCHAR(100) not null,
 	typeofpet		VARCHAR(100) not null,
+	gender			VARCHAR (100) not null, 
+	descrip			text,
+	med				text,
 	oid				SERIAL not null REFERENCES PetOwners(oid)
 );
 
-INSERT INTO Pets (PetID, name, weight, age, breed, typeofpet, oid) VALUES
-(1166,'Hop',2,3,'Poodle','dog',255),
-(1177,'Rebecca',3,4,'Husky','dog',255),
-(1379,'Xandra',4,3,'Shitzu','dog',255),
-(3590,'Lana',3,5,'Corgi','dog',255),
-(9176,'Zeph',5,5,'Husky','dog',255),
-(5664,'Leilani',1,4,'Poodle','dog',810),
-(9056,'Kaye',2,3,'Terrier','dog',810),
-(5014,'Sydney',2,4,'Corgi','dog',810),
-(8600,'Jack',3,8,'Husky','dog',525),
-(2594,'Constance',3,2,'Poodle','dog',525),
-(9108,'Dalton',3,5,'Husky','dog',332),
-(4152,'Maxine',2,5,'Corgi','dog',548),
-(6373,'Walter',4,5,'Shitzu','dog',548),
-(8627,'Joel',3,5,'Corgi','dog',489);
+INSERT INTO Pets (PetID, name, weight, age, breed, typeofpet, gender, descrip, med, oid) VALUES
+(1166,'Hop',2,3,'Poodle','dog', 'male', 'hop likes to chew things', 'teething', 255),
+(1177,'Rebecca',3,4,'Husky','dog', 'female', 'bec is socialable dog and loves hanging out with other animals', 'none', 255),
+(1379,'Xandra',1,5,'Shitzu','dog', 'female', 'xandra loves sports!', null, 255),
+(3590,'Lana',2,7,'Corgi','dog','female', 'lana loves humans', null, 255),
+(9176,'Zeph',3,2,'Husky','dog','male', 'zeph is afraid of thunder', null, 255),
+(5664,'Leilani',2,5,'Poodle','dog','female', 'leilani love children. she is very child-friendly and does not bite', 'NA', 810),
+(9056,'Kaye',1,8,'Terrier','dog','female', null, null,  810),
+(5014,'Sydney',2,10,'Corgi','dog', 'male', 'syd loves walks in the park', 'do not feed him chocolate', 810),
+(8600,'Jack',3,12,'Husky','dog','male', null, 'jack does not eat human food',525),
+(2594,'Constance',3,5,'Poodle','dog','female',null, null, 525),
+(9108,'Dalton',3,6,'Husky','dog','male', null, 'keep him cool', 332),
+(4152,'Maxine',1,9,'Corgi','dog','female', 'maxine is very friendly but she is afraid of cats', null, 548),
+(6373,'Walter',1,3,'Shitzu','dog','male', 'walter loves playing by the beach!', 'walter is scared of seagulls',  548),
+(8627,'Joel',2,6,'Corgi','dog','male', 'joel loves to swim', null,  489);
 
 
 
