@@ -26,32 +26,6 @@ class SignupForm extends Component {
     }
   }
 
-  handleSubmit(event) {
-    console.log("heyho");
-    if (this.state.name!=="" && this.state.email!=="" && this.state.password!=="") {
-    let data = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-    }
-    var request = new Request("http://localhost:3001/signup", {
-      method: 'POST',
-      headers: new Headers({'Content-Type': 'application/json'}),
-      body: JSON.stringify(data)
-    });
-
-    fetch(request)
-    .then(function(response) {
-      response.json()
-      .then(function(data) {
-        console.log(data)
-      })
-    })
-    .catch(function(err) {
-      console.log(err);
-    })
-  }
-  }
   onUsernameChange = (event) => {
     this.props.form.setFieldsValue({
      username: event.target.value
@@ -91,24 +65,35 @@ class SignupForm extends Component {
   }
 
   handleSubmit = (event) => {
-    console.log("submitt");
+    console.log("submit");
     event.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
       }
     });
-  }
+    let data = this.props.form.getFieldsValue();
 
+    console.log(JSON.stringify(data));
 
-  // validateEmail() {
-  //   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email)) {
-  //     return true;
-  //   }
-  //   else {
-  //     return false;
-  //   }
-  // }
+    var request = new Request("http://localhost:3001/signup", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       body: JSON.stringify(data)
+     });
+
+     fetch(request)
+     .then(function(response) {
+       response.json()
+       .then(function(data) {
+         console.log(data)
+       })
+     })
+     .catch(function(err) {
+       console.log(err);
+     })
+   }
+
 
   render() {
     const { getFieldDecorator } = this.props.form;
