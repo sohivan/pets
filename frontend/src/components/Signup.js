@@ -1,15 +1,28 @@
 import React, { Component } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import {Form, Input, Select, Button} from 'antd';
+import './Signup.css';
 
+const Option = Select.Option;
 
 class Signup extends Component {
+    render() {
+        const AntWrappedLoginForm = Form.create()(SignupForm)
+        return (
+            <AntWrappedLoginForm />
+        );
+    }
+}
+
+const roles = ["Pet Owner", "Caretaker"]
+
+class SignupForm extends Component {
   constructor() {
     super();
     this.state = {
       name: '',
       email: '',
       password: '',
+      role: ['Pet Owner'],
     }
   }
 
@@ -39,24 +52,54 @@ class Signup extends Component {
     })
   }
   }
+  onUsernameChange = (event) => {
+    this.props.form.setFieldsValue({
+     username: event.target.value
+   });
+    console.log(this.props.form.getFieldsValue());
+  }
 
-  handleChange = name => event => {
-      this.setState({
-        [name]: event.target.value,
-      });
-  };
+  onEmailChange = (event) => {
+    this.props.form.setFieldsValue({
+     email: event.target.value
+   });
+    console.log(this.props.form.getFieldsValue());
+  }
 
-  handleChange = email => event => {
-      this.setState({
-        [email]: event.target.value,
-      });
-    };
+  onPasswordChange = (event) =>  {
+    this.props.form.setFieldsValue({
+     password: event.target.value
+   });
+    console.log(this.props.form.getFieldsValue());
+  }
 
-  handleChange = password => event => {
-      this.setState({
-        [password]: event.target.value,
-      });
-    };
+  onRoleChange(value, options) {
+    this.props.form.setFieldsValue({
+     role: value
+   });
+   console.log(this.props.form.getFieldsValue());
+  }
+
+  goToAddPet = (event) => {
+    console.log("goToAddPet");
+    event.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  }
+
+  handleSubmit = (event) => {
+    console.log("submitt");
+    event.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  }
+
 
   // validateEmail() {
   //   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email)) {
@@ -68,34 +111,82 @@ class Signup extends Component {
   // }
 
   render() {
+    const { getFieldDecorator } = this.props.form;
+
     return (
       <div>
-      <TextField
-         id="outlined-name"
-         label="Name"
-         onChange={this.handleChange('name')}
-         margin="normal"
-         variant="outlined"
-       />
-       <br/>
-       <TextField
-          id="outlined-name"
-          label="Email"
-          onChange={this.handleChange('email')}
-          margin="normal"
-          variant="outlined"
-        />
-        <br/>
-        <TextField
-           id="outlined-name"
-           label="Password"
-           onChange={this.handleChange('password')}
-           margin="normal"
-           variant="outlined"
-         />
-         <br/>
-         <Button color="primary" variant="contained" onClick={this.handleSubmit.bind(this)}>Submit </Button>
-         </div>
+      <h1 className = "signup-title"> Sign Up </h1>
+      <Form>
+        <div className="signup-div">
+        <Form.Item>
+        {getFieldDecorator('email', {
+            rules: [{
+              type: 'email', message: 'The input is not valid E-mail!',
+            }, {
+              required: true, message: 'Please input your E-mail!',
+            }],
+          })(
+            <Input
+              placeholder="Email*"
+              onChange={this.onEmailChange.bind(this)}/>
+          )}
+        </Form.Item>
+        <Form.Item>
+        {getFieldDecorator('username', {
+            rules: [{
+              required: true, message: 'Please input your username!',
+            }],
+          })(
+            <Input
+              placeholder="Username*"
+              onChange={this.onUsernameChange.bind(this)}/>
+          )}
+        </Form.Item>
+        <Form.Item>
+        {getFieldDecorator('password', {
+            rules: [{
+              required: true, message: 'Please input your password!',
+            }],
+          })(
+            <Input
+              placeholder="Password*"
+              onChange={this.onPasswordChange.bind(this)}/>
+          )}
+        </Form.Item>
+        <div>
+        <p className="service-label">Sign up as a:</p>
+        </div>
+        <Form.Item>
+        {getFieldDecorator('role', {
+            initialValue: ["Pet Owner"],
+            rules: [{
+              required: true, type: 'array', message: 'Please choose at least one role!',
+            }],
+          })(
+            <Select
+              mode="multiple"
+              size="large"
+              autoComplete="off"
+              style={{ width: '100%', fontSize: '14px' }}
+              onChange={this.onRoleChange.bind(this)}
+              >
+              {roles.map(role => <Option key={role}>{role}</Option>)}
+            </Select>
+          )}
+        </Form.Item>
+        {this.props.form.getFieldValue('role').includes("Pet Owner") ?
+        <Button className= "search-button" type="primary" htmlType="submit" onClick={this.goToAddPet.bind(this)}>
+            Next
+        </Button>
+        :
+        <Button className= "search-button" type="primary" htmlType="submit" onClick={this.handleSubmit.bind(this)}>
+            Submit
+        </Button>
+        }
+
+        </div>
+        </Form>
+    </div>
     );
   }
 }

@@ -1,0 +1,24 @@
+.signup-div {
+  margin: auto;
+  width: 300px;
+  height: fit-content;
+}
+
+
+.signup-title {
+  text-align: center;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 45px;
+  margin-top: 50px;
+}
+
+.input {
+  margin-bottom: 15px;
+}
+
+.service-label {
+  float: left;
+  font-weight: bold;
+  font-family: 'Montserrat', sans-serif;
+}
