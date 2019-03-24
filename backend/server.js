@@ -126,6 +126,39 @@ app.post('/addpet', function(request, response) {
   })
 })
 
+app.post('/addbid', function(request, response) {
+  var bidstartdate = request.body.bidstartdate;
+  var bidenddate = request.body.bidenddate;
+  var bidtimestamp = request.body.bidtimestamp;
+  var bidamt = request.body.bidamt;
+  var bidpet = request.body.bidpet;
+  var bidowner = request.body.bidowner;
+  var bidsitter = request.body.bidsitter;
+  var bidservice = request.body.bidservice;
+  var bidreq = request.body.bidreq;
+  let values = [bidstartdate, bidenddate, bidtimestamp, bidamt, bidpet, bidowner, bidsitter, bidservice, bidreq];
+  console.log("i am here in serverjs")
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    }
+    else {
+      db.query(`
+        INSERT INTO BID(BidStartDate, BidEndDate, BidTimestamp, BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [bidstartdate, bidenddate, bidtimestamp, bidamt, bidpet, bidowner, bidsitter, bidservice, bidreq], (err, table) => {
+        done();
+        if (err) {
+          console.log(err)
+          return response.status(400).send(err);
+        }
+        else {
+          console.log("i added a new bid");
+          response.status(200).send({message:"new bid added"});
+        }
+      })
+    }
+  })
+})
 
 app.get('/getCaretakers', function(request, response) {
   pool.connect((err, db, done) => {
