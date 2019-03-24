@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Input, Select, Button} from 'antd';
+import {Form, Input, Select, Button, message} from 'antd';
 import './Signup.css';
 
 
@@ -105,8 +105,13 @@ class SignupForm extends Component {
      });
 
      fetch(request)
-     .then((response) =>
-       response.json())
+     .then((response) => {
+       if (!response.ok) {
+         message.error('An error occurred. Please try again.');
+         return {};
+       }
+       return response.json();
+      })
        .then((data) => {
          if (data.constraint == "users_email_key") {
            this.props.form.setFields({
