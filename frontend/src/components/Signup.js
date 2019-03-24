@@ -81,7 +81,7 @@ class SignupForm extends Component {
      .then((response) =>
        response.json())
        .then((data) => {
-         console.log(data)
+         console.log(data);
          this.props.onGoToAddPet(data.id);
        })
      .catch(function(err) {
@@ -105,12 +105,18 @@ class SignupForm extends Component {
      });
 
      fetch(request)
-     .then(function(response) {
-       response.json()
-       .then(function(data) {
-         console.log(data)
+     .then((response) =>
+       response.json())
+       .then((data) => {
+         if (data.constraint == "users_email_key") {
+           this.props.form.setFields({
+             email: {
+               value: this.props.form.getFieldValue('email'),
+               errors: [new Error('User with email address already exists')],
+             },
+           });
+         }
        })
-     })
      .catch(function(err) {
        console.log(err);
      })
