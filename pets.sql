@@ -152,7 +152,6 @@ CREATE TABLE Payment (
 	PaymentFrom		SERIAL not null REFERENCES PetOwners(oid)
 );
 
-
 DROP TABLE if exists ChatHistory;
 CREATE TABLE ChatHistory (
 	MessageID		SERIAL primary key,
