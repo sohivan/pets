@@ -124,7 +124,7 @@ CREATE TABLE Services (
 set datestyle = 'DMY';
 
 INSERT INTO Services (Service, StartDate, EndDate, Rate, cid, serviceid) VALUES
-('Overnight','24-01-2019','25-01-2019',50,508,1),
+('Pet Boarding','24-01-2019','25-01-2019',50,508,1),
 ('Washing','23-01-2019','20-02-2019',92,932,2),
 ('Walking','25-01-2019','20-02-2019',87,932,3),
 ('Walking','30-01-2019','25-01-2019',90,508,4),
