@@ -2,13 +2,24 @@ import React, { Component } from 'react';
 import {Form, Input, Select, Button} from 'antd';
 import './Signup.css';
 
+
 const Option = Select.Option;
 
 class Signup extends Component {
-    render() {
+  constructor(props) {
+    super(props);
+  }
+
+  onSubmit = (id) => {
+    this.props.onGoToAddPet(id);
+  }
+
+  render() {
         const AntWrappedLoginForm = Form.create()(SignupForm)
         return (
-            <AntWrappedLoginForm />
+          <div>
+            <AntWrappedLoginForm onGoToAddPet= {this.onSubmit.bind(this)}/>
+          </div>
         );
     }
 }
@@ -16,8 +27,9 @@ class Signup extends Component {
 const roles = ["Pet Owner", "Caretaker"]
 
 class SignupForm extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    console.log(props);
+    super(props);
     this.state = {
       name: '',
       email: '',
@@ -30,28 +42,24 @@ class SignupForm extends Component {
     this.props.form.setFieldsValue({
      username: event.target.value
    });
-    console.log(this.props.form.getFieldsValue());
   }
 
   onEmailChange = (event) => {
     this.props.form.setFieldsValue({
      email: event.target.value
    });
-    console.log(this.props.form.getFieldsValue());
   }
 
   onPasswordChange = (event) =>  {
     this.props.form.setFieldsValue({
      password: event.target.value
    });
-    console.log(this.props.form.getFieldsValue());
   }
 
   onRoleChange(value, options) {
     this.props.form.setFieldsValue({
      role: value
    });
-   console.log(this.props.form.getFieldsValue());
   }
 
   goToAddPet = (event) => {
@@ -62,6 +70,23 @@ class SignupForm extends Component {
         console.log('Received values of form: ', values);
       }
     });
+    let data = this.props.form.getFieldsValue();
+    var request = new Request("http://localhost:3001/signup", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       body: JSON.stringify(data)
+     });
+
+     fetch(request)
+     .then((response) =>
+       response.json())
+       .then((data) => {
+         console.log(data)
+         this.props.onGoToAddPet(data.id);
+       })
+     .catch(function(err) {
+       console.log(err);
+     })
   }
 
   handleSubmit = (event) => {
@@ -73,9 +98,6 @@ class SignupForm extends Component {
       }
     });
     let data = this.props.form.getFieldsValue();
-
-    console.log(JSON.stringify(data));
-
     var request = new Request("http://localhost:3001/signup", {
        method: 'POST',
        headers: new Headers({'Content-Type': 'application/json'}),
@@ -171,7 +193,9 @@ class SignupForm extends Component {
 
         </div>
         </Form>
+
     </div>
+
     );
   }
 }

@@ -38,6 +38,7 @@ app.post('/signup', function(request, response) {
   var email = request.body.email;
   var password = request.body.password;
   var roles = request.body.role;
+  var id;
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
@@ -55,7 +56,7 @@ app.post('/signup', function(request, response) {
             response.status(400).send(err);
             return rollback(db);
           }
-            let id = result.rows[0].id;
+            id = result.rows[0].id;
             console.log("i have been inserted into users");
             if (roles.includes("Caretaker")) {
               db.query(`
@@ -78,12 +79,11 @@ app.post('/signup', function(request, response) {
                     })
               }
               db.query('COMMIT', (err) => {
-                console.log("hello");
                 db.end.bind(db);
                 if (err) {
                   console.error('Error committing transaction', err.stack)
                 }
-                response.status(200).send({message: "good"});
+                response.status(200).send({id: id});
               })
               })
             })
