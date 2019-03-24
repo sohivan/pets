@@ -108,7 +108,6 @@ class SignupForm extends Component {
      .then((response) => {
        if (!response.ok) {
          message.error('An error occurred. Please try again.');
-         return {};
        }
        return response.json();
       })
