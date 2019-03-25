@@ -62,15 +62,18 @@ class SignupForm extends Component {
      role: value
    });
   }
+
   validateFields = () => {
+    let validated = false;
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        return true;
+        validated = true;
       }
-      return false;
     });
+    return validated;
   }
+
   goToAddPet = (event) => {
     event.preventDefault();
     if (this.validateFields()) {
