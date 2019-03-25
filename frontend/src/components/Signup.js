@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Form, Input, Select, Button, message} from 'antd';
 import './Signup.css';
+import { withRouter } from "react-router";
 
 
 const Option = Select.Option;
@@ -18,7 +19,7 @@ class Signup extends Component {
         const AntWrappedLoginForm = Form.create()(SignupForm)
         return (
           <div>
-            <AntWrappedLoginForm onGoToAddPet= {this.onSubmit.bind(this)}/>
+            <AntWrappedLoginForm {...this.props} onGoToAddPet= {this.onSubmit.bind(this)}/>
           </div>
         );
     }
@@ -28,8 +29,8 @@ const roles = ["Pet Owner", "Caretaker"]
 
 class SignupForm extends Component {
   constructor(props) {
-    console.log(props);
     super(props);
+
     this.state = {
       name: '',
       email: '',
@@ -63,7 +64,6 @@ class SignupForm extends Component {
   }
 
   goToAddPet = (event) => {
-    console.log("goToAddPet");
     event.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
@@ -74,53 +74,77 @@ class SignupForm extends Component {
     var request = new Request("http://localhost:3001/signup", {
        method: 'POST',
        headers: new Headers({'Content-Type': 'application/json'}),
-       body: JSON.stringify(data)
-     });
-
-     fetch(request)
-     .then((response) =>
-       response.json())
-       .then((data) => {
-         console.log(data);
-         this.props.onGoToAddPet(data.id);
-       })
-     .catch(function(err) {
-       console.log(err);
-     })
-  }
-
-  handleSubmit = (event) => {
-    console.log("submit");
-    event.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
-    });
-    let data = this.props.form.getFieldsValue();
-    var request = new Request("http://localhost:3001/signup", {
-       method: 'POST',
-       headers: new Headers({'Content-Type': 'application/json'}),
-       body: JSON.stringify(data)
+       body: JSON.stringify(data),
+       credentials: 'include',
      });
 
      fetch(request)
      .then((response) => {
        if (!response.ok) {
          message.error('An error occurred. Please try again.');
+         response.json()
+         .then((data) => {
+           if (data.constraint == "users_email_key") {
+             this.props.form.setFields({
+               email: {
+                 value: this.props.form.getFieldValue('email'),
+                 errors: [new Error('User with email address already exists')],
+               },
+             });
+           }
+         })
+         .catch(function(err) {
+           console.log(err);
+         })
+       } else {
+         response.json()
+         .then((data) => {
+           this.props.onGoToAddPet(data.id);
+         })
        }
-       return response.json();
+     })
+     .catch(function(err) {
+       console.log(err);
+     })
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+    let data = this.props.form.getFieldsValue();
+    var request = new Request("http://localhost:3001/signup", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       body: JSON.stringify(data),
+       credentials: 'include',
+     });
+
+     fetch(request)
+     .then((response) => {
+       if (!response.ok) {
+         message.error('An error occurred. Please try again.');
+         response.json()
+         .then((data) => {
+           if (data.constraint == "users_email_key") {
+             this.props.form.setFields({
+               email: {
+                 value: this.props.form.getFieldValue('email'),
+                 errors: [new Error('User with email address already exists')],
+               },
+             });
+           }
+         })
+         .catch(function(err) {
+           console.log(err);
+         })
+       } else {
+         this.props.history.push("/");
+       }
       })
-       .then((data) => {
-         if (data.constraint == "users_email_key") {
-           this.props.form.setFields({
-             email: {
-               value: this.props.form.getFieldValue('email'),
-               errors: [new Error('User with email address already exists')],
-             },
-           });
-         }
-       })
      .catch(function(err) {
        console.log(err);
      })
@@ -210,4 +234,4 @@ class SignupForm extends Component {
   }
 }
 
-export default Signup;
+export default withRouter(Signup);
