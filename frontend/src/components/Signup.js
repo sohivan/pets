@@ -62,92 +62,94 @@ class SignupForm extends Component {
      role: value
    });
   }
-
-  goToAddPet = (event) => {
-    event.preventDefault();
+  validateFields = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        return true;
       }
+      return false;
     });
-    let data = this.props.form.getFieldsValue();
-    var request = new Request("http://localhost:3001/signup", {
-       method: 'POST',
-       headers: new Headers({'Content-Type': 'application/json'}),
-       body: JSON.stringify(data),
-       credentials: 'include',
-     });
+  }
+  goToAddPet = (event) => {
+    event.preventDefault();
+    if (this.validateFields()) {
+      let data = this.props.form.getFieldsValue();
+      var request = new Request("http://localhost:3001/signup", {
+         method: 'POST',
+         headers: new Headers({'Content-Type': 'application/json'}),
+         body: JSON.stringify(data),
+         credentials: 'include',
+       });
 
-     fetch(request)
-     .then((response) => {
-       if (!response.ok) {
-         message.error('An error occurred. Please try again.');
-         response.json()
-         .then((data) => {
-           if (data.constraint == "users_email_key") {
-             this.props.form.setFields({
-               email: {
-                 value: this.props.form.getFieldValue('email'),
-                 errors: [new Error('User with email address already exists')],
-               },
-             });
-           }
-         })
-         .catch(function(err) {
-           console.log(err);
-         })
-       } else {
-         response.json()
-         .then((data) => {
-           this.props.onGoToAddPet(data.id);
-         })
-       }
-     })
-     .catch(function(err) {
-       console.log(err);
-     })
+       fetch(request)
+       .then((response) => {
+         if (!response.ok) {
+           message.error('An error occurred. Please try again.');
+           response.json()
+           .then((data) => {
+             if (data.constraint == "users_email_key") {
+               this.props.form.setFields({
+                 email: {
+                   value: this.props.form.getFieldValue('email'),
+                   errors: [new Error('User with email address already exists')],
+                 },
+               });
+             }
+           })
+           .catch(function(err) {
+             console.log(err);
+           })
+         } else {
+           response.json()
+           .then((data) => {
+             this.props.onGoToAddPet(data.id);
+           })
+         }
+       })
+       .catch(function(err) {
+         console.log(err);
+       })
+   }
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
-    });
-    let data = this.props.form.getFieldsValue();
-    var request = new Request("http://localhost:3001/signup", {
-       method: 'POST',
-       headers: new Headers({'Content-Type': 'application/json'}),
-       body: JSON.stringify(data),
-       credentials: 'include',
-     });
+    if (this.validateFields()) {
+      let data = this.props.form.getFieldsValue();
+      var request = new Request("http://localhost:3001/signup", {
+         method: 'POST',
+         headers: new Headers({'Content-Type': 'application/json'}),
+         body: JSON.stringify(data),
+         credentials: 'include',
+       });
 
-     fetch(request)
-     .then((response) => {
-       if (!response.ok) {
-         message.error('An error occurred. Please try again.');
-         response.json()
-         .then((data) => {
-           if (data.constraint == "users_email_key") {
-             this.props.form.setFields({
-               email: {
-                 value: this.props.form.getFieldValue('email'),
-                 errors: [new Error('User with email address already exists')],
-               },
-             });
-           }
-         })
-         .catch(function(err) {
-           console.log(err);
-         })
-       } else {
-         this.props.history.push("/");
-       }
-      })
-     .catch(function(err) {
-       console.log(err);
-     })
+       fetch(request)
+       .then((response) => {
+         if (!response.ok) {
+           message.error('An error occurred. Please try again.');
+           response.json()
+           .then((data) => {
+             if (data.constraint == "users_email_key") {
+               this.props.form.setFields({
+                 email: {
+                   value: this.props.form.getFieldValue('email'),
+                   errors: [new Error('User with email address already exists')],
+                 },
+               });
+             }
+           })
+           .catch(function(err) {
+             console.log(err);
+           })
+         } else {
+           this.props.history.push("/");
+         }
+        })
+       .catch(function(err) {
+         console.log(err);
+       })
+     }
    }
 
 
