@@ -95,20 +95,23 @@ CREATE TABLE Homes (
 CREATE TABLE CareTaker (
 	cid				SERIAL unique not null,
 	name 			text not null,
-	Preference		text not null,
+	PetType			text not null,
+	PetSize			text not null,
+	houseOptions	text not null,
+	miscOptions		text,
 	Description 	text not null,
 	-- address			text not null REFERENCES Homes(address)
 	foreign key (cid, name) references users(id, name)
 );
 
-INSERT INTO CareTaker (cid, name, Preference, Description) VALUES
-(932,'Solomon','aaaaaaaa','bbbb'),
-(508,'Octavius','aaaaaaaa','bbbbb'),
-(673,'Violet','aaaaaaa','bbbbb'),
-(640,'Jolie','aaaaaaa','bbbbb'),
-(725,'Heather','aaaaaaa','bbbbb'),
-(941,'Yoshio','aaaaaaa','bbbbbb'),
-(950,'Keane','aaaaaaa','bbbbb');
+INSERT INTO CareTaker (cid, name, PetType, PetSize, houseOptions, miscOptions, Description) VALUES
+(932,'Solomon','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','likes to eat'),
+(508,'Octavius','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house',null,;'likes to sleep'),
+(673,'Violet','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','vegetarian'),
+(640,'Jolie','dog',"Medium: 6 - 15kg",'Allow pets to stay in sitter\'s house',null,'likes to sing'),
+(725,'Heather','dog',"Medium: 6 - 15kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','i am writing a book'),
+(941,'Yoshio','dog',"Large: 16 - 45kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','i love shows'),
+(950,'Keane','dog',"Large: 16 - 45kg",'Allow pets to stay in sitter\'s house',null,'I like monkeys');
 
 
 CREATE TABLE Services (
