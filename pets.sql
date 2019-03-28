@@ -127,7 +127,7 @@ CREATE TABLE Services (
 set datestyle = 'DMY';
 
 INSERT INTO Services (Service, StartDate, EndDate, Rate, cid, serviceid) VALUES
-('Overnight','24-01-2019','25-01-2019',50,508,1),
+('Pet Boarding','24-01-2019','25-01-2019',50,508,1),
 ('Washing','23-01-2019','20-02-2019',92,932,2),
 ('Walking','25-01-2019','20-02-2019',87,932,3),
 ('Walking','30-01-2019','25-01-2019',90,508,4),
@@ -172,9 +172,10 @@ CREATE TABLE Bid (
 	BidTimestamp	timestamp not null,
 	BidAmount		smallint not null,
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
-	PetOnwner		SERIAL not null REFERENCES PetOwners(oid),
-	BidderID		SERIAL not null REFERENCES CareTaker(cid),
-	serviceid		serial not null REFERENCES Services(serviceid)
+	PetOwnerID		SERIAL not null REFERENCES PetOwners(oid),
+	CareTakerID		SERIAL not null REFERENCES CareTaker(cid),
+	ServiceID		serial not null REFERENCES Services(serviceid),
+	bidrequest		text
 );
 
 

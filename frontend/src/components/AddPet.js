@@ -114,8 +114,8 @@ const petbreed = [{
 
 
 class AddPet extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       petid: 0,
       petname: '',
@@ -412,6 +412,19 @@ class AddPet extends Component {
   }
 }
 
-const WrappedAddPet = Form.create({ name: 'addpet' })(AddPet);
+class WrappedAddPet extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+        const WrappedAddPet = Form.create({ name: 'addpet' })(AddPet);
+        return (
+          <div>
+            <WrappedAddPet id= {this.props.id}/>
+          </div>
+        );
+    }
+}
 
 export default WrappedAddPet;

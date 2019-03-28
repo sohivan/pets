@@ -13,6 +13,12 @@ const pool = new pg.Pool({
   port: 5432,
 });
 
+function rollback(client) {
+    client.query('ROLLBACK', function() {
+        client.end();
+    });
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -24,32 +30,66 @@ app.use(function(req, res, next){
   next();
 })
 
+
+
 app.post('/signup', function(request, response) {
   console.log(request.body);
-  var name = request.body.name;
+  var name = request.body.username;
   var email = request.body.email;
   var password = request.body.password;
-  let values = [name, email, password];
+  var roles = request.body.role;
+  var id;
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     }
-    else {
-      db.query(`
-        INSERT INTO USERS(name, email, password)
-        VALUES($1, $2, $3)`, [name, email, password], (err, table) => {
-        done();
-        if (err) {
-          return response.status(400).send(err);
+      db.query('BEGIN', function(err) {
+        if(err) {
+          console.log('Problem starting transaction', err);
+          response.status(400).send(err);
+          return rollback(db);
         }
-        else {
-          console.log("i have been inserted");
-          response.status(200).send({message:"data inserted"});
-        }
+        db.query(`
+          INSERT INTO USERS(name, email, password)
+          VALUES($1, $2, $3) RETURNING id`, [name, email, password], (err, result) => {
+          if (err) {
+            response.status(400).send(err);
+            return rollback(db);
+          }
+            id = result.rows[0].id;
+            console.log("i have been inserted into users");
+            if (roles.includes("Caretaker")) {
+              db.query(`
+                INSERT INTO CARETAKER(cid, name, Preference, Description)
+                VALUES($1, $2, $3, $4)`, [id, name, "hi", "hi2"], (err, result) => {
+                  if (err) {
+                    console.error(err);
+                    return rollback(db);
+                  }
+              })
+            }
+              if (roles.includes("Pet Owner")) {
+                db.query(`
+                  INSERT INTO PETOWNERS (oid, owner_name, description, numofpets)
+                  VALUES($1, $2, $3, $4)`, [id, name, "hi", 1], (err, result) => {
+                    if (err) {
+                      console.error(err);
+                      return rollback(db);
+                    }
+                    })
+              }
+              db.query('COMMIT', (err) => {
+                db.end.bind(db);
+                if (err) {
+                  console.error('Error committing transaction', err.stack)
+                }
+                response.status(200).send({id: id});
+              })
+              })
+            })
+          })
       })
-    }
-  })
-})
+
 
 
 app.post('/addpet', function(request, response) {
@@ -86,6 +126,39 @@ app.post('/addpet', function(request, response) {
   })
 })
 
+app.post('/addbid', function(request, response) {
+  var bidstartdate = request.body.bidstartdate;
+  var bidenddate = request.body.bidenddate;
+  var bidtimestamp = request.body.bidtimestamp;
+  var bidamt = request.body.bidamt;
+  var bidpet = request.body.bidpet;
+  var bidowner = request.body.bidowner;
+  var bidsitter = request.body.bidsitter;
+  var bidservice = request.body.bidservice;
+  var bidreq = request.body.bidreq;
+  let values = [bidstartdate, bidenddate, bidtimestamp, bidamt, bidpet, bidowner, bidsitter, bidservice, bidreq];
+  console.log("i am here in serverjs")
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    }
+    else {
+      db.query(`
+        INSERT INTO BID(BidStartDate, BidEndDate, BidTimestamp, BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [bidstartdate, bidenddate, bidtimestamp, bidamt, bidpet, bidowner, bidsitter, bidservice, bidreq], (err, table) => {
+        done();
+        if (err) {
+          console.log(err)
+          return response.status(400).send(err);
+        }
+        else {
+          console.log("i added a new bid");
+          response.status(200).send({message:"new bid added"});
+        }
+      })
+    }
+  })
+})
 
 app.get('/getCaretakers', function(request, response) {
   pool.connect((err, db, done) => {
