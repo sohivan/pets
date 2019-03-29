@@ -30,7 +30,8 @@ INSERT INTO users (id, name, email, password) VALUES
 (640,'Jolie','sem.ut@faucibusorci.ca','ZZT15HBV5XT'),
 (725,'Heather','nunc.risus@acturpis.com','JBK85ODN5PL'),
 (941,'Yoshio','Nulla.eget.metus@magnis.net','BTD17WGQ1UB'),
-(950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG');
+(950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG'),
+ (123, 'W', 'hello123@gmail.com', '12341234');
 
 
 CREATE TABLE PetOwners (
@@ -96,7 +97,7 @@ CREATE TABLE CareTaker (
 	cid				SERIAL unique not null,
 	name 			text not null,
 	PetType			text not null,
-	PetSize			text not null,
+	PetSize			smallint not null,
 	houseOptions	text not null,
 	miscOptions		text,
 	Description 	text not null,
@@ -105,13 +106,13 @@ CREATE TABLE CareTaker (
 );
 
 INSERT INTO CareTaker (cid, name, PetType, PetSize, houseOptions, miscOptions, Description) VALUES
-(932,'Solomon','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','likes to eat'),
-(508,'Octavius','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house',null,;'likes to sleep'),
-(673,'Violet','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','vegetarian'),
-(640,'Jolie','dog',"Medium: 6 - 15kg",'Allow pets to stay in sitter\'s house',null,'likes to sing'),
-(725,'Heather','dog',"Medium: 6 - 15kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','i am writing a book'),
-(941,'Yoshio','dog',"Large: 16 - 45kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','i love shows'),
-(950,'Keane','dog',"Large: 16 - 45kg",'Allow pets to stay in sitter\'s house',null,'I like monkeys');
+(932,'Solomon','dog', 1,'Allow pets to stay in sitter house','Takes care of one client at a time','likes to eat'),
+(508,'Octavius','dog', 1,'Allow pets to stay in sitter house',null,'likes to sleep'),
+(673,'Violet','dog', 1,'Allow pets to stay in sitter house','Takes care of one client at a time','vegetarian'),
+(640,'Jolie','dog',2,'Allow pets to stay in sitter house',null,'likes to sing'),
+(725,'Heather','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i am writing a book'),
+(941,'Yoshio','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i love shows'),
+(950,'Keane','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i love shows');
 
 
 CREATE TABLE Services (
@@ -169,14 +170,19 @@ CREATE TABLE Bid (
 	BidStartDate	date not null,
 	BidEndDate		date not null,
 	BidID			SERIAL primary key,
-	BidTimestamp	timestamp not null,
+	BidTimestamp	timestamp unique not null ,
 	BidAmount		smallint not null,
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
 	PetOwnerID		SERIAL not null REFERENCES PetOwners(oid),
 	CareTakerID		SERIAL not null REFERENCES CareTaker(cid),
 	ServiceID		serial not null REFERENCES Services(serviceid),
-	bidrequest		text
+	bidrequest		text,
+	bidstatus		varchar(20) default 'pending' unique not null 
 );
+
+INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
+('20-01-2019','31-01-2019',  1234455,'2018-12-25 21:44:30', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
+('20-01-2019','31-01-2019',  1234456,'2018-12-25 21:44:30', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
 
 
 CREATE Table History (
@@ -184,8 +190,8 @@ CREATE Table History (
 	BidderID		SERIAL not null REFERENCES CareTaker(cid),
 	PetOnwner 		SERIAL not null REFERENCES PetOwners(oid),
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
-	BookingTimestamp	timestamp not null,
-	PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
+	BookingTimestamp	timestamp not null references Bid(BidTimestamp),
+	-- PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
 	serviceid 		serial not null REFERENCES Services(serviceid)
 );
 

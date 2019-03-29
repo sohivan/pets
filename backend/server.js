@@ -36,6 +36,90 @@ app.use(function(req, res, next){
   next();
 })
 
+app.post('/user/profile', async (request, response) => {
+  const { email } = request.body;
+
+  try {
+    const table = await pool.query(`
+    SELECT *,
+    CASE WHEN USERS.ID IN (SELECT OID FROM PETOWNERS) THEN 'Petowner' ELSE 'Caretaker' END AS USERTYPE
+    FROM USERS
+    WHERE EMAIL=$1
+  `, [email])
+
+    return response.status(200).send({
+      status: "success", data: {
+        name: table.rows[0].name, email: table.rows[0].email,
+        type: table.rows[0].usertype, id: table.rows[0].id
+      }
+    })
+  } catch (e) {
+    return response.status(400).send(e);
+  }
+})
+
+app.post('/user/petowner', async (request, response) => {
+  const { id } = request.body;
+
+  try {
+    const table = await pool.query(`
+    SELECT *
+    FROM PETOWNERS LEFT OUTER JOIN PETS ON PETOWNERS.OID=PETS.OID
+    WHERE PETOWNERS.OID=$1
+    `, [id])
+
+    return response.status(200).send({ status: "success", data: { info: table.rows } })
+  } catch(e) {
+    return response.status(400).send(e);
+  }
+})
+
+app.post('/user/caretaker', async (request, response) => {
+  const { id } = request.body;
+
+  try {
+    const table = await pool.query(`
+   SELECT *
+   FROM CARETAKER LEFT OUTER JOIN SERVICES ON CARETAKER.CID = SERVICES.CID
+   WHERE CARETAKER.CID=$1
+    `, [id])
+
+    return response.status(200).send({ status: "success", data: { info: table.rows } })
+  } catch(e) {
+    return response.status(400).send(e);
+  }
+})
+
+app.post('/login', (request, response) => {
+  const { email, password } = request.body;
+
+  pool.connect((err, db, done) => {
+    if (err) {
+      return response.status(400).send(err);
+    }
+
+    db.query(`
+      SELECT * FROM USERS
+      WHERE EMAIL=$1
+    `, [email], (err, table) => {
+        if (err) {
+          return response.status(400).send(err);
+        }
+
+        if (table.rows.length < 1) {
+          return response.status(403).send({ status: "failed", message: "No user found" })
+        }
+
+        if (table.rows[0].password === password) {
+          console.log("success!")
+          return response.status(200).send({ status: "success" });
+
+        } else {
+          return response.status(403).send({ status: "failed", message: "Wrong username/password" })
+        }
+      })
+  })
+});
 
 
 app.post('/signup', function(request, response) {

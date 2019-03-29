@@ -14,9 +14,6 @@
   top:0;
   bottom:0;
   margin: auto 20px;
-
-
-
 }
 
 .App-header {
@@ -27,6 +24,12 @@
 
 .Button-app {
   float: right;
+}
+
+a {
+  color: black;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
 }
 
 /* .App-link {
