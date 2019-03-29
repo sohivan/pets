@@ -181,7 +181,8 @@ CREATE TABLE Bid (
 );
 
 INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
-('20-01-2019','31-01-2019',  1234455,'2018-12-25 21:44:30', 35,  8627,  489, 640, , 16, 'please take good care of my pet', 'pending');
+('20-01-2019','31-01-2019',  1234455,'2018-12-25 21:44:30', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
+('20-01-2019','31-01-2019',  1234456,'2018-12-25 21:44:30', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
 
 
 CREATE Table History (
@@ -193,9 +194,6 @@ CREATE Table History (
 	-- PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
 	serviceid 		serial not null REFERENCES Services(serviceid)
 );
-
-INSERT INTO History (BookingID, BidderID, PetOnwner, PetID , BookingTimestamp,serviceid) VALUES
-(123445,640,  489, 8627, "2019-3-29 21:44:30", 16);
 
 DROP TABLE if exists Review;
 CREATE TABLE Review (
