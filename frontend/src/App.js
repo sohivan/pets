@@ -11,6 +11,7 @@ import AddPet from './components/AddPet';
 import AddBid from './components/AddBid';
 import Logo from './image/pet-bay-sands-logo.svg';
 import CreateProfile from './components/CreateProfile';
+import BidTracker from './components/BidTracker';
 import history from './history';
 
 class App extends Component {
@@ -51,6 +52,7 @@ class App extends Component {
          <Route exact path="/add-bid" component={AddBid} />
          <Route path="/create-profile" component={CreateProfile} />
          <Route path="/login" component={Login} />
+         <Route path="/bid-tracker" component={BidTracker} />
          </div>
       </Router>
     );
