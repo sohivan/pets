@@ -30,7 +30,8 @@ INSERT INTO users (id, name, email, password) VALUES
 (640,'Jolie','sem.ut@faucibusorci.ca','ZZT15HBV5XT'),
 (725,'Heather','nunc.risus@acturpis.com','JBK85ODN5PL'),
 (941,'Yoshio','Nulla.eget.metus@magnis.net','BTD17WGQ1UB'),
-(950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG');
+(950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG',
+ 123, 'W', 'hello123@gmail.com', 'GHT1235Z728');
 
 
 CREATE TABLE PetOwners (
