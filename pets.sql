@@ -30,8 +30,8 @@ INSERT INTO users (id, name, email, password) VALUES
 (640,'Jolie','sem.ut@faucibusorci.ca','ZZT15HBV5XT'),
 (725,'Heather','nunc.risus@acturpis.com','JBK85ODN5PL'),
 (941,'Yoshio','Nulla.eget.metus@magnis.net','BTD17WGQ1UB'),
-(950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG',
- 123, 'W', 'hello123@gmail.com', 'GHT1235Z728');
+(950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG'),
+ (123, 'W', 'hello123@gmail.com', '12341234');
 
 
 CREATE TABLE PetOwners (
@@ -97,7 +97,7 @@ CREATE TABLE CareTaker (
 	cid				SERIAL unique not null,
 	name 			text not null,
 	PetType			text not null,
-	PetSize			text not null,
+	PetSize			smallint not null,
 	houseOptions	text not null,
 	miscOptions		text,
 	Description 	text not null,
@@ -106,13 +106,13 @@ CREATE TABLE CareTaker (
 );
 
 INSERT INTO CareTaker (cid, name, PetType, PetSize, houseOptions, miscOptions, Description) VALUES
-(932,'Solomon','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','likes to eat'),
-(508,'Octavius','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house',null,;'likes to sleep'),
-(673,'Violet','dog', "Small: 0 - 5kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','vegetarian'),
-(640,'Jolie','dog',"Medium: 6 - 15kg",'Allow pets to stay in sitter\'s house',null,'likes to sing'),
-(725,'Heather','dog',"Medium: 6 - 15kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','i am writing a book'),
-(941,'Yoshio','dog',"Large: 16 - 45kg",'Allow pets to stay in sitter\'s house','Takes care of one client at a time','i love shows'),
-(950,'Keane','dog',"Large: 16 - 45kg",'Allow pets to stay in sitter\'s house',null,'I like monkeys');
+(932,'Solomon','dog', 1,'Allow pets to stay in sitter house','Takes care of one client at a time','likes to eat'),
+(508,'Octavius','dog', 1,'Allow pets to stay in sitter house',null,'likes to sleep'),
+(673,'Violet','dog', 1,'Allow pets to stay in sitter house','Takes care of one client at a time','vegetarian'),
+(640,'Jolie','dog',2,'Allow pets to stay in sitter house',null,'likes to sing'),
+(725,'Heather','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i am writing a book'),
+(941,'Yoshio','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i love shows'),
+(950,'Keane','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i love shows');
 
 
 CREATE TABLE Services (

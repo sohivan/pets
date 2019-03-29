@@ -37,7 +37,8 @@ function LoginPage({ history }) {
           setError(result.message);
         } else if (result.status === "success") {
           localStorage.setItem("email", email);
-          history.push('/SearchForm');
+          console.log("the log in button has been pressed")
+          history.push('/');
         }
       })
     } catch(e) {
