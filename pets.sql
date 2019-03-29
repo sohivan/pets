@@ -176,8 +176,12 @@ CREATE TABLE Bid (
 	PetOwnerID		SERIAL not null REFERENCES PetOwners(oid),
 	CareTakerID		SERIAL not null REFERENCES CareTaker(cid),
 	ServiceID		serial not null REFERENCES Services(serviceid),
-	bidrequest		text
+	bidrequest		text,
+	bidstatus		varchar(20) default 'pending' unique not null 
 );
+
+INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
+('20-01-2019','31-01-2019',  1234455,'2018-12-25 21:44:30', 35,  8627,  489, 640, , 16, 'please take good care of my pet', 'pending');
 
 
 CREATE Table History (
@@ -186,9 +190,12 @@ CREATE Table History (
 	PetOnwner 		SERIAL not null REFERENCES PetOwners(oid),
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
 	BookingTimestamp	timestamp not null references Bid(BidTimestamp),
-	PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
+	-- PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
 	serviceid 		serial not null REFERENCES Services(serviceid)
 );
+
+INSERT INTO History (BookingID, BidderID, PetOnwner, PetID , BookingTimestamp,serviceid) VALUES
+(123445,640,  489, 8627, "2019-3-29 21:44:30", 16);
 
 DROP TABLE if exists Review;
 CREATE TABLE Review (
