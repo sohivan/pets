@@ -170,7 +170,7 @@ CREATE TABLE Bid (
 	BidStartDate	date not null,
 	BidEndDate		date not null,
 	BidID			SERIAL primary key,
-	BidTimestamp	timestamp not null,
+	BidTimestamp	timestamp unique not null ,
 	BidAmount		smallint not null,
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
 	PetOwnerID		SERIAL not null REFERENCES PetOwners(oid),
@@ -185,7 +185,7 @@ CREATE Table History (
 	BidderID		SERIAL not null REFERENCES CareTaker(cid),
 	PetOnwner 		SERIAL not null REFERENCES PetOwners(oid),
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
-	BookingTimestamp	timestamp not null,
+	BookingTimestamp	timestamp not null references Bid(BidTimestamp),
 	PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
 	serviceid 		serial not null REFERENCES Services(serviceid)
 );
