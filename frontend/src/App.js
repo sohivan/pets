@@ -5,12 +5,14 @@ import { Router } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import Signup from './components/Signup';
+import Login from './components/Login';
 import SearchForm from './components/SearchForm';
 import AddPet from './components/AddPet';
 import AddBid from './components/AddBid';
 import Logo from './image/pet-bay-sands-logo.svg';
+import CreateProfile from './components/CreateProfile';
+import BidTracker from './components/BidTracker';
 import history from './history';
-
 
 class App extends Component {
   constructor(props) {
@@ -48,6 +50,9 @@ class App extends Component {
             exact path="/add-pet"
             render={({props}) => <AddPet id= {this.state.id}/>}/>
          <Route exact path="/add-bid" component={AddBid} />
+         <Route path="/create-profile" component={CreateProfile} />
+         <Route path="/login" component={Login} />
+         <Route path="/bid-tracker" component={BidTracker} />
          </div>
       </Router>
     );
