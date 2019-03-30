@@ -14,6 +14,10 @@ const pettype = [
 const petsize = [
   "Small: 0 - 5kg", "Medium: 6 - 15kg", "Large: 16 - 45kg", "Giant: > 45kg"
 ]
+const filters = [
+  "None", "Most Popular", "Lowest-Highest Rate"
+]
+
 const CheckboxGroup = Checkbox.Group;
 const houseOptions = ['Do not have other pets in their house',
                     'Do not cage pets'];
@@ -56,7 +60,8 @@ class Search extends Component {
       housingopt: 0,
       miscopt: 0,
       startdate: '',
-      enddate: ''
+      enddate: '',
+      filter: 0
   };
   }
 
@@ -89,6 +94,7 @@ class Search extends Component {
       miscopt: this.state.miscopt,
       startdate: this.state.startdate,
       enddate: this.state.enddate,
+      filter: this.state.filter
     }
     event.preventDefault();
     console.log(selection);
@@ -244,11 +250,11 @@ displayResults(results){
   onPetSizeChange(value) {
     if(value === "Small: 0 - 5kg"){
         this.state.petsize = 1
-     } if(value === "Medium: 6 - 15kg"){
+     } else if(value === "Medium: 6 - 15kg"){
          this.state.petsize = 2
-    } if(value === "Large: 16 - 45kg"){
+    } else if(value === "Large: 16 - 45kg"){
         this.state.petsize = 3
-   } if(value === "Giant: > 45kg"){
+   } else if(value === "Giant: > 45kg"){
        this.state.petsize = 4
      } else {
        console.log("error! does not fall into any weight groups")
@@ -264,11 +270,11 @@ displayResults(results){
     console.log(checkedValues)
     if(checkedValues.length === 0){
         this.state.housingopt = 0
-     } if(checkedValues.length === 1 && checkedValues[0] === "Do not have other pets in their house"){
+     } else if(checkedValues.length === 1 && checkedValues[0] === "Do not have other pets in their house"){
          this.state.housingopt = 1
-    } if(checkedValues.length === 1 && checkedValues[0] === "Do not cage pets"){
+    } else if(checkedValues.length === 1 && checkedValues[0] === "Do not cage pets"){
         this.state.housingopt = 2
-   } if(checkedValues.length === 2){
+   } else if(checkedValues.length === 2){
        this.state.housingopt = 3
      } else {
        console.log("error! does not fall into any housing option groups")
@@ -279,24 +285,38 @@ displayResults(results){
     console.log(checkedValues)
     if(checkedValues.length === 0){
         this.state.miscopt = 0
-     } if(checkedValues.length === 1 && checkedValues[0] === "Takes care of one client at a time"){
+     } else if(checkedValues.length === 1 && checkedValues[0] === "Takes care of one client at a time"){
          this.state.miscopt = 1
-    } if(checkedValues.length === 1 && checkedValues[0] === "Pet First-Aid certified"){
+    } else if(checkedValues.length === 1 && checkedValues[0] === "Pet First-Aid certified"){
         this.state.miscopt = 2
-   } if(checkedValues.length === 2){
+   } else if(checkedValues.length === 2){
        this.state.miscopt = 3
      } else {
        console.log("error! does not fall into any housing option groups")
      }
   }
 
-  onLocationChange(suggestion) {
+  /* onLocationChange(suggestion) {
     console.log(suggestion);
     this.setState({
       location: suggestion
     })
-  }
+  } */
 
+  onFilterChange(value) {
+    if(value === "Most Popular"){
+        this.state.filter = 1
+     }
+        else if(value === "Lowest-Highest Rate"){
+         this.state.filter = 2
+      }
+        else if(value === "None"){
+           this.state.filter = 0
+        }
+          else {
+          console.log("No filter selected")
+       }
+  }
 
 
   render() {
@@ -321,7 +341,7 @@ displayResults(results){
               {services.map(service => <Option key={service}>{service}</Option>)}
             </Select>
           </Form.Item>
-          <div className="slider-label">
+           {/*<div className="slider-label">
             <p>Location</p>
           </div>
           <div className="algolia">
@@ -341,7 +361,7 @@ displayResults(results){
               onLimit={({ message }) =>
                console.log('Fired when you reached your current rate limit.')}
             />
-         </div>
+         </div> */}
           <div className="slider-label">
             <p>Rate (S$)</p>
           </div>
@@ -418,8 +438,19 @@ displayResults(results){
             </div>
           </Col>
           <Col span={16}>
-
             <h3 className="results-label">Results</h3>
+            <Form.Item>
+              <Select
+                className="results-filter"
+                size="large"
+                name="role"
+                autoComplete="off"
+                style={{ width: '40%', float: 'right', fontSize: '14px' }}
+                defaultValue={['Filter By']}
+                onChange = {event => this.onFilterChange(event)}>
+                {filters.map(filters => <Option key={filters}>{filters}</Option>)}
+              </Select>
+            </Form.Item>
             <div className="results" ref={this.myRef}>
               {this.state.currentResultsDisplay}
             </div>

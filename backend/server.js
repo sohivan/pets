@@ -129,8 +129,8 @@ app.post('/signup', function(request, response) {
   var email = request.body.email;
   var password = request.body.password;
   var roles = request.body.role;
+  var dateNow = new Date();
   var hashedPw, id;
-
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
@@ -140,56 +140,19 @@ app.post('/signup', function(request, response) {
     .then(hash => {
       console.log(`Hash: ${hash}`);
       hashedPw=hash;
-      db.query('BEGIN', function(err) {
-        if(err) {
-          console.log('Problem starting transaction', err);
-          response.status(400).send(err);
-          return rollback(db);
-        }
         db.query(`
-          INSERT INTO USERS(name, email, password)
-          VALUES($1, $2, $3) RETURNING id`, [name, email, hashedPw], (err, result) => {
+          INSERT INTO USERS(name, email, password, lastlogintimestamp)
+          VALUES($1, $2, $3, $4) RETURNING id`, [name, email, hashedPw, dateNow], (err, result) => {
           if (err) {
-            response.status(400).send(err);
-            return rollback(db);
+            console.log(err);
+            return response.status(400).send(err);
           }
-            id = result.rows[0].id;
-            console.log("i have been inserted into users");
-            if (roles.includes("Caretaker")) {
-              db.query(`
-                INSERT INTO CARETAKER(cid, name, Preference, Description)
-                VALUES($1, $2, $3, $4)`, [id, name, "hi", "hi2"], (err, result) => {
-                  if (err) {
-                    console.error(err);
-                    return rollback(db);
-                  }
-              })
-            }
-              if (roles.includes("Pet Owner")) {
-                db.query(`
-                  INSERT INTO PETOWNERS (oid, owner_name, description, numofpets)
-                  VALUES($1, $2, $3, $4)`, [id, name, "hi", 1], (err, result) => {
-                    if (err) {
-                      console.error(err);
-                      return rollback(db);
-                    }
-                    })
-              }
-              db.query('COMMIT', (err) => {
-                db.end.bind(db);
-                if (err) {
-                  console.error('Error committing transaction', err.stack)
-                }
-                response.cookie('username', 'Flavio');
-                response.status(200).send({id: id});
-              })
-              })
-            })
-          })
-        .catch(err => console.error(err.message));
-          })
-
+            return response.status(200).send({id: result.rows[0].id});
+        })
       })
+    .catch(err => console.error(err.message));
+    })
+  })
 
 
 
@@ -202,7 +165,7 @@ app.post('/addpet', function(request, response) {
   var petbreed = request.body.petbreed;
   var petdesc = request.body.petdesc;
   var petmed = request.body.petmed;
-  var petoid = 255;
+  var petoid = request.body.oid;
   let values = [petname, petage, petgender, pettype, petbreed, petdesc, petmed, petoid];
   console.log("i am here in serverjs")
   pool.connect((err, db, done) => {
@@ -211,7 +174,7 @@ app.post('/addpet', function(request, response) {
     }
     else {
       db.query(`
-        INSERT INTO PETS(name, weight, age, breed, typeofpet, gender, descrip, med, oid)
+        INSERT INTO PETS(name, weight, age, breed, PetType, gender, description, medical_conditions, oid)
         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, petoid], (err, table) => {
         done();
         if (err) {
@@ -271,12 +234,56 @@ app.post('/getCaretakers', function(request, response) {
   var miscopt = request.body.miscopt;
   var startdate = request.body.startdate;
   var enddate = request.body.enddate;
+  var filter = request.body.filter;
   console.log(request.body)
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query(`SELECT distinct * from caretaker natural join services
+      if(filter === 1) {
+        db.query(`with PopCareTaker as
+                  	(SELECT cid, count(BidID) as NumOfBid
+                  	from caretaker natural join services natural join bid
+                  	group by cid
+                  	order by NumOfBid desc)
+                SELECT distinct * from PopCareTaker natural join caretaker natural join services
+                where service = $1 and PetType = $2 and PetSize = $3
+                and NumOfPet >= $4 and rate <= $5
+                and housingOptions = $6
+                and miscOptions = $7
+                and StartDate <= $8
+                and EndDate >= $9
+                order by NumOfBid desc
+                `, [service, pettype, petsize, numofpet, marks, housingopt, miscopt, startdate, enddate], function(err, table) {
+        done();
+        if (err) {
+          return response.status(400).send(err);
+        }
+        else {
+          return response.status(200).send(table.rows);
+        }
+      })
+    }
+      else if(filter === 2) {
+        db.query(`SELECT distinct * from caretaker natural join services
+                where service = $1 and PetType = $2 and PetSize = $3
+                and NumOfPet >= $4 and rate <= $5
+                and housingOptions = $6
+                and miscOptions = $7
+                and StartDate <= $8
+                and EndDate >= $9
+                order by rate asc`, [service, pettype, petsize, numofpet, marks, housingopt, miscopt, startdate, enddate], function(err, table) {
+        done();
+        if (err) {
+          return response.status(400).send(err);
+        }
+        else {
+          return response.status(200).send(table.rows);
+        }
+      })
+    }
+      else {
+        db.query(`SELECT distinct * from caretaker natural join services
                 where service = $1 and PetType = $2 and PetSize = $3
                 and NumOfPet >= $4 and rate <= $5
                 and housingOptions = $6
@@ -292,6 +299,7 @@ app.post('/getCaretakers', function(request, response) {
         }
       })
     }
+    }
   })
 });
 
@@ -300,7 +308,7 @@ app.get('/getPendingBids', function(request, response) {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where bidstatus = 'pending' ", function(err, table) {
+      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where bidstatus = 'pending' and BidStartDate > now() ", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);

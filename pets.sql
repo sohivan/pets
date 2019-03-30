@@ -23,6 +23,7 @@ CREATE TABLE users (
 	unique(id,name)
 );
 
+
 CREATE TABLE PetOwners (
 	oid				serial primary key,
 	owner_name		text not null,
@@ -105,3 +106,31 @@ CREATE TABLE Bid (
 --	-- PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
 --	serviceid 		serial not null REFERENCES Services(serviceid)
 --);
+
+-- Triggers 
+CREATE OR REPLACE FUNCTION mustBe_petOwner() 
+RETURNS TRIGGER as $$
+DECLARE count numeric; name text;
+BEGIN
+SELECT COUNT (*) INTO count FROM petowners
+WHERE NEW.oid = petowners.oid; 
+IF count > 0 THEN
+RETURN NEW; 
+else
+select users.name into name 
+from users 
+where users.id = new.oid;
+insert into petowners values (new.oid, name, 'aaaa');
+RETURN NEW; 
+END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER 
+add_pets 
+BEFORE INSERT OR UPDATE ON Pets
+FOR EACH ROW
+EXECUTE PROCEDURE mustBe_petOwner();
+
+select * from petowners;
+select * from users;
