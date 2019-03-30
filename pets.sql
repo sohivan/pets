@@ -186,7 +186,7 @@ CREATE TABLE Bid (
 	bidstatus		varchar(20) default 'pending' not null 
 );
 
-INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
+INSERT INTO Bid (ServiceStartDate, ServiceEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
 ('20-01-2019','31-01-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
 ('30-05-2019','31-06-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending')
 ('20-01-2019','31-01-2019',  1234456,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
