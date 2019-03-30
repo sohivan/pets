@@ -49,13 +49,13 @@ CREATE TABLE PetOwners (
 );
 
 
-INSERT INTO PetOwners (oid, owner_name, description, numofpets) VALUES
-(255,'Renee','aaaaaa',5),
-(810,'Paki','aaaaaaa',3),
-(525,'Minerva','aaaaaaa',2),
-(332,'Patrick','aaaaaaaa',1),
-(548,'Iona','aaaaaaaa',2),
-(489,'Karyn','aaaaaaaa',1);
+INSERT INTO PetOwners (oid, owner_name, description) VALUES
+(255,'Renee','aaaaaa'),
+(810,'Paki','aaaaaaa'),
+(525,'Minerva','aaaaaaa'),
+(332,'Patrick','aaaaaaaa'),
+(548,'Iona','aaaaaaaa'),
+(489,'Karyn','aaaaaaaa');
 
 
 CREATE TABLE Pets (
@@ -189,7 +189,7 @@ CREATE TABLE Bid (
 
 INSERT INTO Bid (ServiceStartDate, ServiceEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
 ('20-01-2019','31-01-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
-('30-05-2019','31-06-2019',  1234459,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
+('30-05-2019','30-06-2019',  1234459,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
 ('20-01-2019','31-01-2019',  1234456,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
 ('29-04-2019','31-05-2019',  1234457,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
 ('30-04-2019','31-05-2019',  1234458,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
@@ -215,3 +215,33 @@ CREATE TABLE Review (
 	Convenience		smallint,
 	Friendliness	smallint
 );
+
+
+
+-- Triggers 
+CREATE OR REPLACE FUNCTION mustBe_petOwner() 
+RETURNS TRIGGER as $$
+DECLARE count numeric; name text;
+BEGIN
+SELECT COUNT (*) INTO count FROM petowners
+WHERE NEW.oid = petowners.oid; 
+IF count > 0 THEN
+RETURN NEW; 
+else
+select users.name into name 
+from users 
+where users.id = new.oid;
+insert into petowners values (new.oid, name, 'aaaa');
+RETURN NEW; 
+END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER 
+add_pets 
+BEFORE INSERT OR UPDATE ON Pets
+FOR EACH ROW
+EXECUTE PROCEDURE mustBe_petOwner();
+
+select * from petowners;
+select * from users;
