@@ -25,8 +25,17 @@ users['password'] = users['uid'].apply(lambda x: fake.password(length=10,
                                                                 digits=True, 
                                                                 upper_case=True, 
                                                                 lower_case=True))
-pet_owners = users[:no_petowners]
-care_takers = users[no_caretakers:]
+users['lastlogintimestamp'] = users['uid'].apply(lambda x: fake.date_time_between(start_date='-1y', 
+                                                                                    end_date='now'))
+
+# create pet_owners table
+pet_owners = users[:no_petowners][['uid','name']]
+pet_owners['desription'] = pet_owners.apply(lambda x: fake.sentence(nb_words=5, 
+                                                                    variable_nb_words=True,
+                                                                    ext_word_list=None))
+
+
+care_takers = users[no_caretakers:][['uid','name']]
 
 pets = pd.DataFrame({'pid': range(1, 1+no_pets)})
 pets['oid'] = pet_owners.sample(len(pets), replace = True).index
@@ -35,7 +44,7 @@ services = pd.DataFrame({'sid':range(1, 1+no_services)})
 services['cid'] = care_takers.sample(len(services), replace = True).index
 
 bids = pd.DataFrame({'bid_id':range(1, 1+no_bids)})
-print(pets.sample(len(bids), replace= True))
+# print(pets.sample(len(bids), replace= True))
 # bids.assign(pets.index.sample(len(bids), replace= True))
 # bids[['ServiceID','CareTakerID']] = services.sample(len(bids), replace= True).index
 
