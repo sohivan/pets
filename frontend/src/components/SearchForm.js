@@ -5,7 +5,7 @@ import './SearchForm.css';
 
 const Option = Select.Option;
 const services = [
-  "Pet Boarding", "House Sitting", "Dog Walking",  "Drop In Visits",
+  "Pet Boarding", "Washing", "Walking", "Feeding", "Vet Visitation", "Overnight", "Drop In Visits",
   "Pet Day Care"
 ]
 const pettype = [
@@ -15,12 +15,10 @@ const petsize = [
   "Small: 0 - 5kg", "Medium: 6 - 15kg", "Large: 16 - 45kg", "Giant: > 45kg"
 ]
 const CheckboxGroup = Checkbox.Group;
-const houseOptions = ['Able to visit owner\'s house',
-                      'Allow pets to stay in sitter\'s house',
-                      'Lives with other pets in their house',
-                    'Don\'t cage pets'];
+const houseOptions = ['Do not have other pets in their house',
+                    'Do not cage pets'];
 const miscOptions = ['Takes care of one client at a time',
-'Dog First-Aid certified'];
+'Pet First-Aid certified'];
 
 
 class SearchForm extends Component {
@@ -43,14 +41,22 @@ class Search extends Component {
     this.myRef = React.createRef();
     this.state = {
      marks: {
-        0: '$10',
-        100: '$150'
+        0: 10,
+        100: 150
       },
       location: {},
       results:[],
       totalResultsDisplay:[],
       currentResultsDisplay:[],
       current: 1,
+      service: 'Pet Boarding',
+      pettype: 'Dog',
+      petsize: 1,
+      numofpet: 1,
+      housingopt: 0,
+      miscopt: 0,
+      startdate: '',
+      enddate: ''
   };
   }
 
@@ -73,12 +79,25 @@ class Search extends Component {
 
 
   handleSubmit(event) {
+    let selection = {
+      service: this.state.service,
+      pettype: this.state.pettype,
+      petsize: this.state.petsize,
+      numofpet: this.state.numofpet,
+      marks: this.state.marks[100],
+      housingopt: this.state.housingopt,
+      miscopt: this.state.miscopt,
+      startdate: this.state.startdate,
+      enddate: this.state.enddate,
+    }
     event.preventDefault();
-    console.log(this.state);
+    console.log(selection);
+
     // this.makeFakeDataFirst();
     var request = new Request("http://localhost:3001/getCaretakers", {
-      method: 'GET',
-      headers: new Headers({'Content-Type': 'application/json'})
+      method: 'POST',
+      headers: new Headers({'Content-Type': 'application/json'}),
+      body: JSON.stringify(selection)
     });
   let results = []
   fetch(request)
@@ -92,10 +111,10 @@ class Search extends Component {
 
       .catch(function(err) {
         console.log(err);
-      })}
+      })
+    }
 
 displayResults(results){
-    console.log("I am here 2")
   let totalResultsDisplay = [];
   let currentResultsDisplay = [];
     results.map((result, i, array) =>  {
@@ -114,7 +133,7 @@ displayResults(results){
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
                      <p className="results-location">{"Bishan"}</p>
-                  
+
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -193,42 +212,82 @@ displayResults(results){
   }
 
   onRateChange(value) {
-      let newVal = "$"+value;
+      let newVal = value;
       this.setState({
         marks: {
-          0: '$10',
+          0: 10,
           100: newVal
           }
         })
+        console.log(this.state.marks[100]);
     }
 
   onDateChange(date, dateString) {
     console.log(date);
     console.log(dateString);
+    this.state.startdate = dateString[0]
+    this.state.enddate = dateString[1]
+    console.log(this.state.startdate);
+    console.log(this.state.enddate);
   }
 
   onServiceChange(value) {
-    console.log(value);
+    this.state.service = value;
+    console.log(this.state.service);
   }
 
   onPetTypeChange(value) {
-    console.log(value);
+    this.state.pettype = value;
+    console.log(this.state.pettype);
   }
 
   onPetSizeChange(value) {
-    console.log(value);
+    if(value === "Small: 0 - 5kg"){
+        this.state.petsize = 1
+     } if(value === "Medium: 6 - 15kg"){
+         this.state.petsize = 2
+    } if(value === "Large: 16 - 45kg"){
+        this.state.petsize = 3
+   } if(value === "Giant: > 45kg"){
+       this.state.petsize = 4
+     } else {
+       console.log("error! does not fall into any weight groups")
+  }
   }
 
   onPetNoChange(value) {
-    console.log(value);
+    this.state.numofpet = value;
+    console.log(this.state.numofpet);
   }
 
   onHousingChange(checkedValues) {
-    console.log(checkedValues);
+    console.log(checkedValues)
+    if(checkedValues.length === 0){
+        this.state.housingopt = 0
+     } if(checkedValues.length === 1 && checkedValues[0] === "Do not have other pets in their house"){
+         this.state.housingopt = 1
+    } if(checkedValues.length === 1 && checkedValues[0] === "Do not cage pets"){
+        this.state.housingopt = 2
+   } if(checkedValues.length === 2){
+       this.state.housingopt = 3
+     } else {
+       console.log("error! does not fall into any housing option groups")
+     }
   }
 
   onMiscChange(checkedValues) {
-    console.log(checkedValues);
+    console.log(checkedValues)
+    if(checkedValues.length === 0){
+        this.state.miscopt = 0
+     } if(checkedValues.length === 1 && checkedValues[0] === "Takes care of one client at a time"){
+         this.state.miscopt = 1
+    } if(checkedValues.length === 1 && checkedValues[0] === "Pet First-Aid certified"){
+        this.state.miscopt = 2
+   } if(checkedValues.length === 2){
+       this.state.miscopt = 3
+     } else {
+       console.log("error! does not fall into any housing option groups")
+     }
   }
 
   onLocationChange(suggestion) {
@@ -257,8 +316,8 @@ displayResults(results){
               name="role"
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px' }}
-              defaultValue={['Dog Boarding']}
-              onChange={this.onServiceChange.bind(this)}>
+              defaultValue={['Pet Boarding']}
+              onChange = {event => this.onServiceChange(event)}>
               {services.map(service => <Option key={service}>{service}</Option>)}
             </Select>
           </Form.Item>
@@ -284,7 +343,7 @@ displayResults(results){
             />
          </div>
           <div className="slider-label">
-            <p>Rate</p>
+            <p>Rate (S$)</p>
           </div>
           <Form.Item>
             <Slider
@@ -312,7 +371,7 @@ displayResults(results){
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px'  }}
               defaultValue={['Dog']}
-              onChange={this.onPetTypeChange.bind(this)}>
+              onChange = {event => this.onPetTypeChange(event)}>
               {pettype.map(pettype => <Option key={pettype}>{pettype}</Option>)}
             </Select>
           </Form.Item>
@@ -326,7 +385,7 @@ displayResults(results){
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px' }}
               defaultValue={['Small: 0 - 5kg']}
-              onChange={this.onPetSizeChange.bind(this)}>
+              onChange={event => this.onPetSizeChange(event)}>
               {petsize.map(petsize => <Option key={petsize}>{petsize}</Option>)}
             </Select>
           </Form.Item>
@@ -338,20 +397,20 @@ displayResults(results){
               max={10}
               defaultValue={1}
               style={{ width: '100%', marginBottom: '25px', fontSize: '14px' }}
-              onChange={this.onPetNoChange.bind(this)} />
+              onChange={event => this.onPetNoChange(event)} />
           <div className="slider-label">
             <p>Housing</p>
           </div>
           <CheckboxGroup
             options={houseOptions}
-            onChange={this.onHousingChange.bind(this)} />
+            onChange={event => this.onHousingChange(event)} />
             <br /><br />
           <div className="slider-label">
             <p>Miscellaneous</p>
           </div>
           <CheckboxGroup
             options={miscOptions}
-            onChange={this.onMiscChange.bind(this)} />
+            onChange={event => this.onMiscChange(event)} />
             <br /><br />
           <Button className= "search-button" type="primary" htmlType="submit" onClick={this.handleSubmit.bind(this)}>
             Search</Button>

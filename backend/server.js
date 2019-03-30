@@ -261,12 +261,28 @@ app.post('/addbid', function(request, response) {
   })
 })
 
-app.get('/getCaretakers', function(request, response) {
+app.post('/getCaretakers', function(request, response) {
+  var service = request.body.service;
+  var pettype = request.body.pettype;
+  var petsize = request.body.petsize;
+  var numofpet = request.body.numofpet;
+  var marks = request.body.marks;
+  var housingopt = request.body.housingopt;
+  var miscopt = request.body.miscopt;
+  var startdate = request.body.startdate;
+  var enddate = request.body.enddate;
+  console.log(request.body)
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from caretaker natural join services", function(err, table) {
+      db.query(`SELECT distinct * from caretaker natural join services
+                where service = $1 and PetType = $2 and PetSize = $3
+                and NumOfPet >= $4 and rate <= $5
+                and housingOptions = $6
+                and miscOptions = $7
+                and StartDate <= $8
+                and EndDate >= $9`, [service, pettype, petsize, numofpet, marks, housingopt, miscopt, startdate, enddate], function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
