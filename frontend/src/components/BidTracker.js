@@ -27,7 +27,7 @@ class BidTracker extends Component {
       pendingbid: [],
       pastbid: [],
       deletebid: 0,
-      acceptedbid: 0,
+      acceptbid: 0,
       editing: false,
     }
   };
@@ -117,14 +117,12 @@ class BidTracker extends Component {
     })
   }
 
-  // TO BE DONE: when accepted button is clicked
+  // TO BE DONE: when accepted button is clicked. SetState changes to the BidID after second click idk WHYYY
   handleAccept = (key) => {
-    this.setState({
-      acceptbid: key
-    })
+    this.state.acceptbid = key
     this.nextAccept();
-  }
 
+  }
 
   nextAccept = () => {
     let data = {
@@ -148,10 +146,60 @@ class BidTracker extends Component {
     .catch(function(err) {
       console.log(err);
     })
+    this.updateBidTable();
   }
 
-  // TO BE DONE: front end needs to reflect the updated data. 
+  // TO BE DONE: front end needs to reflect the updated data. it now only do this after 2 clicks....
+  updateBidTable = () => {
+    var upcomingbidrequest = new Request("http://localhost:3001/getUpcomingBids", {
+      method: 'GET',
+      headers: new Headers({'Content-Type': 'application/json'})
+    });
+    var pendingbidrequest = new Request("http://localhost:3001/getPendingBids", {
+      method: 'GET',
+      headers: new Headers({'Content-Type': 'application/json'})
+    });
+    var pastbidrequest = new Request("http://localhost:3001/getPastBids", {
+      method: 'GET',
+      headers: new Headers({'Content-Type': 'application/json'})
+    });
+        fetch(pendingbidrequest)
+            .then((response) =>
+              response.json())
+              .then((pendingbiddata) => {
+                this.setState({
+                  pendingbid: pendingbiddata
+                })
+                console.log(this.state.pendingbid)
+              })
+            .catch(function(err) {
+              console.log(err);
+            })
 
+        fetch(upcomingbidrequest)
+            .then((response) =>
+              response.json())
+              .then((upcomingbiddata) => {
+                this.setState({
+                  upcomingbid: upcomingbiddata
+                })
+              })
+            .catch(function(err) {
+              console.log(err);
+            })
+
+        fetch(pastbidrequest)
+            .then((response) =>
+              response.json())
+              .then((pastbiddata) => {
+                this.setState({
+                  pastbid: pastbiddata,
+                })
+              })
+            .catch(function(err) {
+              console.log(err);
+            })
+  }
 
   render() {
 
@@ -211,11 +259,11 @@ class BidTracker extends Component {
       key="action"
       render={(text, record) => (
         <span>
+        <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.bidid)}>
+          <a href="javascript:;">Reject</a>
+        </Popconfirm>
+        <Divider type="vertical" />
           <a href={"mailto:" + "hello123@gmail.com"}>Email</a>
-          <Divider type="vertical" />
-           <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.bidid)}>
-             <a href="javascript:;">Delete</a>
-           </Popconfirm>
         </span>
 
       )}
