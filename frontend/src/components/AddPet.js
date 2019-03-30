@@ -290,7 +290,8 @@ class AddPet extends Component {
        pettype: this.state.pettype,
        petbreed:this.state.petbreed,
        petdesc: this.state.petdesc,
-       petmed: this.state.petmed
+       petmed: this.state.petmed,
+       oid: this.props.id,
      }
       // console.log(data)
      var request = new Request("http://localhost:3001/addpet", {
