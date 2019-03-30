@@ -98,21 +98,22 @@ CREATE TABLE CareTaker (
 	name 			text not null,
 	PetType			text not null,
 	PetSize			smallint not null,
-	houseOptions	text not null,
+	housingOptions	smallint not null,
 	miscOptions		text,
 	Description 	text not null,
+	NumOfPet		smallint not null, 
 	-- address			text not null REFERENCES Homes(address)
 	foreign key (cid, name) references users(id, name)
 );
 
-INSERT INTO CareTaker (cid, name, PetType, PetSize, houseOptions, miscOptions, Description) VALUES
-(932,'Solomon','dog', 1,'Allow pets to stay in sitter house','Takes care of one client at a time','likes to eat'),
-(508,'Octavius','dog', 1,'Allow pets to stay in sitter house',null,'likes to sleep'),
-(673,'Violet','dog', 1,'Allow pets to stay in sitter house','Takes care of one client at a time','vegetarian'),
-(640,'Jolie','dog',2,'Allow pets to stay in sitter house',null,'likes to sing'),
-(725,'Heather','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i am writing a book'),
-(941,'Yoshio','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i love shows'),
-(950,'Keane','dog',2,'Allow pets to stay in sitter house','Takes care of one client at a time','i love shows');
+INSERT INTO CareTaker (cid, name, PetType, PetSize, housingOptions, miscOptions, Description, NumOfPet) VALUES
+(932,'Solomon','Dog', 1,0,3,'likes to eat', 1),
+(508,'Octavius','Dog', 1,1,2,'likes to sleep', 2),
+(673,'Violet','Dog', 1,2,1,'vegetarian',1),
+(640,'Jolie','Dog',2,3,0,'likes to sing',3),
+(725,'Heather','Dog',2,1,3,'i am writing a book',2),
+(941,'Yoshio','Dog',2,2,2,'i love shows',3),
+(950,'Keane','Cat',2,3,1,'i love shows',4);
 
 
 CREATE TABLE Services (
@@ -182,7 +183,7 @@ CREATE TABLE Bid (
 
 INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
 ('20-01-2019','31-01-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
-('30-05-2019','31-06-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending')
+('30-05-2019','31-06-2019',  1234459,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
 ('20-01-2019','31-01-2019',  1234456,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
 ('29-04-2019','31-05-2019',  1234457,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
 ('30-04-2019','31-05-2019',  1234458,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
