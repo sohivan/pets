@@ -6,6 +6,10 @@ import pandas.io.sql as psql
 
 engine = create_engine('postgresql://postgres@localhost:5432/postgres')
 
+sql_script = open("pets.sql", "r")
+sql = sql_script.read()
+engine.connect().execute(sql)
+
 # initialising the faker module
 fake = Faker()
 
@@ -32,85 +36,76 @@ users['password'] = users['id'].apply(lambda x: fake.password(length=10,
 users['lastlogintimestamp'] = users['id'].apply(lambda x: fake.date_time_between(start_date='-1y', 
                                                                                     end_date='now'))
 users_df = users.set_index(keys='id', drop = True)
-
-sql = """
-        DROP TABLE if exists users cascade;
-        DROP TABLE if exists PetOwners cascade;
-        DROP TABLE if exists Pets cascade;
-        DROP TABLE if exists Homes cascade;
-        DROP TABLE if exists Bid cascade;
-        DROP TABLE if exists History cascade;
-        DROP TABLE if exists CareTaker cascade;
-        DROP TABLE if exists Services cascade;
-        DROP TABLE if exists admins cascade;"""
-
-engine.connect().execute(sql)
-users_df.to_sql('users', engine, if_exists='replace')
+users_df.to_sql('users', engine, if_exists='append')
 
 # create pet_owners table
-pet_owners = users[:no_petowners][['id','name']].rename(columns ={'id':'oid',
-                                                                    'name':'onwer_name'})
-pet_owners['desription'] = pet_owners['oid'].apply(lambda x: fake.sentence(nb_words=5, 
+pet_owners = users[:no_petowners][['id','name']].rename(columns ={'id':'oid','name':'owner_name'})
+pet_owners['description'] = pet_owners['oid'].apply(lambda x: fake.sentence(nb_words=5, 
                                                                             variable_nb_words=True,
                                                                             ext_word_list=None))
-pet_owners.to_sql('PetOwners', engine, if_exists='replace')
+pet_owners_df = pet_owners.set_index(keys='oid', drop = True)
+pet_owners_df.to_sql('petowners', engine, if_exists='append')
 
 
-# # create care_takers table
-# care_takers = users[no_caretakers:][['id','name']].rename(columns={'id':'cid'})
-# care_takers['description'] = care_takers['cid'].apply(lambda x: fake.sentence(nb_words=5, 
-#                                                                         variable_nb_words=True,
-#                                                                         ext_word_list=None))
-# care_takers['PetType'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
-# care_takers['PetSize'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
-# care_takers['NumOfPet'] = care_takers['cid'].apply(lambda x: random.randint(1,8))
-# care_takers['housingOptions'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
-# care_takers['miscOptions'] = care_takers['cid'].apply(lambda x: fake.sentence(nb_words=5, 
-#                                                                                 variable_nb_words=True,
-#                                                                                 ext_word_list=None))
+# create care_takers table
+care_takers = users[no_caretakers:][['id','name']].rename(columns={'id':'cid'})
+care_takers['description'] = care_takers['cid'].apply(lambda x: fake.sentence(nb_words=5, 
+                                                                        variable_nb_words=True,
+                                                                        ext_word_list=None))
+care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
+care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
+care_takers['numofpet'] = care_takers['cid'].apply(lambda x: random.randint(1,8))
+care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
+care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: fake.sentence(nb_words=5, 
+                                                                                variable_nb_words=True,
+                                                                                ext_word_list=None))
+care_takers_df = care_takers.set_index(keys='cid', drop = True)
+care_takers_df.to_sql('caretaker', engine, if_exists='append')
 
-# def pet_breed(x):
-#     if x == 'Dog':
-#         return fake.word(ext_word_list=['Husky','Poodle','Corgi','Terrier','Shitzu'])
-#     else:
-#         return 'Others'
+def pet_breed(x):
+    if x == 'Dog':
+        return fake.word(ext_word_list=['Husky','Poodle','Corgi','Terrier','Shitzu'])
+    else:
+        return 'Others'
 
-# # create pets table
-# pets = pd.DataFrame({'pid': range(1, 1+no_pets)})
-# pets['oid'] = pet_owners['oid'].sample(len(pets), replace = True).index
-# pets['name'] = pets['oid'].apply(lambda x: fake.first_name())
-# pets[['weight','age']] = pets['oid'].apply(lambda x: pd.Series([random.randint(1,6),
-#                                                                 random.randint(1,6)]))
-# pets['PetType'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
-# pets['breed'] = pets['PetType'].apply(pet_breed)
-# pets['description'] = pets['oid'].apply(lambda x: fake.sentence(nb_words=5, 
-#                                                                         variable_nb_words=True,
-#                                                                         ext_word_list=None))
-# pets['gender'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Male','Female']))
-# pets['medical_conditions'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Null','Chocolate','Teething']))
+# create pets table
+pets = pd.DataFrame({'petid': range(1, 1+no_pets)})
+pets['oid'] = pet_owners['oid'].sample(len(pets), replace = True).values
+pets['name'] = pets['oid'].apply(lambda x: fake.first_name())
+pets[['weight','age']] = pets['oid'].apply(lambda x: pd.Series([random.randint(1,6),
+                                                                random.randint(1,6)]))
+pets['pettype'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
+pets['breed'] = pets['pettype'].apply(pet_breed)
+pets['description'] = pets['oid'].apply(lambda x: fake.sentence(nb_words=5, 
+                                                                        variable_nb_words=True,
+                                                                        ext_word_list=None))
+pets['gender'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Male','Female']))
+pets['medical_conditions'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Null','Chocolate','Teething']))
+pets_df = pets.set_index(keys='petid', drop = True)
+pets_df.to_sql('pets', engine, if_exists='append')
 
-# # create services table
-# services = pd.DataFrame({'serviceid':range(1, 1+no_services)})
-# services['cid'] = care_takers['cid'].sample(len(services), replace = True).index
-# services['Rate'] = services['cid'].apply(lambda x: random.randint(10,50))
-# # services['Service'] = services['cid'].apply(lambda x: )
+# create services table
+services = pd.DataFrame({'serviceid':range(1, 1+no_services)})
+services['cid'] = care_takers['cid'].sample(len(services), replace = True).values
+services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
+services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=['Sitting','Visiting Vet','Washing','Walking']))
+services['startdate'] = services['cid'].apply(lambda x: fake.date())
+services['enddate'] = services['cid'].apply(lambda x: fake.date())
+services_df = services.set_index(keys='serviceid', drop = True)
+services_df.to_sql('services', engine, if_exists='append')
 
-# bids = pd.DataFrame({'bid_id':range(1, 1+no_bids)})
-# # print(pets.sample(len(bids), replace= True))
-# # bids.assign(pets.index.sample(len(bids), replace= True))
-# # bids[['ServiceID','CareTakerID']] = services.sample(len(bids), replace= True).index
-
-# # print(bids.head(20))
-
-# # for i in range(50):
-# # 	print('(\'{}\', \'{}\', {}, \'{}\', {}, {}, {}, {}, {}, \'{}\'),'.format(
-# # 		fake.date_between(start_date="-30d", end_date="today"),
-# # 		fake.date_between(start_date="today", end_date="+30d"),
-# # 		fake.credit_card_security_code(card_type=None),
-# # 		fake.date_time_between(start_date="-60d", end_date="-30d"),
-# # 		random.randint(1,100),
-# # 		random.randint(1000,9999),
-# # 		random.randint(100,999),
-# # 		random.randint(100,999),
-# # 		random.randint(1,99),
-# # 		fake.sentence(nb_words=6, variable_nb_words=True, ext_word_list=None)))
+# create bid table
+bids = pd.DataFrame({'bidid':range(1, 1+no_bids)}).set_index(keys='bidid')
+bids['petid'] = pets_df.sample(len(bids), replace = True).index
+bids['servicestartdate'] = bids['petid'].apply(lambda x: fake.date())
+bids['serviceenddate'] = bids['petid'].apply(lambda x: fake.date())
+bids['bidtimestamp'] =  bids['petid'].apply(lambda x: fake.date_time())
+bids['bidamount'] = bids['petid'].apply(lambda x: random.randint(10,50))
+bids['petownerid'] = bids['petid'].apply(lambda x: pets[pets['petid'] == x]['oid'].values[0])
+bids['serviceid'] = services['serviceid'].sample(len(bids), replace = True).values
+bids['caretakerid'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['cid'].values[0])
+bids['bidrequest'] = bids['petid'].apply(lambda x: fake.sentence(nb_words=5, 
+                                                                variable_nb_words=True,
+                                                                ext_word_list=None))
+bids['bidstatus'] = bids['petid'].apply(lambda x: fake.word(ext_word_list=['pending','accept','reject']))
+bids.to_sql('bid', engine, if_exists='append')
