@@ -6,13 +6,19 @@ DROP TABLE if exists Bid cascade;
 DROP TABLE if exists History cascade;
 DROP TABLE if exists CareTaker cascade;
 DROP TABLE if exists Services cascade;
+DROP TABLE if exists admins cascade;
+
+CREATE TABLE admins (
+	id 			SERIAL PRIMARY KEY
+);
 
 
 CREATE TABLE users (
-	id 				SERIAL primary key,
-	name 			text not null,
-	email			VARCHAR(100) not null unique,
-	password 		text not null,
+	id 					SERIAL primary key,
+	name 				text not null,
+	email				VARCHAR(100) not null unique,
+	password 			text not null,
+	lastlogintimestamp	TIMESTAMP not null,
 	unique(id,name)
 );
 
@@ -167,8 +173,8 @@ CREATE TABLE ChatHistory (
 );
 
 CREATE TABLE Bid (
-	BidStartDate	date not null,
-	BidEndDate		varchar(20) not null,
+	ServiceStartDate	date not null,
+	ServiceEndDate		date not null,
 	BidID			SERIAL primary key,
 	BidTimestamp	timestamp not null ,
 	BidAmount		smallint not null,
@@ -180,7 +186,7 @@ CREATE TABLE Bid (
 	bidstatus		varchar(20) default 'pending' not null 
 );
 
-INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
+INSERT INTO Bid (ServiceStartDate, ServiceEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
 ('20-01-2019','31-01-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
 ('30-05-2019','31-06-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending')
 ('20-01-2019','31-01-2019',  1234456,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
