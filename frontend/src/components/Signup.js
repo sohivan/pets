@@ -67,7 +67,6 @@ class SignupForm extends Component {
     let validated = false;
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
         validated = true;
       }
     });
