@@ -143,7 +143,7 @@ INSERT INTO Services (Service, StartDate, EndDate, Rate, cid, serviceid) VALUES
 ('Washing','20-01-2019','26-01-2019',99,725,13),
 ('Vet Visitation','10-01-2019','23-02-2019',96,725,14),
 ('Feeding','24-01-2019','24-02-2019',81,640,15),
-('Overnight','20-01-2019','24-02-2019',51,640,16),
+('Overnight','20-01-2019','01-05-2019',51,640,16),
 ('Walking','25-01-2019','26-01-2019',53,640,17);
 
 DROP TABLE if exists Payment;
@@ -168,21 +168,24 @@ CREATE TABLE ChatHistory (
 
 CREATE TABLE Bid (
 	BidStartDate	date not null,
-	BidEndDate		date not null,
+	BidEndDate		varchar(20) not null,
 	BidID			SERIAL primary key,
-	BidTimestamp	timestamp unique not null ,
+	BidTimestamp	timestamp not null ,
 	BidAmount		smallint not null,
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
 	PetOwnerID		SERIAL not null REFERENCES PetOwners(oid),
 	CareTakerID		SERIAL not null REFERENCES CareTaker(cid),
 	ServiceID		serial not null REFERENCES Services(serviceid),
 	bidrequest		text,
-	bidstatus		varchar(20) default 'pending' unique not null 
+	bidstatus		varchar(20) default 'pending' not null 
 );
 
 INSERT INTO Bid (BidStartDate, BidEndDate, BidID, BidTimestamp , BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest, bidstatus) VALUES
-('20-01-2019','31-01-2019',  1234455,'2018-12-25 21:44:30', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
-('20-01-2019','31-01-2019',  1234456,'2018-12-25 21:44:30', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
+('20-01-2019','31-01-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
+('30-05-2019','31-06-2019',  1234455,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending')
+('20-01-2019','31-01-2019',  1234456,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
+('29-04-2019','31-05-2019',  1234457,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
+('30-04-2019','31-05-2019',  1234458,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
 
 
 CREATE Table History (
@@ -190,7 +193,7 @@ CREATE Table History (
 	BidderID		SERIAL not null REFERENCES CareTaker(cid),
 	PetOnwner 		SERIAL not null REFERENCES PetOwners(oid),
 	PetID 			SERIAL not null REFERENCES Pets(PetID),
-	BookingTimestamp	timestamp not null references Bid(BidTimestamp),
+	--BookingTimestamp	timestamp not null references Bid(BidTimestamp),
 	-- PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
 	serviceid 		serial not null REFERENCES Services(serviceid)
 );

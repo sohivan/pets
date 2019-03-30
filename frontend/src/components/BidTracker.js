@@ -1,204 +1,247 @@
 import React, { Component } from 'react';
-import { Table, Divider, Tag } from 'antd';
+import { Table, Divider, Tag, Input, Button, Popconfirm, Form } from 'antd';
 import './BidTracker.css';
 import { withRouter } from "react-router";
 
 
 const { Column, ColumnGroup } = Table;
 
-const upcomingbid = [{
-  key: '1',
-  name: 'John',
-  pet: 'Snow',
-  type: 'Dog',
-  breed: 'Maltese',
-  service: 'Walking',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'New York No. 1 Lake Park',
-}, {
-  key: '2',
-  name: 'Jim',
-  pet: 'Ching',
-  type: 'Dog',
-  breed: 'Shih Tzu',
-  service: 'Walking',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'London No. 1 Lake Park',
-}, {
-  key: '3',
-  name: 'Joe',
-  pet: 'Blackie',
-  type: 'Cat',
-  breed: 'Siamese',
-  service: 'Sitting',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'Sidney No. 1 Lake Park',
-}];
+const FormItem = Form.Item;
 
+const EditableContext = React.createContext();
 
-const pendingbid = [{
-  key: '1',
-  name: 'John',
-  pet: 'Snow',
-  type: 'Dog',
-  breed: 'Maltese',
-  service: 'Walking',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'New York No. 1 Lake Park',
-}, {
-  key: '2',
-  name: 'Jim',
-  pet: 'Ching',
-  type: 'Dog',
-  breed: 'Shih Tzu',
-  service: 'Walking',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'London No. 1 Lake Park',
-}, {
-  key: '3',
-  name: 'Joe',
-  pet: 'Blackie',
-  type: 'Cat',
-  breed: 'Siamese',
-  service: 'Sitting',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'Sidney No. 1 Lake Park',
-}];
+const EditableRow = ({ form, index, ...props }) => (
+  <EditableContext.Provider value={form}>
+    <tr {...props} />
+  </EditableContext.Provider>
+);
 
-const pastbid = [{
-  key: '1',
-  name: 'John',
-  pet: 'Snow',
-  type: 'Dog',
-  breed: 'Maltese',
-  service: 'Walking',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'New York No. 1 Lake Park',
-}, {
-  key: '2',
-  name: 'Jim',
-  pet: 'Ching',
-  type: 'Dog',
-  breed: 'Shih Tzu',
-  service: 'Walking',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'London No. 1 Lake Park',
-}, {
-  key: '3',
-  name: 'Joe',
-  pet: 'Blackie',
-  type: 'Cat',
-  breed: 'Siamese',
-  service: 'Sitting',
-  startdate: '2019-4-1',
-  enddate: '2019-4-1',
-  biddate: '2019-3-29',
-  address: 'Sidney No. 1 Lake Park',
-}];
+const EditableFormRow = Form.create()(EditableRow);
 
 
 class BidTracker extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      upcomingbid: [],
+      pendingbid: [],
+      pastbid: [],
+      deletebid: 0,
+      acceptedbid: 0,
+      editing: false,
+    }
+  };
+
+  // Gets data from the table when the page first launches
+  componentWillMount () {
+      var upcomingbidrequest = new Request("http://localhost:3001/getUpcomingBids", {
+        method: 'GET',
+        headers: new Headers({'Content-Type': 'application/json'})
+      });
+      var pendingbidrequest = new Request("http://localhost:3001/getPendingBids", {
+        method: 'GET',
+        headers: new Headers({'Content-Type': 'application/json'})
+      });
+      var pastbidrequest = new Request("http://localhost:3001/getPastBids", {
+        method: 'GET',
+        headers: new Headers({'Content-Type': 'application/json'})
+      });
+          fetch(pendingbidrequest)
+              .then((response) =>
+                response.json())
+                .then((pendingbiddata) => {
+                  this.setState({
+                    pendingbid: pendingbiddata
+                  })
+                  console.log(this.state.pendingbid)
+                })
+              .catch(function(err) {
+                console.log(err);
+              })
+
+          fetch(upcomingbidrequest)
+              .then((response) =>
+                response.json())
+                .then((upcomingbiddata) => {
+                  this.setState({
+                    upcomingbid: upcomingbiddata
+                  })
+                })
+              .catch(function(err) {
+                console.log(err);
+              })
+
+          fetch(pastbidrequest)
+              .then((response) =>
+                response.json())
+                .then((pastbiddata) => {
+                  this.setState({
+                    pastbid: pastbiddata,
+                  })
+                })
+              .catch(function(err) {
+                console.log(err);
+              })
+  }
+
+  // TO BE DONE: when rejected button is clicked
+  handleDelete = (key) => {
+    this.setState({
+      deletebid: key
+    })
+    console.log(key);
+    console.log(this.state.deletebid);
+    this.nextDelete();
+  }
+
+  nextDelete = () => {
+    let data = {
+      deletebid: this.state.deletebid,
+    }
+    var request = new Request("http://localhost:3001/deleteBid", {
+      method: 'DELETE',
+      headers: new Headers({'Content-Type': 'application/json'}),
+      body: JSON.stringify(data)
+    });
+
+    fetch(request)
+    .then(function(response) {
+      console.log(request)
+      response.json()
+      .then(function(data) {
+        console.log(data)
+      })
+    })
+    .catch(function(err) {
+      console.log(err);
+    })
+  }
+
+  // TO BE DONE: when accepted button is clicked
+  handleAccept = (key) => {
+    this.setState({
+      acceptbid: key
+    })
+    this.nextAccept();
+  }
+
+
+  nextAccept = () => {
+    let data = {
+      acceptbid: this.state.acceptbid,
+    }
+    console.log(data)
+    var request = new Request("http://localhost:3001/acceptBid", {
+      method: 'POST',
+      headers: new Headers({'Content-Type': 'application/json'}),
+      body: JSON.stringify(data)
+    });
+
+    fetch(request)
+    .then(function(response) {
+      console.log(request)
+      response.json()
+      .then(function(data) {
+        console.log(data)
+      })
+    })
+    .catch(function(err) {
+      console.log(err);
+    })
+  }
+
+  // TO BE DONE: front end needs to reflect the updated data. 
+
+
   render() {
+
     return (
       <div className="bidtracker">
       <h1 className = "bidtracker-title">Your Bids</h1>
       <h2 className = "bidtracker-subtitle">Upcoming</h2>
-      <Table dataSource={upcomingbid}>
+      <Table dataSource={this.state.upcomingbid}>
       <Column
         title="Bid Date"
-        dataIndex="biddate"
-        key="biddate"
+        dataIndex="bidtimestamp"
+        key="bidtimestamp"
       />
       <Column
         title="Pet Owner"
+        dataIndex="owner_name"
+        key="owner_name"
+      />
+      <Column
+        title="Pet Name"
         dataIndex="name"
         key="name"
       />
       <Column
-        title="Pet Name"
-        dataIndex="pet"
-        key="pet"
-      />
-    <Column
       title="Type"
-      dataIndex="type"
-      key="type"
-    />
-    <Column
+      dataIndex="typeofpet"
+      key="typeofpet"
+      />
+      <Column
       title="Breed"
       dataIndex="breed"
       key="breed"
-    />
-    <Column
+      />
+      <Column
       title="Service"
       dataIndex="service"
       key="service"
-    />
-    <Column
+      />
+      <Column
       title="Start Date"
-      dataIndex="startdate"
-      key="startdate"
-    />
-    <Column
+      dataIndex="bidstartdate"
+      key="bidstartdate"
+      />
+      <Column
       title="End Date"
-      dataIndex="enddate"
-      key="enddate"
-    />
-    <Column
+      dataIndex="bidenddate"
+      key="bidenddate"
+      />
+    {/*<Column
       title="Address"
       dataIndex="address"
       key="address"
-    />
+    />*/}
 
     <Column
       title="Action"
       key="action"
       render={(text, record) => (
         <span>
-          <a href="javascript:;">Email {record.lastName}</a>
+          <a href={"mailto:" + "hello123@gmail.com"}>Email</a>
           <Divider type="vertical" />
-          <a href="javascript:;">Reject</a>
+           <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.bidid)}>
+             <a href="javascript:;">Delete</a>
+           </Popconfirm>
         </span>
+
       )}
     />
   </Table>
       <h2 className = "bidtracker-subtitle">Pending</h2>
-      <Table dataSource={pendingbid}>
+      <Table dataSource={this.state.pendingbid}>
       <Column
         title="Bid Date"
-        dataIndex="biddate"
-        key="biddate"
+        dataIndex="bidtimestamp"
+        key="bidtimestamp"
       />
       <Column
         title="Pet Owner"
-        dataIndex="name"
-        key="name"
+        dataIndex="owner_name"
+        key="owner_name"
       />
       <Column
         title="Pet Name"
-        dataIndex="pet"
-        key="pet"
+        dataIndex="name"
+        key="name"
       />
     <Column
       title="Type"
-      dataIndex="type"
-      key="type"
+      dataIndex="typeofpet"
+      key="typeofpet"
     />
     <Column
       title="Breed"
@@ -212,18 +255,13 @@ class BidTracker extends Component {
     />
     <Column
       title="Start Date"
-      dataIndex="startdate"
-      key="startdate"
+      dataIndex="bidstartdate"
+      key="bidstartdate"
     />
     <Column
       title="End Date"
-      dataIndex="enddate"
-      key="enddate"
-    />
-    <Column
-      title="Address"
-      dataIndex="address"
-      key="address"
+      dataIndex="bidenddate"
+      key="bidenddate"
     />
 
     <Column
@@ -231,36 +269,36 @@ class BidTracker extends Component {
       key="action"
       render={(text, record) => (
         <span>
-          <a href="javascript:;">Accept {record.lastName}</a>
+          <a href="javascript:;" onClick={() => this.handleAccept(record.bidid)}>Accept</a>
           <Divider type="vertical" />
           <a href="javascript:;">Reject</a>
           <Divider type="vertical" />
-          <a href="javascript:;">Email</a>
+          <a href={"mailto:" + "hello123@gmail.com"}>Email</a>
         </span>
       )}
     />
   </Table>
       <h2 className = "bidtracker-subtitle">Past</h2>
-      <Table dataSource={pastbid}>
+      <Table dataSource={this.state.pastbid}>
       <Column
         title="Bid Date"
-        dataIndex="biddate"
-        key="biddate"
+        dataIndex="bidtimestamp"
+        key="bidtimestamp"
       />
       <Column
         title="Pet Owner"
-        dataIndex="name"
-        key="name"
+        dataIndex="owner_name"
+        key="owner_name"
       />
       <Column
         title="Pet Name"
-        dataIndex="pet"
-        key="pet"
+        dataIndex="name"
+        key="name"
       />
     <Column
       title="Type"
-      dataIndex="type"
-      key="type"
+      dataIndex="typeofpet"
+      key="typeofpet"
     />
     <Column
       title="Breed"
@@ -274,18 +312,13 @@ class BidTracker extends Component {
     />
     <Column
       title="Start Date"
-      dataIndex="startdate"
-      key="startdate"
+      dataIndex="bidstartdate"
+      key="bidstartdate"
     />
     <Column
       title="End Date"
-      dataIndex="enddate"
-      key="enddate"
-    />
-    <Column
-      title="Address"
-      dataIndex="address"
-      key="address"
+      dataIndex="bidenddate"
+      key="bidenddate"
     />
   </Table>
     </div>
