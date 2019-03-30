@@ -6,13 +6,19 @@ DROP TABLE if exists Bid cascade;
 DROP TABLE if exists History cascade;
 DROP TABLE if exists CareTaker cascade;
 DROP TABLE if exists Services cascade;
+DROP TABLE if exists admins cascade;
+
+CREATE TABLE admins (
+	id 			SERIAL PRIMARY KEY
+);
 
 
 CREATE TABLE users (
-	id 				SERIAL primary key,
-	name 			text not null,
-	email			VARCHAR(100) not null unique,
-	password 		text not null,
+	id 					SERIAL primary key,
+	name 				text not null,
+	email				VARCHAR(100) not null unique,
+	password 			text not null,
+	lastlogintimestamp	TIMESTAMP not null,
 	unique(id,name)
 );
 
@@ -178,7 +184,7 @@ CREATE TABLE Bid (
 	bidrequest		text
 );
 
-INSERT INTO Bid (Service, ServiceStartDate, ServiceEndDate, BidID, BidTimestamp, BidAmount,PetID,PetOwnerID,CareTakerID,ServiceID,bidrequest) VALUES 
+INSERT INTO Bid (Service, ServiceStartDate, ServiceEndDate, BidID, BidTimestamp, BidAmount, PetID, PetOwnerID, CareTakerID, ServiceID, bidrequest) VALUES 
 ('2019-03-09', '2019-04-17', 479, '2019-02-07 17:10:13', 95, 3699, 640, 204, 26, 'Model line will cell.'),
 ('2019-03-14', '2019-04-02', 959, '2019-01-30 08:44:56', 38, 2144, 517, 137, 24, 'Attack century sure people.'),
 ('2019-03-05', '2019-04-13', 462, '2019-01-29 07:12:28', 77, 8142, 843, 203, 39, 'Information consumer memory question.'),
