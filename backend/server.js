@@ -341,7 +341,8 @@ app.delete('/deleteBid', function(request, response) {
       return response.status(400).send(err);
     } else {
       console.log("I am trying to delete")
-      db.query(`DELETE * from Bid B where B.BidID = $1`, [deletebid], function(err, table) {
+      db.query(`DELETE * from Bid B
+                where B.BidID = $1`, [deletebid], function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -354,10 +355,9 @@ app.delete('/deleteBid', function(request, response) {
   })
 });
 
-
-// TO BE COMPLETED
 app.post('/acceptBid', function(request, response) {
-  var acceptedbid = request.body.acceptedbid;
+  console.log(request.body);
+  var acceptedbid = request.body.acceptbid;
   console.log("i am here in serverjs")
   pool.connect((err, db, done) => {
     if(err) {
@@ -365,14 +365,15 @@ app.post('/acceptBid', function(request, response) {
     }
     else {
       db.query(
-        `UPDATE Bid B set bidstatus = 'accepted' where B.BidID = $1`, [acceptedbid], (err, table) => {
+        `UPDATE Bid B set bidstatus = 'accepted'
+        where B.BidID = $1`, [acceptedbid], (err, table) => {
         done();
         if (err) {
           console.log(err)
           return response.status(400).send(err);
         }
         else {
-          console.log("i added a new bid");
+          console.log("i accepted a new bid");
           response.status(200).send({message:"new bid accepted"});
         }
       })
