@@ -128,3 +128,7 @@ margin-right: auto;
   margin-bottom:-5px;
   font-weight: 600;
 }
+
+.results-filter{
+  width: 50%;
+}

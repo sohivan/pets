@@ -23,7 +23,6 @@ CREATE TABLE users (
 	unique(id,name)
 );
 
-
 INSERT INTO users (id, name, email, password,lastlogintimestamp) VALUES
 (255,'Renee','tempor.bibendum@vel.com','BUZ77LFA2JY','1990-09-26 00:16:06'),
 (810,'Paki','vehicula.aliquet@Aeneaneuismod.ca','BVJ15SCT9SU','1990-09-26 00:16:06'),
@@ -34,12 +33,12 @@ INSERT INTO users (id, name, email, password,lastlogintimestamp) VALUES
 (932,'Solomon','quam.quis.diam@molestie.co.uk','QGT17PZZ2IJ','1990-09-26 00:16:06'),
 (508,'Octavius','Phasellus@Aliquamadipiscing.ca','LIO34VZC2UV','1990-09-26 00:16:06'),
 (673,'Violet','Quisque.tincidunt.pede@vitaenibh.com','UFK59FOD0YT','1990-09-26 00:16:06'),
+(639,'Gina','sem.ut@farrucibusorci.ca','ZZZ15HBV5XT', '1990-09-26 00:16:06'),
 (640,'Jolie','sem.ut@faucibusorci.ca','ZZT15HBV5XT','1990-09-26 00:16:06'),
 (725,'Heather','nunc.risus@acturpis.com','JBK85ODN5PL','1990-09-26 00:16:06'),
 (941,'Yoshio','Nulla.eget.metus@magnis.net','BTD17WGQ1UB','1990-09-26 00:16:06'),
 (950,'Keane','dignissim.Maecenas@interdumenimnon.org','STX76YFI9BG','1990-09-26 00:16:06'),
 (123, 'W', 'hello123@gmail.com', '12341234','1990-09-26 00:16:06');
-
 
 CREATE TABLE PetOwners (
 	oid				serial primary key,
@@ -117,6 +116,7 @@ INSERT INTO CareTaker (cid, name, PetType, PetSize, housingOptions, miscOptions,
 (508,'Octavius','Dog', 1,1,2,'likes to sleep', 2),
 (673,'Violet','Dog', 1,2,1,'vegetarian',1),
 (640,'Jolie','Dog',2,3,0,'likes to sing',3),
+(639,'Gina','Dog',2,3,0,'likes to sing',3),
 (725,'Heather','Dog',2,1,3,'i am writing a book',2),
 (941,'Yoshio','Dog',2,2,2,'i love shows',3),
 (950,'Keane','Cat',2,3,1,'i love shows',4);
@@ -144,14 +144,15 @@ INSERT INTO Services (Service, StartDate, EndDate, Rate, cid, serviceid) VALUES
 ('Feeding','23-01-2019','20-02-2019',88,508,7),
 ('Overnight','22-01-2019','23-02-2019',61,941,8),
 ('Walking','30-01-2019','27-02-2019',71,941,9),
-('Vet Visitation','22-01-2019','10-02-2019',67,950,10),
-('Vet Visitation','27-01-2019','20-02-2019',98,950,11),
+('Vet Visitation','22-01-2019','10-02-2019',98,950,10),
+('Vet Visitation','27-01-2019','20-02-2019',67,950,11),
 ('Feeding','10-01-2019','27-02-2019',57,725,12),
 ('Washing','20-01-2019','26-01-2019',99,725,13),
 ('Vet Visitation','10-01-2019','23-02-2019',96,725,14),
 ('Feeding','24-01-2019','24-02-2019',81,640,15),
 ('Overnight','20-01-2019','01-05-2019',51,640,16),
-('Walking','25-01-2019','26-01-2019',53,640,17);
+('Walking','25-01-2019','26-01-2019',53,640,17),
+('Feeding','24-01-2019','24-02-2019',75,639,18);
 
 DROP TABLE if exists Payment;
 CREATE TABLE Payment (
@@ -192,7 +193,7 @@ INSERT INTO Bid (ServiceStartDate, ServiceEndDate, BidID, BidTimestamp , BidAmou
 ('30-05-2019','30-06-2019',  1234459,'2018-12-25', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'pending'),
 ('20-01-2019','31-01-2019',  1234456,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
 ('29-04-2019','31-05-2019',  1234457,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted'),
-('30-04-2019','31-05-2019',  1234458,'2018-12-26', 35,  8627,  489, 640,  16, 'please take good care of my pet', 'accepted');
+('30-04-2019','31-05-2019',  1234458,'2018-12-26', 35,  8627,  489, 639,  18, 'please take good care of my pet', 'accepted');
 
 
 CREATE Table History (
