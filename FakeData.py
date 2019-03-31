@@ -3,6 +3,7 @@ import random
 import pandas as pd
 from sqlalchemy import create_engine
 import pandas.io.sql as psql
+from datetime import date, timedelta
 
 engine = create_engine('postgresql://postgres@localhost:5432/postgres')
 
@@ -33,7 +34,7 @@ users['password'] = users['id'].apply(lambda x: fake.password(length=10,
                                                                 digits=True, 
                                                                 upper_case=True, 
                                                                 lower_case=True))
-users['lastlogintimestamp'] = users['id'].apply(lambda x: fake.date_time_between(start_date='-1y', 
+users['lastlogintimestamp'] = users['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
 users_df = users.set_index(keys='id', drop = True)
 users_df.to_sql('users', engine, if_exists='append')
@@ -89,17 +90,14 @@ services = pd.DataFrame({'serviceid':range(1, 1+no_services)})
 services['cid'] = care_takers['cid'].sample(len(services), replace = True).values
 services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
 services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=['Sitting','Visiting Vet','Washing','Walking']))
-services['startdate'] = services['cid'].apply(lambda x: fake.date())
-services['enddate'] = services['cid'].apply(lambda x: fake.date())
+services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-100d', end_date='-50d'))
+services['enddate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-40d', end_date='today'))
 services_df = services.set_index(keys='serviceid', drop = True)
 services_df.to_sql('services', engine, if_exists='append')
 
 # create bid table
 bids = pd.DataFrame({'bidid':range(1, 1+no_bids)}).set_index(keys='bidid')
 bids['petid'] = pets_df.sample(len(bids), replace = True).index
-bids['servicestartdate'] = bids['petid'].apply(lambda x: fake.date())
-bids['serviceenddate'] = bids['petid'].apply(lambda x: fake.date())
-bids['bidtimestamp'] =  bids['petid'].apply(lambda x: fake.date_time())
 bids['bidamount'] = bids['petid'].apply(lambda x: random.randint(10,50))
 bids['petownerid'] = bids['petid'].apply(lambda x: pets[pets['petid'] == x]['oid'].values[0])
 bids['serviceid'] = services['serviceid'].sample(len(bids), replace = True).values
@@ -108,4 +106,7 @@ bids['bidrequest'] = bids['petid'].apply(lambda x: fake.sentence(nb_words=5,
                                                                 variable_nb_words=True,
                                                                 ext_word_list=None))
 bids['bidstatus'] = bids['petid'].apply(lambda x: fake.word(ext_word_list=['pending','accept','reject']))
+bids['servicestartdate'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['startdate'].values[0]+timedelta(days = random.randint(1,15)))
+bids['serviceenddate'] = bids['servicestartdate'].apply(lambda x: x + timedelta(days =  random.randint(5,15)))
+bids['bidtimestamp'] =  bids['servicestartdate'].apply(lambda x: x - timedelta(days =  random.randint(10,20)))
 bids.to_sql('bid', engine, if_exists='append')
