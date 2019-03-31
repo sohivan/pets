@@ -34,7 +34,7 @@ class App extends Component {
       <Router history = {history}>
         <div className="App">
           <div className="App-header">
-             <img src={Logo} className="App-logo"/>
+             <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
              <Button color="inherit" className="Button-app">
              <NavLink to="/login" style={{textDecoration: 'none'}}> Login</NavLink>
              </Button>
