@@ -13,6 +13,7 @@ engine.connect().execute(sql)
 
 # initialising the faker module
 fake = Faker()
+fake.seed(4321)
 
 # specify the number of users, petowners, pets, caretakers and services
 # number of users >= petowners + caretakers
