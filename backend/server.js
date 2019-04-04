@@ -110,14 +110,14 @@ app.post('/login', (request, response) => {
         if (table.rows.length < 1) {
           return response.status(403).send({ status: "failed", message: "No user found" })
         }
-
-        if (table.rows[0].password === password) {
-          console.log("success!")
-          return response.status(200).send({ status: "success" });
-
-        } else {
-          return response.status(403).send({ status: "failed", message: "Wrong username/password" })
-        }
+        bcrypt.compare(password, table.rows[0].password, function(err, res) {
+          if (res==true) {
+            console.log("success!")
+            return response.status(200).send({ status: "success" });
+          } else {
+            return response.status(403).send({ status: "failed", message: "Wrong username/password" })
+          }
+        });
       })
   })
 });
