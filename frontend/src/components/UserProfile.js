@@ -154,6 +154,7 @@ function Explore({ history }) {
             {(type === "Caretaker") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
+                <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
                     {
                         services.map(i => {
                             return (
@@ -163,7 +164,7 @@ function Explore({ history }) {
                                 <p>Service start: {i['startdate']}</p>
                                 <p>Service end: {i['enddate']}</p>
                                 <p>Service Description: {i['description']}</p>
-                                <p>Service Rate: {i['rate']}</p>
+                                <p>Service Rate: ${i['rate']}</p>
 
                                     {/* Links to service */}
                                     <a href="services" data-fluidbox>
