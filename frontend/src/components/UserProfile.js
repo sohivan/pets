@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import './CreateProfile.css';
+import './UserProfile.css';
 
 function getUserProfile(email) {
     return fetch('http://localhost:3001/user/profile', {
@@ -116,11 +116,9 @@ function Explore({ history }) {
         fetchCareTaker(type, id, setError,  setServices)
     }, [type, id])
 
+
     return (
         <html>
-            <div>
-                {anyErrors}
-            </div>
             <section class="intro-section">
                 <div class="container">
                     <div class="row">
@@ -128,11 +126,10 @@ function Explore({ history }) {
                         <div class="col-md-10 col-lg-8">
                             <div class="intro">
                                 <div class="profile-img"><img src="https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg" alt="" /></div>
-                                <h2><b>{name.toUpperCase()}</b></h2>
+                                <h2 class="profile-name"><b>{name}</b></h2>
                                 <h4 class="font-yellow">{type}</h4>
-                                <ul class="information margin-tb-30">
-                                    <li><b>EMAIL : </b>{email}</li>
-                                </ul>
+                                {/* TODO: Change to dynamic description */}
+                                <h4 class="profile-desc">Keane is a fun-loving person who loves animals! She can walk, sit, wash and bring your dog to the vet!</h4>
                             </div>
                         </div>
                     </div>
@@ -141,8 +138,23 @@ function Explore({ history }) {
 
             {/* Webpage for Caretakers */}
             {(type === "Caretaker") &&
+            <section class="buttons-section">
+                <div class="container">
+                  <div>
+                    <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
+                    {/* TODO: Need to link button add-bid */}
+                    <button className="email-button">Make A Bid</button>
+                  </div>
+                </div>
+            </section>
+              }
+
+
+            {/* Webpage for Caretakers */}
+            {(type === "Caretaker") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
+                <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
                     {
                         services.map(i => {
                             return (
@@ -152,7 +164,7 @@ function Explore({ history }) {
                                 <p>Service start: {i['startdate']}</p>
                                 <p>Service end: {i['enddate']}</p>
                                 <p>Service Description: {i['description']}</p>
-                                <p>Service Rate: {i['rate']}</p>
+                                <p>Service Rate: ${i['rate']}</p>
 
                                     {/* Links to service */}
                                     <a href="services" data-fluidbox>
@@ -165,10 +177,23 @@ function Explore({ history }) {
             </section>
             }
 
+              {/* Webpage for PetOwners */}
+              {(type === "Petowner") &&
+              <section class="buttons-section">
+                  <div class="container">
+                  <div>
+                    <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
+                  </div>
+                  </div>
+              </section>
+                }
+
             {/* Webpage for PetOwners */}
+
             {(type === "Petowner") &&
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
+                    <h1 className="petowner-pets">{name}'s pets</h1>
                         {
                             pets.map(i => {
                                 return (

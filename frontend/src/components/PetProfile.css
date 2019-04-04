@@ -1,0 +1,41 @@
+.pet-profile {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pet-profile-pic {
+  width:50%;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+.pet-profile-img {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  width:540px; /* you can use % */
+   height: auto;
+}
+
+.pet-profile-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.ant-btn.pet-profile-button.ant-btn-primary{
+  background-color: transparent;
+  border-color: black;
+  color: black;
+  box-shadow: white;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0);
+  margin-top: 50px;
+  margin-bottom: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-left: 50px;
+  height: 50px;
+}
