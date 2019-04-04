@@ -11,14 +11,13 @@ class PetProfile extends Component {
       return (
         <div>
         <Button className="pet-profile-button" type="primary">
-            <Icon type="left" />Back to owner's profile
-        </Button>
+            <Icon type="left" />Back to owner's profile</Button>
         <Row>
         <Col span={12}>
         <div className = "pet-profile-pic">
-        <img className = "pet-profile-img" src = "https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313__340.jpg" alt="pet image1"/>
-        <img className = "pet-profile-img" src = "https://images.unsplash.com/photo-1529429617124-95b109e86bb8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80" alt="pet image2"/>
-        <img className = "pet-profile-img" src = "https://i5.wal.co/dfw/4ff9c6c9-a77b/k2-_864ef38f-4c7e-427e-8a3c-7415272c6919.v1.jpg" alt="pet image3"/>
+        <img className = "pet-profile-img" src="https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313__340.jpg" alt="pet image1"/>
+        <img className = "pet-profile-img" src="https://images.unsplash.com/photo-1529429617124-95b109e86bb8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80" alt="pet image2"/>
+        <img className = "pet-profile-img" src="https://i5.wal.co/dfw/4ff9c6c9-a77b/k2-_864ef38f-4c7e-427e-8a3c-7415272c6919.v1.jpg" alt="pet image3"/>
         </div>
         </Col>
 
