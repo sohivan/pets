@@ -112,8 +112,19 @@ app.post('/login', (request, response) => {
         }
         bcrypt.compare(password, table.rows[0].password, function(err, res) {
           if (res==true) {
-            console.log("success!")
-            return response.status(200).send({ status: "success" });
+            console.log("success!");
+            var dateNow = new Date();
+            db.query(`
+              UPDATE USERS
+              SET lastlogintimestamp=$1
+              where email=$2
+              `, [dateNow, email], (err, table) => {
+                if (!err) {
+                  return response.status(200).send({ status: "success" });
+                } else {
+                  return response.status(403).send({ status: "failed", message: "Something went wrong" });
+                }
+              })
           } else {
             return response.status(403).send({ status: "failed", message: "Wrong username/password" })
           }
