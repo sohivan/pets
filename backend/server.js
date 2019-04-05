@@ -139,7 +139,6 @@ app.post('/signup', function(request, response) {
   var name = request.body.username;
   var email = request.body.email;
   var password = request.body.password;
-  var roles = request.body.role;
   var dateNow = new Date();
   var hashedPw, id;
   pool.connect((err, db, done) => {
@@ -158,7 +157,8 @@ app.post('/signup', function(request, response) {
             console.log(err);
             return response.status(400).send(err);
           }
-            return response.status(200).send({id: result.rows[0].id});
+          response.cookie('userId', result.rows[0].id);
+          return response.status(200).send({id: result.rows[0].id});
         })
       })
     .catch(err => console.error(err.message));
@@ -177,6 +177,8 @@ app.post('/addpet', function(request, response) {
   var petdesc = request.body.petdesc;
   var petmed = request.body.petmed;
   var petoid = request.body.oid;
+  var userId = request.cookies.userId;
+  console.log(userId);
   let values = [petname, petage, petgender, pettype, petbreed, petdesc, petmed, petoid];
   console.log("i am here in serverjs")
   pool.connect((err, db, done) => {
@@ -186,7 +188,7 @@ app.post('/addpet', function(request, response) {
     else {
       db.query(`
         INSERT INTO PETS(name, weight, age, breed, PetType, gender, description, medical_conditions, oid)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, petoid], (err, table) => {
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, userId], (err, table) => {
         done();
         if (err) {
           console.log(err)
@@ -195,6 +197,33 @@ app.post('/addpet', function(request, response) {
         else {
           console.log("i added a new pet");
           response.status(200).send({message:"new pet added"});
+        }
+      })
+    }
+  })
+})
+app.post('/addService', function(request, response) {
+  var service = request.body.service[0];
+  var startDate = request.body.date[0];
+  var endDate = request.body.date[1];
+  var rate = request.body.rate;
+  var userId = request.cookies.userId;
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    }
+    else {
+      db.query(`
+        INSERT INTO Services(service, startDate, enddate, rate, cid)
+        VALUES($1, $2, $3, $4, $5)`, [service, startDate, endDate, rate, userId], (err, table) => {
+        done();
+        if (err) {
+          console.log(err)
+          return response.status(400).send(err);
+        }
+        else {
+          console.log("new service added");
+          response.status(200).send({message:"new service added"});
         }
       })
     }
