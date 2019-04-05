@@ -315,6 +315,8 @@ class AddPet extends Component {
          console.log(data);
          if (this.props.isCareTaker) {
            this.props.history.push("/add-service");
+         } else {
+           this.props.history.push("/");
          }
        })
      })

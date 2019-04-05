@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import Button from '@material-ui/core/Button';
 import { Router } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { Route } from 'react-router-dom';
@@ -15,12 +14,16 @@ import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
 import history from './history';
+import { Menu, Icon, Button, Dropdown } from 'antd';
+
 
 class App extends Component {
   constructor(props) {
     super(props);
+    console.log(document.cookie);
     this.state = {
       id: '',
+      collapsed: true,
     }
   }
 
@@ -36,18 +39,54 @@ class App extends Component {
     history.push("/add-service");
   }
 
+  toggleCollapsed = () => {
+    this.setState({
+      collapsed: !this.state.collapsed,
+    });
+  }
+
+  handleClick(e) {
+  console.log('click', e);
+}
+
   render() {
     return (
       <Router history = {history}>
         <div className="App">
           <div className="App-header">
-             <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
+          <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
+          {document.cookie.indexOf("userId=") >= 0 ?
+          <div>
+           <Button color="inherit" className="Button-view-bids ">
+          <NavLink to="/login" style={{textDecoration: 'none'}}> View Bids</NavLink>
+          </Button>
+          <Dropdown
+            className = "menu-button"
+            placement="bottomRight"
+            overlay={
+            <Menu>
+              <Menu.Item key="0">
+                  <NavLink to="/user-profile" style={{textDecoration: 'none'}}> Edit Profile </NavLink>
+              </Menu.Item>
+              <Menu.Divider/>
+              <Menu.Item key="3">Logout</Menu.Item>
+            </Menu>
+          }>
+            <a className="ant-dropdown-link" href="#">
+              <Icon type="user" /> Profile
+            </a>
+            </Dropdown>
+            </div>
+            :
+            <div>
              <Button color="inherit" className="Button-app">
              <NavLink to="/login" style={{textDecoration: 'none'}}> Login</NavLink>
              </Button>
              <Button color="inherit" className="Button-app">
              <NavLink to="/signup" style={{textDecoration: 'none'}}>Signup</NavLink>
              </Button>
+            </div>
+          }
           </div>
           <Route
             exact path="/signup"
