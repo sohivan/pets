@@ -48,8 +48,8 @@ const petbreed = [{
       label: 'Poodle'
   }, {value: 'beagle',
       label: 'Beagle'
-  }, {value: 'dashschund',
-      label: 'Dashschund'
+  }, {value: 'dachshund',
+      label: 'Dachshund'
   }, {value: 'bordercollie',
       label: 'Border Collie'
   }],
@@ -113,7 +113,6 @@ const petbreed = [{
 }];
 
 
-
 class AddPet extends Component {
   constructor(props) {
     super(props);
@@ -129,12 +128,15 @@ class AddPet extends Component {
       petmed: '',
       previewVisible: false,
       previewImage: '',
-      fileList: [{
-        uid: '-1',
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://images.prop24.com/196811060',
-      }]
+      image1: '',
+      image2: '',
+      image3: '',
+      // fileList: [{
+      //   uid: '-1',
+      //   name: 'xxx.png',
+      //   status: 'done',
+      //   url: 'https://images.prop24.com/196811060',
+      // }]
     }
   }
 
@@ -271,16 +273,16 @@ class AddPet extends Component {
     })
   }
 
-  handleCancel = () => this.setState({ previewVisible: false })
-
-   handlePreview = (file) => {
-     this.setState({
-       previewImage: file.url || file.thumbUrl,
-       previewVisible: true,
-     });
-   }
-
-   handleChange = ({ fileList }) => this.setState({ fileList })
+  // handleCancel = () => this.setState({ previewVisible: false })
+  //
+  //  handlePreview = (file) => {
+  //    this.setState({
+  //      previewImage: file.url || file.thumbUrl,
+  //      previewVisible: true,
+  //    });
+  //  }
+  //
+  //  handleChange = ({ fileList }) => this.setState({ fileList })
 
    handleSubmit(event) {
      let data = {
@@ -293,8 +295,11 @@ class AddPet extends Component {
        petdesc: this.state.petdesc,
        petmed: this.state.petmed,
        oid: this.props.id,
+       image1: this.state.image1,
+       image2: this.state.image2,
+       image3: this.state.image3
      }
-      // console.log(data)
+     console.log(data)
      var request = new Request("http://localhost:3001/addpet", {
        method: 'POST',
        headers: new Headers({'Content-Type': 'application/json'}),
@@ -317,6 +322,37 @@ class AddPet extends Component {
        console.log(err);
      })
    }
+
+  fileSelectedHandler1 = (e) => {
+    console.log(e.target.files[0]);
+    const reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = (e) => {
+      this.state.image1 = (e.target.result)
+      console.log('the image url' + this.state.image1)
+    }
+  }
+
+  fileSelectedHandler2 = (e) => {
+    console.log(e.target.files[0]);
+    const reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = (e) => {
+      this.state.image2 = (e.target.result)
+      console.log('the image url' + this.state.image2)
+    }
+  }
+
+  fileSelectedHandler3 = (e) => {
+    console.log(e.target.files[0]);
+    const reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = (e) => {
+      this.state.image3 = (e.target.result)
+      console.log('the image url' + this.state.image3)
+    }
+  }
+
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -386,9 +422,10 @@ class AddPet extends Component {
          </Form.Item>
          </Col>
          <Col className = "addpet-colright" span={8}>
-         <div className="clearfix">
+         <h1> Upload images of your pet </h1>
+         {/*<div className="clearfix">
         <Upload
-          action="//jsonplaceholder.typicode.com/posts/"
+          action="http://localhost:3001/addpet"
           listType="picture-card"
           fileList={fileList}
           onPreview={this.handlePreview}
@@ -399,6 +436,15 @@ class AddPet extends Component {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
+      </div>*/}
+      <div>
+        <input className = "pet-imageuploader" type="file" onChange={(e)=>this.fileSelectedHandler1(e)}/>
+      </div>
+      <div>
+        <input className = "pet-imageuploader"type="file" onChange={(e)=>this.fileSelectedHandler2(e)}/>
+      </div>
+      <div>
+        <input className = "pet-imageuploader" type="file" onChange={(e)=>this.fileSelectedHandler3(e)}/>
       </div>
          </Col>
          </Form>

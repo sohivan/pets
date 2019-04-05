@@ -1,5 +1,8 @@
-.intro-section{ padding-top: 200px; position: relative; background-size: cover;
-	z-index: 1;background-image: url(/image/puppies.jpg); }
+.intro-section{
+	padding-top: 80px;
+	position: relative;
+	background-size: cover;
+	background-color: white;}
 
 .intro-section:before{ content:''; z-index: -1; position: absolute; top: 0; bottom: 0; left: 0;
 	right: 0; background: rgba(0,0,0, .2); }
@@ -67,7 +70,10 @@
 
 /* Section 2 */
 
-.portfolio-section{ position: relative; }
+.portfolio-section{
+	position: relative;
+	margin-left: 100px;
+ }
 
 .portfolio-section .portfolioFilter{ margin-top: 60px; color: #666; }
 
@@ -96,3 +102,55 @@
         .section{ padding: 50px 0 0px; }
         .section .heading{ margin-bottom: 30px; }
 }
+
+.email-button{
+  background: #FF676D;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  width: 30%;
+	height: 45px;
+	color: white;
+	margin-top: 50px;
+	margin-left: 10px;
+	margin-right: 10px;
+	font-family: 'Montserrat', sans-serif;
+}
+
+.email-link{
+	color: white;
+}
+
+.font-yellow{
+	font-family: 'Montserrat', sans-serif;
+	font-size: 20px;
+	margin-top: 20px;
+	font-weight: 600;
+}
+
+.profile-name{
+	font-family: 'Montserrat', sans-serif;
+	font-size: 30px;
+	margin-top: 15px;
+}
+
+.profile-desc{
+	font-family: 'Montserrat', sans-serif;
+	font-size: 15px;
+	padding-top: 20px;
+}
+
+.buttons-section{
+	width: 60%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+ }
+
+ .petowner-pets{
+	 font-family: 'Montserrat', sans-serif;
+	 font-size: 30px;
+	 margin-top: 20px;
+	 margin-bottom: 50px;
+	 font-weight: bold;
+ }

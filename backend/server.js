@@ -23,8 +23,8 @@ function rollback(client) {
     });
 }
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
 
 app.use(morgan('dev'));
@@ -180,6 +180,10 @@ app.post('/addpet', function(request, response) {
   var userId = request.cookies.userId;
   console.log(userId);
   let values = [petname, petage, petgender, pettype, petbreed, petdesc, petmed, petoid];
+  var image1 = request.body.image1;
+  var image2 = request.body.image2;
+  var image3 = request.body.image3;
+  let values = [petname, petage, petgender, pettype, petbreed, petdesc, petmed, petoid, image1, image2, image3];
   console.log("i am here in serverjs")
   pool.connect((err, db, done) => {
     if(err) {
@@ -187,8 +191,8 @@ app.post('/addpet', function(request, response) {
     }
     else {
       db.query(`
-        INSERT INTO PETS(name, weight, age, breed, PetType, gender, description, medical_conditions, oid)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, userId], (err, table) => {
+        INSERT INTO PETS(name, weight, age, breed, PetType, gender, description, medical_conditions, oid, image1, image2, image3)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, userId, image1, image2, image3], (err, table) => {
         done();
         if (err) {
           console.log(err)
@@ -229,6 +233,7 @@ app.post('/addService', function(request, response) {
     }
   })
 })
+
 
 app.post('/addbid', function(request, response) {
   var bidstartdate = request.body.bidstartdate;

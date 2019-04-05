@@ -10,9 +10,10 @@ import SearchForm from './components/SearchForm';
 import AddPet from './components/AddPet';
 import AddBid from './components/AddBid';
 import Logo from './image/pet-bay-sands-logo.svg';
-import CreateProfile from './components/CreateProfile';
+import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
+import PetProfile from './components/PetProfile';
 import history from './history';
 
 class App extends Component {
@@ -40,7 +41,7 @@ class App extends Component {
       <Router history = {history}>
         <div className="App">
           <div className="App-header">
-             <img src={Logo} className="App-logo"/>
+             <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
              <Button color="inherit" className="Button-app">
              <NavLink to="/login" style={{textDecoration: 'none'}}> Login</NavLink>
              </Button>
@@ -57,9 +58,10 @@ class App extends Component {
             render={({props}) => <AddPet id= {this.state.id} isCareTaker= {this.state.isCareTaker} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
          <Route path="/add-service" component={AddService} />
          <Route exact path="/add-bid" component={AddBid} />
-         <Route path="/create-profile" component={CreateProfile} />
+         <Route path="/user-profile" component={UserProfile} />
          <Route path="/login" component={Login} />
          <Route path="/bid-tracker" component={BidTracker} />
+         <Route path="/pet-profile" component={PetProfile} />
          </div>
       </Router>
     );
