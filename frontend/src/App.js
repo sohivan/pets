@@ -12,6 +12,7 @@ import AddBid from './components/AddBid';
 import Logo from './image/pet-bay-sands-logo.svg';
 import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
+import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
 import history from './history';
 
@@ -19,15 +20,20 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: ''
+      id: '',
     }
   }
 
-  onGoToAddPet (id) {
+  onGoToAddPet (id, isCareTakerChosen) {
     this.setState({
-      id: id
+      id: id,
+      isCareTaker: isCareTakerChosen
     })
     history.push("/add-pet");
+  }
+
+  onGoToAddService() {
+    history.push("/add-service");
   }
 
   render() {
@@ -49,7 +55,8 @@ class App extends Component {
          <Route exact path="/" component={SearchForm} />
          <Route
             exact path="/add-pet"
-            render={({props}) => <AddPet id= {this.state.id}/>}/>
+            render={({props}) => <AddPet id= {this.state.id} isCareTaker= {this.state.isCareTaker} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
+         <Route path="/add-service" component={AddService} />
          <Route exact path="/add-bid" component={AddBid} />
          <Route path="/user-profile" component={UserProfile} />
          <Route path="/login" component={Login} />

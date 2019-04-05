@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Upload, Icon, Modal,Form, Input, Cascader, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button, Card, Rate, Pagination} from 'antd';
 import './AddPet.css';
+import { withRouter } from "react-router";
 
 
 const Option = Select.Option;
@@ -302,16 +303,19 @@ class AddPet extends Component {
      var request = new Request("http://localhost:3001/addpet", {
        method: 'POST',
        headers: new Headers({'Content-Type': 'application/json'}),
-       body: JSON.stringify(data)
+       body: JSON.stringify(data),
+       credentials: 'include'
      });
 
      fetch(request)
-     .then(function(response) {
+     .then((response) => {
        console.log(request)
        response.json()
-       .then(function(data) {
-         console.log(data)
-
+       .then((data) => {
+         console.log(data);
+         if (this.props.isCareTaker) {
+           this.props.history.push("/add-service");
+         }
        })
      })
      .catch(function(err) {
@@ -453,7 +457,9 @@ class AddPet extends Component {
           petmed={this.state.petmed}
           onChange={event => this.onPetMedChange(event, 'petmed')}/>
       </div>
-      <Button className="addpet-button" type="primary" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+        <Button className="addpet-button" type="primary" onClick={this.handleSubmit.bind(this)}>
+        {this.props.isCareTaker ? "Next" : "Done"}
+        </Button>
       </div>
     );
   }
@@ -468,10 +474,10 @@ class WrappedAddPet extends Component {
         const WrappedAddPet = Form.create({ name: 'addpet' })(AddPet);
         return (
           <div>
-            <WrappedAddPet id= {this.props.id}/>
+            <WrappedAddPet {...this.props} id= {this.props.id} isCareTaker={this.props.isCareTaker}/>
           </div>
         );
     }
 }
 
-export default WrappedAddPet;
+export default withRouter(WrappedAddPet);
