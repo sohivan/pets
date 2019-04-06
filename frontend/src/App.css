@@ -23,7 +23,50 @@
 }
 
 .Button-app {
+  font-size: 17px;
   float: right;
+  background-color: inherit;
+  border: none;
+  margin-top: 6px;
+}
+
+.Button-app:hover, .Button-view-bids:hover {
+  background: none;
+  text-decoration: underline;
+}
+
+.Button-app:active , .Button-view-bids:active {
+  background: none;
+  text-decoration: underline;
+
+}
+
+.Button-app:focus,  .Button-view-bids:focus {
+    background: none;
+  text-decoration: underline;
+}
+
+.Button-view-bids {
+  font-size: 17px;
+  background-color: inherit;
+  border: none;
+  float: right;
+  background-color: inherit;
+  border: none;
+  margin-right: 120px;
+  float: right;
+  margin-top: 7px;
+}
+
+
+.menu-button {
+  font-size: 17px;
+  width: fit-content;
+  max-width:150px;
+  background-color: inherit;
+  margin-top: 10px;
+  position: absolute;
+  right: 20px;
 }
 
 a {

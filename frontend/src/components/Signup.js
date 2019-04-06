@@ -105,14 +105,13 @@ class SignupForm extends Component {
          } else {
            response.json()
            .then((data) => {
+             localStorage.setItem("email", this.props.form.getFieldValue('email'));
              if (this.props.form.getFieldValue('role').includes("Pet Owner")) {
                let isCareTakerChosen = this.props.form.getFieldValue('role').includes("Caretaker");
                this.props.onGoToAddPet(data.id, isCareTakerChosen);
              } else {
-               //this.props.onGoToAddPet(data.id);
-               //gotoaddservice
+               this.props.onGoToAddService();
              }
-
            })
          }
        })

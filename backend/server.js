@@ -93,7 +93,7 @@ app.post('/user/caretaker', async (request, response) => {
 
 app.post('/login', (request, response) => {
   const { email, password } = request.body;
-
+  var id;
   pool.connect((err, db, done) => {
     if (err) {
       return response.status(400).send(err);
@@ -110,6 +110,7 @@ app.post('/login', (request, response) => {
         if (table.rows.length < 1) {
           return response.status(403).send({ status: "failed", message: "No user found" })
         }
+        id = table.rows[0].id;
         bcrypt.compare(password, table.rows[0].password, function(err, res) {
           if (res==true) {
             console.log("success!");
@@ -118,9 +119,9 @@ app.post('/login', (request, response) => {
               UPDATE USERS
               SET lastlogintimestamp=$1
               where email=$2
-              `, [dateNow, email], (err, table) => {
+              `, [dateNow, email], (err, res) => {
                 if (!err) {
-                  return response.status(200).send({ status: "success" });
+                  return response.cookie('userId', id, {expires: new Date(Date.now() + 60*60*60*24*5) }).status(200).send({ status: "success" });
                 } else {
                   return response.status(403).send({ status: "failed", message: "Something went wrong" });
                 }
@@ -132,6 +133,12 @@ app.post('/login', (request, response) => {
       })
   })
 });
+
+app.post('/logout', function(request, response) {
+  var cookie = request.cookies.userId;
+  console.log(cookie);
+  return response.clearCookie('userId', {expires: new Date(Date.now())}).status(200).send({message: "cookie deleted"});
+})
 
 
 app.post('/signup', function(request, response) {
@@ -157,7 +164,7 @@ app.post('/signup', function(request, response) {
             console.log(err);
             return response.status(400).send(err);
           }
-          response.cookie('userId', result.rows[0].id);
+          response.cookie('userId', result.rows[0].id, {expires: new Date(Date.now() + 60*60*60*24*5) });
           return response.status(200).send({id: result.rows[0].id});
         })
       })
@@ -179,7 +186,6 @@ app.post('/addpet', function(request, response) {
   var petoid = request.body.oid;
   var userId = request.cookies.userId;
   console.log(userId);
-  let values = [petname, petage, petgender, pettype, petbreed, petdesc, petmed, petoid];
   var image1 = request.body.image1;
   var image2 = request.body.image2;
   var image3 = request.body.image3;
