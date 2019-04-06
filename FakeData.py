@@ -19,12 +19,20 @@ fake.seed(4321)
 # number of users >= petowners + caretakers
 # number of pets >= petowners (one petowner to many pets)
 # number of services >= caretakers (one caretakers to many services)
-no_users = 230
-no_petowners = 60
-no_pets = 70
-no_caretakers = 40
-no_services = 60
-no_bids = 200
+no_users = 250
+no_petowners = 125
+no_pets = 150
+no_caretakers = 125
+no_services = 170
+no_bids = 250
+
+# creating admin table
+admin = pd.DataFrame({'id': [0]})
+admin['name'] = 'admin'
+admin['email'] = 'admin@admin.com'
+admin['password'] = 'cs2102rocks'
+admin['lastlogintimestamp'] = admin['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
+                                                                                    end_date='now'))
 
 # creating users table
 users = pd.DataFrame({'id': range(1, 1 + no_users)})
@@ -37,8 +45,12 @@ users['password'] = users['id'].apply(lambda x: fake.password(length=10,
                                                                 lower_case=True))
 users['lastlogintimestamp'] = users['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
+users= users.append(admin)                                                                                
 users_df = users.set_index(keys='id', drop = True)
 users_df.to_sql('users', engine, if_exists='append')
+
+admin_df = admin.set_index(keys='id', drop = True)
+admin_df.to_sql('admins', engine, if_exists='append')
 
 # create pet_owners table
 pet_owners = users[:no_petowners][['id','name']].rename(columns ={'id':'oid','name':'owner_name'})
@@ -83,6 +95,9 @@ pets['description'] = pets['oid'].apply(lambda x: fake.sentence(nb_words=5,
                                                                         ext_word_list=None))
 pets['gender'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Male','Female']))
 pets['medical_conditions'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Null','Chocolate','Teething']))
+pets['image1'] = 'https://placeimg.com/640/480/animals'
+pets['image2'] = 'https://placeimg.com/640/480/animals'
+pets['image3'] = 'https://placeimg.com/640/480/animals'
 pets_df = pets.set_index(keys='petid', drop = True)
 pets_df.to_sql('pets', engine, if_exists='append')
 
