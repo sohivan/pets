@@ -7,7 +7,8 @@ DROP TABLE if exists History cascade;
 DROP TABLE if exists CareTaker cascade;
 DROP TABLE if exists Services cascade;
 DROP TABLE if exists admins cascade;
-
+drop view if exists owns cascade;
+drop view if exists provides cascade;
 
 CREATE TABLE users (
 	id 					SERIAL primary key,
@@ -18,6 +19,7 @@ CREATE TABLE users (
 	unique(id,name)
 );
 
+
 CREATE TABLE admins (
 	id 			SERIAL PRIMARY KEY,
 	name		text not null,
@@ -27,6 +29,7 @@ CREATE TABLE admins (
 	foreign key (id, name) references users(id,name)
 );
 
+
 CREATE TABLE PetOwners (
 	oid				serial primary key,
 	owner_name		text not null,
@@ -34,8 +37,9 @@ CREATE TABLE PetOwners (
 	foreign key (oid, owner_name) references users(id,name) on delete cascade
 );
 
+
 CREATE TABLE Pets (
-	PetID				SERIAL primary key,
+	PetID				SERIAL not null,
 	name				VARCHAR(100) not null,
 	weight				smallint not null,
 	age					smallint not null,
@@ -48,38 +52,27 @@ CREATE TABLE Pets (
 	image1				text not null,
 	image2				text not null,
 	image3				text not null,
-	unique(PetId, oid)
+	primary key(PetId, oid)
 );
 
-
--- CREATE TABLE Homes (
--- 	address			text not null,
--- 	area			integer not null,
--- 	type 			text not null,
--- 	home_owner		SERIAL not null REFERENCES users(id),
--- 	primary key (address, home_owner)
--- );
---
---
---CREATE TABLE Homes (
---	address			text not null,
---	area			integer not null,
---	type 			text not null,
---	home_owner		SERIAL not null REFERENCES users(id),
---	primary key (address, home_owner)
---);
---
+CREATE VIEW Owns as 
+	select pt.owner_name as owner, 
+	p.oid, p.name as petname, 
+	p.petid,
+	p.pettype,
+	p.breed
+	from pets p
+	join petowners pt on pt.oid = p.oid;
 
 CREATE TABLE CareTaker (
-	cid				SERIAL unique not null,
+	cid				SERIAL primary key,
 	name 			text not null,
 	PetType			text not null,
 	PetSize			smallint not null,
 	housingOptions	smallint not null,
 	miscOptions		text,
 	description 	text not null,
-	NumOfPet		smallint not null, 
-	-- address			text not null REFERENCES Homes(address)
+	NumOfPet		smallint not null,
 	foreign key (cid, name) references users(id, name) on delete cascade
 );
 
@@ -90,16 +83,24 @@ CREATE TABLE Services (
 	EndDate 		DATE not null,
 	Rate			smallint not null,
 	cid				SERIAL not null REFERENCES CareTaker(cid) on delete cascade,
-	serviceid		serial primary key,
-	unique(serviceid,cid)
+	serviceid		serial not null,
+	primary key (serviceid,cid)
 );
 
----- set datestyle = 'DMY';
+CREATE VIEW provides as 
+	select ct.name as caretaker, 
+	ct.cid, 
+	s.service as service, 
+	s.serviceid,
+	s.rate
+	from services s
+	join caretaker ct on ct.cid = s.cid;
+
 
 CREATE TABLE Bid (
 	ServiceStartDate	date not null,
 	ServiceEndDate		date not null,
-	BidID			SERIAL primary key,
+	BidID			SERIAL,
 	BidTimestamp	timestamp not null ,
 	BidAmount		smallint not null,
 	PetID 			SERIAL not null,
@@ -110,16 +111,31 @@ CREATE TABLE Bid (
 	bidstatus		varchar(20) default 'pending' not null,
 	StatusTimestamp timestamp not null ,
 	foreign key (petid, petownerid) references pets(petid,oid) on delete cascade,
-	foreign key (CareTakerID,ServiceID) references services(cid,serviceid) on delete cascade
+	foreign key (CareTakerID,ServiceID) references services(cid,serviceid) on delete cascade,
+	primary key (PetID,BidID,CareTakerID)
 );
-	
---CREATE Table History (
---	BookingID		SERIAL primary key,
---	BidderID		SERIAL not null REFERENCES CareTaker(cid),
---	PetOnwner 		SERIAL not null REFERENCES Pets(oid),
---	PetID 			SERIAL not null REFERENCES Pets(PetID),
---	--BookingTimestamp	timestamp not null references Bid(BidTimestamp),
---	-- PaymentID		SERIAL not null REFERENCES Payment(PaymentID),
---	serviceid 		serial not null REFERENCES Services(serviceid)
---);
 
+drop view if exists issues cascade;
+
+CREATE VIEW issues as 
+	select pt.oid,
+	pt.owner_name,
+	b.petid,
+	b.bidamount,
+	b.bidid,
+	b.bidstatus,
+	b.statustimestamp
+	from petowners pt
+	join bid b on b.petownerid = pt."oid";
+
+drop view if exists receives cascade;
+
+CREATE VIEW receives as 
+	select ct.name as caretaker, 
+	ct.cid,
+	b.serviceid,
+	b.bidamount,
+	b.bidtimestamp,
+	b.bidstatus
+	from bid b
+	join caretaker ct on ct.cid = b.caretakerid;

@@ -19,12 +19,12 @@ fake.seed(4321)
 # number of users >= petowners + caretakers
 # number of pets >= petowners (one petowner to many pets)
 # number of services >= caretakers (one caretakers to many services)
-no_users = 250
-no_petowners = 125
-no_pets = 150
-no_caretakers = 125
-no_services = 170
-no_bids = 250
+no_users = 500
+no_petowners = 250
+no_pets = 300
+no_caretakers = 250
+no_services = 280
+no_bids = 500
 
 # creating admin table
 admin = pd.DataFrame({'id': [0]})
