@@ -110,9 +110,8 @@ class SignupForm extends Component {
                let isCareTakerChosen = this.props.form.getFieldValue('role').includes("Caretaker");
                this.props.onGoToAddPet(data.id, isCareTakerChosen);
              } else {
-               this.props.history.push("/add-service");
+               this.props.onGoToAddService();
              }
-
            })
          }
        })

@@ -121,8 +121,7 @@ app.post('/login', (request, response) => {
               where email=$2
               `, [dateNow, email], (err, res) => {
                 if (!err) {
-                  response.cookie('userId', id, {expires: new Date(Date.now() + 60*60*60*24*5) });
-                  return response.status(200).send({ status: "success" });
+                  return response.cookie('userId', id, {expires: new Date(Date.now() + 60*60*60*24*5) }).status(200).send({ status: "success" });
                 } else {
                   return response.status(403).send({ status: "failed", message: "Something went wrong" });
                 }
@@ -134,6 +133,12 @@ app.post('/login', (request, response) => {
       })
   })
 });
+
+app.post('/logout', function(request, response) {
+  var cookie = request.cookies.userId;
+  console.log(cookie);
+  return response.clearCookie('userId', {expires: new Date(Date.now())}).status(200).send({message: "cookie deleted"});
+})
 
 
 app.post('/signup', function(request, response) {

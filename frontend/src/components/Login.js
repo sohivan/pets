@@ -28,7 +28,7 @@ class LoginForm extends Component {
     }
 }
 
-function LoginPage({ history , form}) {
+function LoginPage({ history , form, loginSuccess}) {
   const { getFieldDecorator } = form;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,6 +62,7 @@ function LoginPage({ history , form}) {
           } else if (result.status === "success") {
             localStorage.setItem("email", email);
             console.log("the log in button has been pressed")
+            loginSuccess();
             history.push('/');
           }
         })

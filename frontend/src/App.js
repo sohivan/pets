@@ -14,7 +14,7 @@ import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
 import history from './history';
-import { Menu, Icon, Button, Dropdown } from 'antd';
+import { Menu, Icon, Button, Dropdown, message } from 'antd';
 
 
 class App extends Component {
@@ -24,30 +24,59 @@ class App extends Component {
     this.state = {
       id: '',
       collapsed: true,
+      cookie: null
     }
+    this.refreshLoginState();
   }
+
 
   onGoToAddPet (id, isCareTakerChosen) {
     this.setState({
       id: id,
       isCareTaker: isCareTakerChosen
     })
+
     history.push("/add-pet");
   }
 
+  refreshLoginState() {
+    this.setState({
+      email: localStorage.getItem("email"),
+    })
+  }
+
+  loginSuccess() {
+    console.log("here");
+    this.refreshLoginState();
+  }
+
   onGoToAddService() {
+    this.refreshLoginState();
     history.push("/add-service");
   }
 
-  toggleCollapsed = () => {
-    this.setState({
-      collapsed: !this.state.collapsed,
-    });
-  }
+  logout() {
+    var request = new Request("http://localhost:3001/logout", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       credentials: 'include',
+     });
 
-  handleClick(e) {
-  console.log('click', e);
-}
+     fetch(request)
+     .then((response) => {
+       if (!response.ok) {
+         message.error('An error occurred. Please try again.');
+       } else {
+         response.json()
+         .then((data) => {
+           localStorage.removeItem("email");
+         })
+       }
+       this.refreshLoginState();
+       localStorage.removeItem("email");
+     })
+   }
+
 
   render() {
     return (
@@ -55,10 +84,10 @@ class App extends Component {
         <div className="App">
           <div className="App-header">
           <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
-          {document.cookie.indexOf("userId=") >= 0 ?
+          {this.state.email ?
           <div>
            <Button color="inherit" className="Button-view-bids ">
-          <NavLink to="/login" style={{textDecoration: 'none'}}> View Bids</NavLink>
+          <NavLink to="/bid-tracker" style={{textDecoration: 'none'}}> View Bids</NavLink>
           </Button>
           <Dropdown
             className = "menu-button"
@@ -69,7 +98,7 @@ class App extends Component {
                   <NavLink to="/user-profile" style={{textDecoration: 'none'}}> Edit Profile </NavLink>
               </Menu.Item>
               <Menu.Divider/>
-              <Menu.Item key="3">Logout</Menu.Item>
+              <Menu.Item key="3" onClick={this.logout.bind(this)}>Logout</Menu.Item>
             </Menu>
           }>
             <a className="ant-dropdown-link" href="#">
@@ -90,7 +119,7 @@ class App extends Component {
           </div>
           <Route
             exact path="/signup"
-            render={({props}) => <Signup onGoToAddPet= {this.onGoToAddPet.bind(this)} />}/>
+            render={({props}) => <Signup onGoToAddPet= {this.onGoToAddPet.bind(this)} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
          <Route exact path="/" component={SearchForm} />
          <Route
             exact path="/add-pet"
@@ -98,7 +127,9 @@ class App extends Component {
          <Route path="/add-service" component={AddService} />
          <Route exact path="/add-bid" component={AddBid} />
          <Route path="/user-profile" component={UserProfile} />
-         <Route path="/login" component={Login} />
+         <Route
+            path="/login"
+            render={({props}) => <Login loginSuccess= {this.loginSuccess.bind(this)}/>}/>
          <Route path="/bid-tracker" component={BidTracker} />
          <Route path="/pet-profile" component={PetProfile} />
          </div>
