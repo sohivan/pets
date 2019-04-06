@@ -31,7 +31,7 @@ CREATE TABLE PetOwners (
 	oid				serial primary key,
 	owner_name		text not null,
 	description 	text not null,
-	foreign key (oid, owner_name) references users(id,name)
+	foreign key (oid, owner_name) references users(id,name) on delete cascade
 );
 
 CREATE TABLE Pets (
@@ -44,7 +44,7 @@ CREATE TABLE Pets (
 	gender				VARCHAR (100) not null, 
 	description			text,
 	medical_conditions	text,
-	oid					SERIAL not null REFERENCES PetOwners(oid),
+	oid					SERIAL not null REFERENCES PetOwners(oid) on delete cascade,
 	image1				text not null,
 	image2				text not null,
 	image3				text not null,
@@ -80,7 +80,7 @@ CREATE TABLE CareTaker (
 	description 	text not null,
 	NumOfPet		smallint not null, 
 	-- address			text not null REFERENCES Homes(address)
-	foreign key (cid, name) references users(id, name)
+	foreign key (cid, name) references users(id, name) on delete cascade
 );
 
 
@@ -89,7 +89,7 @@ CREATE TABLE Services (
 	StartDate 		DATE not null,
 	EndDate 		DATE not null,
 	Rate			smallint not null,
-	cid				SERIAL not null REFERENCES CareTaker(cid),
+	cid				SERIAL not null REFERENCES CareTaker(cid) on delete cascade,
 	serviceid		serial primary key,
 	unique(serviceid,cid)
 );
@@ -108,8 +108,9 @@ CREATE TABLE Bid (
 	ServiceID		serial not null,
 	bidrequest		text,
 	bidstatus		varchar(20) default 'pending' not null,
-	foreign key (petid, petownerid) references pets(petid,oid),
-	foreign key (CareTakerID,ServiceID) references services(cid,serviceid)
+	StatusTimestamp timestamp not null ,
+	foreign key (petid, petownerid) references pets(petid,oid) on delete cascade,
+	foreign key (CareTakerID,ServiceID) references services(cid,serviceid) on delete cascade
 );
 	
 --CREATE Table History (

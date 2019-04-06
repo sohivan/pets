@@ -125,4 +125,5 @@ bids['bidstatus'] = bids['petid'].apply(lambda x: fake.word(ext_word_list=['pend
 bids['servicestartdate'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['startdate'].values[0]+timedelta(days = random.randint(1,15)))
 bids['serviceenddate'] = bids['servicestartdate'].apply(lambda x: x + timedelta(days =  random.randint(5,15)))
 bids['bidtimestamp'] =  bids['servicestartdate'].apply(lambda x: x - timedelta(days =  random.randint(10,20)))
+bids['statustimestamp'] = bids['bidtimestamp']
 bids.to_sql('bid', engine, if_exists='append')
