@@ -93,7 +93,7 @@ app.post('/user/caretaker', async (request, response) => {
 
 app.post('/login', (request, response) => {
   const { email, password } = request.body;
-
+  var id;
   pool.connect((err, db, done) => {
     if (err) {
       return response.status(400).send(err);
@@ -110,17 +110,35 @@ app.post('/login', (request, response) => {
         if (table.rows.length < 1) {
           return response.status(403).send({ status: "failed", message: "No user found" })
         }
-
-        if (table.rows[0].password === password) {
-          console.log("success!")
-          return response.status(200).send({ status: "success" });
-
-        } else {
-          return response.status(403).send({ status: "failed", message: "Wrong username/password" })
-        }
+        id = table.rows[0].id;
+        bcrypt.compare(password, table.rows[0].password, function(err, res) {
+          if (res==true) {
+            console.log("success!");
+            var dateNow = new Date();
+            db.query(`
+              UPDATE USERS
+              SET lastlogintimestamp=$1
+              where email=$2
+              `, [dateNow, email], (err, res) => {
+                if (!err) {
+                  return response.cookie('userId', id, {expires: new Date(Date.now() + 60*60*60*24*5) }).status(200).send({ status: "success" });
+                } else {
+                  return response.status(403).send({ status: "failed", message: "Something went wrong" });
+                }
+              })
+          } else {
+            return response.status(403).send({ status: "failed", message: "Wrong username/password" })
+          }
+        });
       })
   })
 });
+
+app.post('/logout', function(request, response) {
+  var cookie = request.cookies.userId;
+  console.log(cookie);
+  return response.clearCookie('userId', {expires: new Date(Date.now())}).status(200).send({message: "cookie deleted"});
+})
 
 
 app.post('/signup', function(request, response) {
@@ -128,7 +146,6 @@ app.post('/signup', function(request, response) {
   var name = request.body.username;
   var email = request.body.email;
   var password = request.body.password;
-  var roles = request.body.role;
   var dateNow = new Date();
   var hashedPw, id;
   pool.connect((err, db, done) => {
@@ -147,7 +164,8 @@ app.post('/signup', function(request, response) {
             console.log(err);
             return response.status(400).send(err);
           }
-            return response.status(200).send({id: result.rows[0].id});
+          response.cookie('userId', result.rows[0].id, {expires: new Date(Date.now() + 60*60*60*24*5) });
+          return response.status(200).send({id: result.rows[0].id});
         })
       })
     .catch(err => console.error(err.message));
@@ -166,6 +184,8 @@ app.post('/addpet', function(request, response) {
   var petdesc = request.body.petdesc;
   var petmed = request.body.petmed;
   var petoid = request.body.oid;
+  var userId = request.cookies.userId;
+  console.log(userId);
   var image1 = request.body.image1;
   var image2 = request.body.image2;
   var image3 = request.body.image3;
@@ -178,7 +198,7 @@ app.post('/addpet', function(request, response) {
     else {
       db.query(`
         INSERT INTO PETS(name, weight, age, breed, PetType, gender, description, medical_conditions, oid, image1, image2, image3)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, petoid, image1, image2, image3], (err, table) => {
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, [petname, petsize, petage, petbreed, pettype, petgender, petdesc, petmed, userId, image1, image2, image3], (err, table) => {
         done();
         if (err) {
           console.log(err)
@@ -187,6 +207,33 @@ app.post('/addpet', function(request, response) {
         else {
           console.log("i added a new pet");
           response.status(200).send({message:"new pet added"});
+        }
+      })
+    }
+  })
+})
+app.post('/addService', function(request, response) {
+  var service = request.body.service[0];
+  var startDate = request.body.date[0];
+  var endDate = request.body.date[1];
+  var rate = request.body.rate;
+  var userId = request.cookies.userId;
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    }
+    else {
+      db.query(`
+        INSERT INTO Services(service, startDate, enddate, rate, cid)
+        VALUES($1, $2, $3, $4, $5)`, [service, startDate, endDate, rate, userId], (err, table) => {
+        done();
+        if (err) {
+          console.log(err)
+          return response.status(400).send(err);
+        }
+        else {
+          console.log("new service added");
+          response.status(200).send({message:"new service added"});
         }
       })
     }

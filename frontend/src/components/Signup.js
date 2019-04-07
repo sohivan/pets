@@ -11,8 +11,8 @@ class Signup extends Component {
     super(props);
   }
 
-  onSubmit = (id) => {
-    this.props.onGoToAddPet(id);
+  onSubmit = (id, isCareTakerChosen) => {
+    this.props.onGoToAddPet(id, isCareTakerChosen);
   }
 
   render() {
@@ -105,7 +105,13 @@ class SignupForm extends Component {
          } else {
            response.json()
            .then((data) => {
-             this.props.onGoToAddPet(data.id);
+             localStorage.setItem("email", this.props.form.getFieldValue('email'));
+             if (this.props.form.getFieldValue('role').includes("Pet Owner")) {
+               let isCareTakerChosen = this.props.form.getFieldValue('role').includes("Caretaker");
+               this.props.onGoToAddPet(data.id, isCareTakerChosen);
+             } else {
+               this.props.onGoToAddService();
+             }
            })
          }
        })
@@ -219,15 +225,10 @@ class SignupForm extends Component {
             </Select>
           )}
         </Form.Item>
-        {this.props.form.getFieldValue('role').includes("Pet Owner") ?
         <Button className= "search-button" type="primary" htmlType="submit" onClick={this.goToAddPet.bind(this)}>
             Next
         </Button>
-        :
-        <Button className= "search-button" type="primary" htmlType="submit" onClick={this.handleSubmit.bind(this)}>
-            Submit
-        </Button>
-        }
+
 
         </div>
         </Form>
