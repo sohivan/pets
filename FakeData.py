@@ -25,6 +25,16 @@ no_pets = 300
 no_caretakers = 250
 no_services = 280
 no_bids = 500
+no_homes = 600
+
+# creating home table
+home = pd.DataFrame({'id' :range(1, no_homes +1)})
+home['address'] = home['id'].apply(lambda x: fake.street_address())
+home['postcode'] = home['id'].apply(lambda x: fake.postalcode()).astype(int)
+home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
+home_df = home.set_index(keys='id', drop = True)
+home_df.to_sql('homes', engine, if_exists='append')
+
 
 # creating admin table
 admin = pd.DataFrame({'id': [0]})
@@ -45,7 +55,8 @@ users['password'] = users['id'].apply(lambda x: fake.password(length=10,
                                                                 lower_case=True))
 users['lastlogintimestamp'] = users['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
-users= users.append(admin)                                                                                
+users= users.append(admin)
+users['homeid'] = home['id'].sample(len(users),replace=True).values                                                                               
 users_df = users.set_index(keys='id', drop = True)
 users_df.to_sql('users', engine, if_exists='append')
 

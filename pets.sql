@@ -9,6 +9,18 @@ DROP TABLE if exists Services cascade;
 DROP TABLE if exists admins cascade;
 drop view if exists owns cascade;
 drop view if exists provides cascade;
+drop view if exists receives cascade;
+drop view if exists issues cascade;
+drop view if exists lives CASCADE;
+
+
+CREATE TABLE Homes (
+	id 				serial PRIMARY key,
+	address 	VARCHAR(100) not null unique,
+	postcode		bigint not null,
+	hometype		text not null 
+);
+
 
 CREATE TABLE users (
 	id 					SERIAL primary key,
@@ -16,6 +28,8 @@ CREATE TABLE users (
 	email				VARCHAR(100) not null unique,
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
+	homeid				serial not null,
+	FOREIGN key (homeid) REFERENCES homes(id),
 	unique(id,name)
 );
 
@@ -55,14 +69,6 @@ CREATE TABLE Pets (
 	primary key(PetId, oid)
 );
 
-CREATE VIEW Owns as 
-	select pt.owner_name as owner, 
-	p.oid, p.name as petname, 
-	p.petid,
-	p.pettype,
-	p.breed
-	from pets p
-	join petowners pt on pt.oid = p.oid;
 
 CREATE TABLE CareTaker (
 	cid				SERIAL primary key,
@@ -87,15 +93,6 @@ CREATE TABLE Services (
 	primary key (serviceid,cid)
 );
 
-CREATE VIEW provides as 
-	select ct.name as caretaker, 
-	ct.cid, 
-	s.service as service, 
-	s.serviceid,
-	s.rate
-	from services s
-	join caretaker ct on ct.cid = s.cid;
-
 
 CREATE TABLE Bid (
 	ServiceStartDate	date not null,
@@ -115,7 +112,26 @@ CREATE TABLE Bid (
 	primary key (PetID,BidID,CareTakerID)
 );
 
-drop view if exists issues cascade;
+
+CREATE VIEW provides as 
+	select ct.name as caretaker, 
+	ct.cid, 
+	s.service as service, 
+	s.serviceid,
+	s.rate
+	from services s
+	join caretaker ct on ct.cid = s.cid;
+
+
+CREATE VIEW Owns as 
+	select pt.owner_name as owner, 
+	p.oid, p.name as petname, 
+	p.petid,
+	p.pettype,
+	p.breed
+	from pets p
+	join petowners pt on pt.oid = p.oid;
+
 
 CREATE VIEW issues as 
 	select pt.oid,
@@ -128,7 +144,6 @@ CREATE VIEW issues as
 	from petowners pt
 	join bid b on b.petownerid = pt."oid";
 
-drop view if exists receives cascade;
 
 CREATE VIEW receives as 
 	select ct.name as caretaker, 
@@ -139,3 +154,13 @@ CREATE VIEW receives as
 	b.bidstatus
 	from bid b
 	join caretaker ct on ct.cid = b.caretakerid;
+
+
+CREATE view lives AS
+	select h.id,
+	u.id as userid,
+	u.name,
+	h.address,
+	h.postcode
+	from homes h 
+	join users u on u.homeid = h.id 
