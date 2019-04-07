@@ -78,12 +78,10 @@ care_takers['description'] = care_takers['cid'].apply(lambda x: fake.sentence(nb
                                                                         variable_nb_words=True,
                                                                         ext_word_list=None))
 care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
-care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
+care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,4))
 care_takers['numofpet'] = care_takers['cid'].apply(lambda x: random.randint(1,8))
-care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
-care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: fake.sentence(nb_words=5, 
-                                                                                variable_nb_words=True,
-                                                                                ext_word_list=None))
+care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
+care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
 care_takers_df = care_takers.set_index(keys='cid', drop = True)
 care_takers_df.to_sql('caretaker', engine, if_exists='append')
 
