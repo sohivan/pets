@@ -114,7 +114,7 @@ pets_df.to_sql('pets', engine, if_exists='append')
 services = pd.DataFrame({'serviceid':range(1, 1+no_services)})
 services['cid'] = care_takers['cid'].sample(len(services), replace = True).values
 services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
-services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=['Sitting','Visiting Vet','Washing','Walking']))
+services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=["Pet Boarding", "Washing", "Walking", "Feeding", "Vet Visitation", "Overnight", "Drop In Visits","Pet Day Care"]))
 services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-100d', end_date='+100d'))
 services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(30,90)))
 services_df = services.set_index(keys='serviceid', drop = True)
