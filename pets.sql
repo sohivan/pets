@@ -76,7 +76,7 @@ CREATE TABLE CareTaker (
 	PetType			text not null,
 	PetSize			smallint not null,
 	housingOptions	smallint not null,
-	miscOptions		text,
+	miscOptions		smallint not null,
 	description 	text not null,
 	NumOfPet		smallint not null,
 	foreign key (cid, name) references users(id, name) on delete cascade

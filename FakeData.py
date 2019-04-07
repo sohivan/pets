@@ -78,12 +78,10 @@ care_takers['description'] = care_takers['cid'].apply(lambda x: fake.sentence(nb
                                                                         variable_nb_words=True,
                                                                         ext_word_list=None))
 care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
-care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
+care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,4))
 care_takers['numofpet'] = care_takers['cid'].apply(lambda x: random.randint(1,8))
-care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(1,6))
-care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: fake.sentence(nb_words=5, 
-                                                                                variable_nb_words=True,
-                                                                                ext_word_list=None))
+care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
+care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
 care_takers_df = care_takers.set_index(keys='cid', drop = True)
 care_takers_df.to_sql('caretaker', engine, if_exists='append')
 
@@ -117,8 +115,8 @@ services = pd.DataFrame({'serviceid':range(1, 1+no_services)})
 services['cid'] = care_takers['cid'].sample(len(services), replace = True).values
 services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
 services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=['Sitting','Visiting Vet','Washing','Walking']))
-services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-100d', end_date='-50d'))
-services['enddate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-40d', end_date='today'))
+services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-100d', end_date='+100d'))
+services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(30,90)))
 services_df = services.set_index(keys='serviceid', drop = True)
 services_df.to_sql('services', engine, if_exists='append')
 
