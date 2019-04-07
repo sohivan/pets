@@ -13,17 +13,36 @@ engine.connect().execute(sql)
 
 # initialising the faker module
 fake = Faker()
+fake.seed(4321)
 
 # specify the number of users, petowners, pets, caretakers and services
 # number of users >= petowners + caretakers
 # number of pets >= petowners (one petowner to many pets)
 # number of services >= caretakers (one caretakers to many services)
-no_users = 230
-no_petowners = 60
-no_pets = 70
-no_caretakers = 40
-no_services = 60
-no_bids = 200
+no_users = 500
+no_petowners = 250
+no_pets = 300
+no_caretakers = 250
+no_services = 280
+no_bids = 500
+no_homes = 600
+
+# creating home table
+home = pd.DataFrame({'id' :range(1, no_homes +1)})
+home['address'] = home['id'].apply(lambda x: fake.street_address())
+home['postcode'] = home['id'].apply(lambda x: fake.postalcode()).astype(int)
+home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
+home_df = home.set_index(keys='id', drop = True)
+home_df.to_sql('homes', engine, if_exists='append')
+
+
+# creating admin table
+admin = pd.DataFrame({'id': [0]})
+admin['name'] = 'admin'
+admin['email'] = 'admin@admin.com'
+admin['password'] = 'cs2102rocks'
+admin['lastlogintimestamp'] = admin['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
+                                                                                    end_date='now'))
 
 # creating users table
 users = pd.DataFrame({'id': range(1, 1 + no_users)})
@@ -36,8 +55,13 @@ users['password'] = users['id'].apply(lambda x: fake.password(length=10,
                                                                 lower_case=True))
 users['lastlogintimestamp'] = users['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
+users= users.append(admin)
+users['homeid'] = home['id'].sample(len(users),replace=True).values                                                                               
 users_df = users.set_index(keys='id', drop = True)
 users_df.to_sql('users', engine, if_exists='append')
+
+admin_df = admin.set_index(keys='id', drop = True)
+admin_df.to_sql('admins', engine, if_exists='append')
 
 # create pet_owners table
 pet_owners = users[:no_petowners][['id','name']].rename(columns ={'id':'oid','name':'owner_name'})
@@ -82,6 +106,9 @@ pets['description'] = pets['oid'].apply(lambda x: fake.sentence(nb_words=5,
                                                                         ext_word_list=None))
 pets['gender'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Male','Female']))
 pets['medical_conditions'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Null','Chocolate','Teething']))
+pets['image1'] = 'https://placeimg.com/640/480/animals'
+pets['image2'] = 'https://placeimg.com/640/480/animals'
+pets['image3'] = 'https://placeimg.com/640/480/animals'
 pets_df = pets.set_index(keys='petid', drop = True)
 pets_df.to_sql('pets', engine, if_exists='append')
 
@@ -109,4 +136,5 @@ bids['bidstatus'] = bids['petid'].apply(lambda x: fake.word(ext_word_list=['pend
 bids['servicestartdate'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['startdate'].values[0]+timedelta(days = random.randint(1,15)))
 bids['serviceenddate'] = bids['servicestartdate'].apply(lambda x: x + timedelta(days =  random.randint(5,15)))
 bids['bidtimestamp'] =  bids['servicestartdate'].apply(lambda x: x - timedelta(days =  random.randint(10,20)))
+bids['statustimestamp'] = bids['bidtimestamp']
 bids.to_sql('bid', engine, if_exists='append')

@@ -13,6 +13,7 @@ import Logo from './image/pet-bay-sands-logo.svg';
 import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
 import PetProfile from './components/PetProfile';
+import Admin from './components/Admin';
 import history from './history';
 
 class App extends Component {
@@ -55,6 +56,7 @@ class App extends Component {
          <Route path="/login" component={Login} />
          <Route path="/bid-tracker" component={BidTracker} />
          <Route path="/pet-profile" component={PetProfile} />
+         <Route path="/admin" component={Admin} />
          </div>
       </Router>
     );
