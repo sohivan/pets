@@ -133,6 +133,9 @@ class AddBid extends Component {
               </Select>
               </Form.Item>
 
+              <h3 className="addbid-label">Average rate that other pet owners are offering:</h3>
+              <h3>$24</h3>
+
           <h3 className="addbid-label">Amount per day</h3>
           <InputNumber
              className="addbid-petowner"
@@ -140,6 +143,8 @@ class AddBid extends Component {
              formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
              parser={value => value.replace(/\$\s?|(,*)/g, '')}
              onChange={event => this.onAmtChange(event)}/>
+
+
 
         {/* Needs to be logged into account & take oid from pet table */}
         <h3 className="addbid-label">Select Pet</h3>
