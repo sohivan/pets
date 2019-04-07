@@ -299,11 +299,11 @@ app.post('/getCaretakers', function(request, response) {
                   	order by NumOfBid desc)
                 SELECT distinct * from PopCareTaker natural join caretaker natural join services
                 where service = $1 and PetType = $2 and PetSize = $3
-                and NumOfPet >= $4 and rate <= $5
-                and housingOptions = $6
-                and miscOptions = $7
-                and StartDate <= $8
-                and EndDate >= $9
+                and numofpet >= $4 and rate <= $5
+                and housingoptions = $6
+                and miscoptions = $7
+                and startDate <= $8
+                and endDate >= $9
                 order by NumOfBid desc
                 `, [service, pettype, petsize, numofpet, marks, housingopt, miscopt, startdate, enddate], function(err, table) {
         done();
@@ -359,7 +359,7 @@ app.get('/getPendingBids', function(request, response) {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where bidstatus = 'pending' and BidStartDate > now() ", function(err, table) {
+      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'pending' and P2.servicestartdate > now()", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -377,7 +377,7 @@ app.get('/getUpcomingBids', function(request, response) {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where bidstatus = 'accepted' and BidStartDate > now()", function(err, table) {
+      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'accept' and P2.servicestartdate > now()", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -395,7 +395,7 @@ app.get('/getPastBids', function(request, response) {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where bidstatus = 'accepted' and BidStartDate < now()", function(err, table) {
+      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where P2.bidstatus = 'accept' and P2.servicestartdate < now()", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -457,3 +457,23 @@ app.post('/acceptBid', function(request, response) {
 })
 
 app.listen(PORT, () => console.log("listening on port " + PORT));
+
+
+// get average bid value
+app.get('/getAvgBid', function(request, response) {
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    } else {
+      db.query(`select c.name, serviceid, avg(bidamount) from bid join caretaker c on caretakerid = c.cid group by c.name, serviceid`, function(err, table) {
+        done();
+        if (err) {
+          return response.status(400).send(err);
+        }
+        else {
+          return response.status(200).send(table.rows);
+        }
+      })
+    }
+  })
+});

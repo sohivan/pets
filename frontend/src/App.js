@@ -13,6 +13,7 @@ import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
+import Admin from './components/Admin';
 import history from './history';
 import { Menu, Icon, Button, Dropdown, message } from 'antd';
 
@@ -132,6 +133,7 @@ class App extends Component {
             render={({props}) => <Login loginSuccess= {this.loginSuccess.bind(this)}/>}/>
          <Route path="/bid-tracker" component={BidTracker} />
          <Route path="/pet-profile" component={PetProfile} />
+         <Route path="/admin" component={Admin} />
          </div>
       </Router>
     );
