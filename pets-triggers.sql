@@ -12,7 +12,7 @@ else
 select users.name into name
 from users
 where users.id = new.oid;
-insert into petowners values (new.oid, name, 'aaaa');
+insert into petowners values (new.oid, name);
 RETURN NEW;
 END IF;
 END;
@@ -65,7 +65,7 @@ else
 select users.name into name
 from users
 where users.id = new.cid;
-insert into caretaker values (new.cid, name, 'pettype', 1, 1, null, 'descp', 1);
+insert into caretaker values (new.cid, name);
 RETURN NEW;
 END IF;
 END;

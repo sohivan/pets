@@ -29,6 +29,7 @@ CREATE TABLE users (
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
 	homeid				serial not null,
+	description 	text,
 	FOREIGN key (homeid) REFERENCES homes(id),
 	unique(id,name)
 );
@@ -47,7 +48,6 @@ CREATE TABLE admins (
 CREATE TABLE PetOwners (
 	oid				serial primary key,
 	owner_name		text not null,
-	description 	text not null,
 	foreign key (oid, owner_name) references users(id,name) on delete cascade
 );
 
@@ -72,13 +72,12 @@ CREATE TABLE Pets (
 
 CREATE TABLE CareTaker (
 	cid				SERIAL primary key,
-	name 			text not null,
-	PetType			text not null,
-	PetSize			smallint not null,
-	housingOptions	smallint not null,
-	miscOptions		smallint not null,
-	description 	text not null,
-	NumOfPet		smallint not null,
+	name 			text not null, 
+	PetType			text not null default 'dog',
+	PetSize			smallint not null default 1,
+	housingOptions	smallint not null default 1,
+	miscOptions		smallint not null default 1,
+	NumOfPet		smallint not null default 1,
 	foreign key (cid, name) references users(id, name) on delete cascade
 );
 
