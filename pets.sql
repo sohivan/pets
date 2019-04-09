@@ -73,7 +73,7 @@ CREATE TABLE Pets (
 CREATE TABLE CareTaker (
 	cid				SERIAL primary key,
 	name 			text not null, 
-	PetType			text not null default 'dog',
+	PetType			text not null default 'Dog',
 	PetSize			smallint not null default 1,
 	housingOptions	smallint not null default 1,
 	miscOptions		smallint not null default 1,
