@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Router } from 'react-router-dom';
+import { Router , Redirect, Switch } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import Signup from './components/Signup';
@@ -13,21 +13,28 @@ import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
-import Admin from './components/Admin';
 import history from './history';
 import { Menu, Icon, Button, Dropdown, message } from 'antd';
 
+const PrivateRoute = ({ component: Component, authenticated }) => (
+<Route render={(props) => (
+    authenticated === true
+    ? <Component {...props} />
+    : <Redirect to={{
+          pathname: '/',
+        }} />
+)} />
+)
 
 class App extends Component {
   constructor(props) {
     super(props);
-    console.log(document.cookie);
     this.state = {
       id: '',
       collapsed: true,
-      cookie: null
+      cookie: null,
+      isAuthenticated: localStorage.getItem("email") ? true : false
     }
-    this.refreshLoginState();
   }
 
 
@@ -42,12 +49,11 @@ class App extends Component {
 
   refreshLoginState() {
     this.setState({
-      email: localStorage.getItem("email"),
+      isAuthenticated: localStorage.getItem("email") ? true : false
     })
   }
 
   loginSuccess() {
-    console.log("here");
     this.refreshLoginState();
   }
 
@@ -71,10 +77,9 @@ class App extends Component {
          response.json()
          .then((data) => {
            localStorage.removeItem("email");
+           this.refreshLoginState();
          })
        }
-       this.refreshLoginState();
-       localStorage.removeItem("email");
      })
    }
 
@@ -85,7 +90,7 @@ class App extends Component {
         <div className="App">
           <div className="App-header">
           <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
-          {this.state.email ?
+          {this.state.isAuthenticated ?
           <div>
            <Button color="inherit" className="Button-view-bids ">
           <NavLink to="/bid-tracker" style={{textDecoration: 'none'}}> View Bids</NavLink>
@@ -96,7 +101,7 @@ class App extends Component {
             overlay={
             <Menu>
               <Menu.Item key="0">
-                  <NavLink to="/user-profile" style={{textDecoration: 'none'}}> Edit Profile </NavLink>
+                  <NavLink to="/my-user-profile" style={{textDecoration: 'none'}}> Edit Profile </NavLink>
               </Menu.Item>
               <Menu.Divider/>
               <Menu.Item key="3" onClick={this.logout.bind(this)}>Logout</Menu.Item>
@@ -118,22 +123,27 @@ class App extends Component {
             </div>
           }
           </div>
+
+          <Switch>
+          <Route exact path="/" component={SearchForm} />
+
           <Route
             exact path="/signup"
             render={({props}) => <Signup onGoToAddPet= {this.onGoToAddPet.bind(this)} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
-         <Route exact path="/" component={SearchForm} />
-         <Route
+         <PrivateRoute
+            authenticated={this.state.isAuthenticated}
             exact path="/add-pet"
             render={({props}) => <AddPet id= {this.state.id} isCareTaker= {this.state.isCareTaker} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
-         <Route path="/add-service" component={AddService} />
-         <Route exact path="/add-bid" component={AddBid} />
-         <Route path="/user-profile" component={UserProfile} />
+         <PrivateRoute exact path="/add-service" component={AddService} authenticated={this.state.isAuthenticated}/>
+         <PrivateRoute exact path="/add-bid" component={AddBid} authenticated={this.state.isAuthenticated}/>
+         <Route exact path="/user-profile" component={UserProfile}/>
+         <PrivateRoute exact path="/my-user-profile" component={UserProfile} authenticated={this.state.isAuthenticated}/>
          <Route
             path="/login"
             render={({props}) => <Login loginSuccess= {this.loginSuccess.bind(this)}/>}/>
-         <Route path="/bid-tracker" component={BidTracker} />
-         <Route path="/pet-profile" component={PetProfile} />
-         <Route path="/admin" component={Admin} />
+         <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>
+         <PrivateRoute exact path="/pet-profile" component={PetProfile} authenticated={this.state.isAuthenticated}/>
+         </Switch>
          </div>
       </Router>
     );
