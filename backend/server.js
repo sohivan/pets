@@ -77,6 +77,7 @@ app.post('/user/petowner', async (request, response) => {
   }
 })
 
+
 app.post('/user/caretaker', async (request, response) => {
   const { id } = request.body;
 
@@ -174,6 +175,30 @@ app.post('/signup', function(request, response) {
     })
   })
 
+app.post('/makeABidCheck', function(request, response) {
+    var id = request.cookies.userId;
+    pool.connect((err, db, done) => {
+      if(err) {
+        return response.status(400).send(err);
+      }
+      else {
+        db.query(`
+      SELECT *
+      FROM PETOWNERS
+      WHERE oid=$1`, [id], (err, results) => {
+      done();
+      if (err) {
+        console.log(err)
+        return response.status(400).send(err);
+      }
+      else {
+        response.status(200).send({isValidBidder: results.rows.length > 0});
+      }
+     })
+    }
+  })
+})
+
 
 
 app.post('/addpet', function(request, response) {
@@ -249,8 +274,11 @@ app.post('/addCaretakerPrefsAndServices', function(request, response) {
   var endDate = request.body.date[1];
   var rate = request.body.rate;
   var userId = request.cookies.userId;
-  console.log(request.body);
-  console.log(userId);
+  var pettype =  request.body.pettype;
+  var petsize = request.body.petsize;
+  var numofpet =  request.body.numofpet;
+  var housingopt = request.body.housingopt;
+  var miscopt = request.body.miscopt;
 
   pool.connect((err, db, done) => {
     if(err) {
@@ -277,7 +305,7 @@ app.post('/addCaretakerPrefsAndServices', function(request, response) {
       	             housingOptions	=$3,
       	             miscOptions	= $4,
       	             NumOfPet	= $5
-                     WHERE cid = $6`, ['dog', 1, 2, 3, 4, userId], (err, result) => {
+                     WHERE cid = $6`, [pettype, petsize, housingopt, miscopt, numofpet, userId], (err, result) => {
                        if (err) {
                          console.error(err);
                          return rollback(db);
