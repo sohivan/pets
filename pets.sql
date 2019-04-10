@@ -192,6 +192,7 @@ CREATE view lives AS
 create view review_caretaker as 
 	select c.cid,
 	c."name",
+	r.historyid,
 	r.responsiveness,
 	r.friendliness
 	from review r 
@@ -202,6 +203,7 @@ create view review_caretaker as
 create view review_petowner as 
 	select p.oid,
 	p.owner_name,
+	r.historyid,
 	r.responsiveness,
 	r.friendliness
 	from review r 
