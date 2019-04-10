@@ -16,10 +16,10 @@ import PetProfile from './components/PetProfile';
 import history from './history';
 import { Menu, Icon, Button, Dropdown, message } from 'antd';
 
-const PrivateRoute = ({ component: Component, authenticated }) => (
+const PrivateRoute = ({ component: Component, authenticated, ...rest}) => (
 <Route render={(props) => (
     authenticated === true
-    ? <Component {...props} />
+    ? <Component {...props} {...rest} />
     : <Redirect to={{
           pathname: '/',
         }} />
@@ -33,7 +33,8 @@ class App extends Component {
       id: '',
       collapsed: true,
       cookie: null,
-      isAuthenticated: localStorage.getItem("email") ? true : false
+      isAuthenticated: document.cookie ? true : false,
+      isCareTaker: false
     }
   }
 
@@ -41,15 +42,15 @@ class App extends Component {
   onGoToAddPet (id, isCareTakerChosen) {
     this.setState({
       id: id,
-      isCareTaker: isCareTakerChosen
+      isCareTaker: isCareTakerChosen,
+      isAuthenticated: document.cookie ? true : false
     })
-
     history.push("/add-pet");
   }
 
   refreshLoginState() {
     this.setState({
-      isAuthenticated: localStorage.getItem("email") ? true : false
+      isAuthenticated: document.cookie ? true : false
     })
   }
 
@@ -133,10 +134,14 @@ class App extends Component {
          <PrivateRoute
             authenticated={this.state.isAuthenticated}
             exact path="/add-pet"
-            render={({props}) => <AddPet id= {this.state.id} isCareTaker= {this.state.isCareTaker} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
+            component={AddPet}
+            id= {this.state.id}
+            isCareTaker= {this.state.isCareTaker}
+            onGoToAddService={this.onGoToAddService.bind(this)}
+            />
          <PrivateRoute exact path="/add-service" component={AddService} authenticated={this.state.isAuthenticated}/>
          <PrivateRoute exact path="/add-bid" component={AddBid} authenticated={this.state.isAuthenticated}/>
-         <Route exact path="/user-profile" component={UserProfile}/>
+         <Route exact path="/user-profile/:id" component={UserProfile}/>
          <PrivateRoute exact path="/my-user-profile" component={UserProfile} authenticated={this.state.isAuthenticated}/>
          <Route
             path="/login"
