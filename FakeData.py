@@ -3,7 +3,7 @@ import random
 import pandas as pd
 from sqlalchemy import create_engine
 import pandas.io.sql as psql
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 engine = create_engine('postgresql://postgres@localhost:5432/postgres')
 
@@ -139,3 +139,21 @@ bids['statustimestamp'] = bids['bidtimestamp']
 bids.drop(columns=['petid','serviceid'], inplace= True)
 bids_df = bids.set_index(keys= ['bidid','petownerid','caretakerid'],drop=True)
 bids_df.to_sql('bid', engine, if_exists='append')
+
+
+def paymentdate(x):
+    if x['paymentmade']:
+        return x['serviceenddate'] + timedelta(days = random.randint(1,100))
+    else:
+        return None
+
+
+# create history table
+# subset data where status =  accepted and service end date >= today
+history = bids[(bids['bidstatus']=='accept') & (pd.to_datetime(bids['serviceenddate']) < datetime.now())]
+history_df = history[['bidid','caretakerid','petownerid','serviceenddate']].reset_index(drop=True)
+history_df.index +=1
+history_df['paymentmade'] = history_df['bidid'].apply(lambda x: fake.word(ext_word_list=[False,True]))
+history_df['paymentdate'] = history_df[['paymentmade','serviceenddate']].apply(paymentdate, axis=1)
+history_df.index.name = 'historyid'
+history_df.to_sql('history', engine, if_exists='append')
