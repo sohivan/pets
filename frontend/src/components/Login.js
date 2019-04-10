@@ -10,7 +10,8 @@ function login(email, password) {
     body: JSON.stringify({
         email,
         password
-    })
+    }),
+    credentials: 'include'
   });
 }
 

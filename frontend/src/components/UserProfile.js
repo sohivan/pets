@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import './UserProfile.css';
 
-function getUserProfile(email) {
+function getUserProfile(id) {
     return fetch('http://localhost:3001/user/profile', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         body: JSON.stringify({
-            email
-        })
+            id
+        }),
+        credentials: 'include'
     })
 }
 
@@ -21,7 +22,8 @@ function getPetOwnerProfile(id) {
         method: 'POST',
         body: JSON.stringify({
             id
-        })
+        }),
+        credentials: 'include'
     })
 }
 
@@ -35,17 +37,26 @@ function getCareTakerProfile(id) {
         method: 'POST',
         body: JSON.stringify({
             id
-        })
+        }),
+        credentials: 'include'
     })
 }
 
-async function fetchUserProfile(email, setName, setType, setId, setError) {
-    try {
-        if (!email) {
-            alert("No email detected")
-        }
+function getCookie(name) {
+    function escape(s) { return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1'); };
+    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    return match ? match[1] : null;
+}
 
-        let resp = await getUserProfile(email)
+async function fetchUserProfile(email, setName, setType, setId, setError, params) {
+    try {
+        let id;
+        if (params.id == null) {
+          id = getCookie("userId");
+        } else {
+          id = params.id;
+        }
+        let resp = await getUserProfile(id)
         let result = await resp.json()
 
         if (result.status === "success") {
@@ -93,7 +104,7 @@ async function fetchCareTaker(type, id, setError, setServices) {
 
 }
 
-function Explore({ history }) {
+function Explore({ history, match }) {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
@@ -105,7 +116,7 @@ function Explore({ history }) {
 
 
     useEffect(() => {
-        fetchUserProfile(email, setName, setType, setId, setError)
+        fetchUserProfile(email, setName, setType, setId, setError, match.params)
     }, [email])
 
     useEffect(() => {

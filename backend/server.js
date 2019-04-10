@@ -38,16 +38,17 @@ app.use(function(req, res, next){
   next();
 })
 
-app.post('/user/profile', async (request, response) => {
-  const { email } = request.body;
 
+app.post('/user/profile', async (request, response) => {
+  const { id } = request.body;
+  console.log(request.body);
   try {
     const table = await pool.query(`
     SELECT *,
     CASE WHEN USERS.ID IN (SELECT OID FROM PETOWNERS) THEN 'Petowner' ELSE 'Caretaker' END AS USERTYPE
     FROM USERS
-    WHERE EMAIL=$1
-  `, [email])
+    WHERE id=$1
+  `, [id])
 
     return response.status(200).send({
       status: "success", data: {
