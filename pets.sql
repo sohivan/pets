@@ -7,12 +7,14 @@ DROP TABLE if exists History cascade;
 DROP TABLE if exists CareTaker cascade;
 DROP TABLE if exists Services cascade;
 DROP TABLE if exists admins cascade;
+drop table if exists review cascade;
 drop view if exists owns cascade;
 drop view if exists provides cascade;
 drop view if exists receives cascade;
 drop view if exists issues cascade;
 drop view if exists lives CASCADE;
-
+drop view if exists review_caretaker cascade;
+drop view if exists review_petowner cascade;
 
 CREATE TABLE Homes (
 	id 				serial PRIMARY key,
@@ -107,18 +109,35 @@ CREATE TABLE Bid (
 	StatusTimestamp timestamp not null ,
 	foreign key (PetName, petownerid) references pets(name,oid) on delete cascade,
 	foreign key (CareTakerID,service,startdate) references services(cid,service,startdate) on delete cascade,
-	primary key (Petownerid,BidID,CareTakerID)
+	primary key (Petownerid,BidID,CareTakerID,serviceenddate)
+);
+
+create table History (
+	BidID			Serial not null,
+	caretakerid		serial not null,
+	petownerid		serial not null,
+	paymentmade		bool not null default False,
+	paymentdate		date,
+	HistoryID		serial not null,
+	serviceenddate	date not null,
+	primary key (HistoryID),
+	FOREIGN key (bidid,caretakerid,petownerid,serviceenddate) REFERENCES bid(bidid,caretakerid,petownerid,ServiceEndDate) on delete cascade,
+	unique(historyid, caretakerid, petownerid)
 );
 
 
---create table History (
---	BidID			Serial not null,
---	caretakerid		serial not null,
---	petownerid		serial not null,
---	iscompleted		bool not null default 'false',
---	HistoryID		serial not null,
---		
---);
+create table review (
+	reviewid 			serial not null,
+	reviewer			text not null,
+	HistoryID			serial not null,
+	caretakerid			serial not null,
+	petownerid			serial not null,
+	responsiveness		int not null,
+	friendliness		int not null,
+	check(reviewer in ('caretaker','petowner')),
+	primary key (reviewid),
+	foreign key (historyid, caretakerid, petownerid) REFERENCES history(historyid, caretakerid, petownerid)
+);
 
 
 CREATE VIEW provides as 
@@ -167,4 +186,24 @@ CREATE view lives AS
 	h.address,
 	h.postcode
 	from homes h 
-	join users u on u.homeid = h.id 
+	join users u on u.homeid = h.id;
+
+	
+create view review_caretaker as 
+	select c.cid,
+	c."name",
+	r.responsiveness,
+	r.friendliness
+	from review r 
+	join caretaker c on c.cid = r.caretakerid
+	where r.reviewer = 'caretaker';
+	
+
+create view review_petowner as 
+	select p.oid,
+	p.owner_name,
+	r.responsiveness,
+	r.friendliness
+	from review r 
+	join petowners p on p.oid = r.petownerid
+	where r.reviewer = 'petowner';
