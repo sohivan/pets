@@ -443,7 +443,7 @@ app.post('/getCaretakers', function(request, response) {
   })
 });
 
-app.get('/getPendingBids', function(request, response) {
+app.post('/getPendingBids', function(request, response) {
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
@@ -461,12 +461,13 @@ app.get('/getPendingBids', function(request, response) {
   })
 });
 
-app.get('/getUpcomingBids', function(request, response) {
+app.post('/getUpcomingBids', function(request, response) {
+
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'accept' and P2.servicestartdate > now()", function(err, table) {
+      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'accept' and P2.servicestartdate > now() ", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -479,7 +480,7 @@ app.get('/getUpcomingBids', function(request, response) {
   })
 });
 
-app.get('/getPastBids', function(request, response) {
+app.post('/getPastBids', function(request, response) {
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
@@ -505,7 +506,7 @@ app.delete('/deleteBid', function(request, response) {
       return response.status(400).send(err);
     } else {
       console.log("I am trying to delete")
-      db.query(`DELETE * from Bid B
+      db.query(`DELETE from Bid B
                 where B.BidID = $1`, [deletebid], function(err, table) {
         done();
         if (err) {
