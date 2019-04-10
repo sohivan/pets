@@ -416,7 +416,7 @@ app.delete('/deleteBid', function(request, response) {
       return response.status(400).send(err);
     } else {
       console.log("I am trying to delete")
-      db.query(`DELETE * from Bid B
+      db.query(`DELETE from Bid B
                 where B.BidID = $1`, [deletebid], function(err, table) {
         done();
         if (err) {
