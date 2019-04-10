@@ -53,7 +53,6 @@ CREATE TABLE PetOwners (
 
 
 CREATE TABLE Pets (
-	PetID				SERIAL not null,
 	name				VARCHAR(100) not null,
 	weight				smallint not null,
 	age					smallint not null,
@@ -66,14 +65,14 @@ CREATE TABLE Pets (
 	image1				text not null,
 	image2				text not null,
 	image3				text not null,
-	primary key(PetId, oid)
+	primary key(name, oid)
 );
 
 
 CREATE TABLE CareTaker (
 	cid				SERIAL primary key,
 	name 			text not null, 
-	PetType			text not null default 'dog',
+	PetType			text not null default 'Dog',
 	PetSize			smallint not null default 1,
 	housingOptions	smallint not null default 1,
 	miscOptions		smallint not null default 1,
@@ -88,35 +87,44 @@ CREATE TABLE Services (
 	EndDate 		DATE not null,
 	Rate			smallint not null,
 	cid				SERIAL not null REFERENCES CareTaker(cid) on delete cascade,
-	serviceid		serial not null,
-	primary key (serviceid,cid)
+	primary key (cid,service,startdate)
 );
 
 
 CREATE TABLE Bid (
 	ServiceStartDate	date not null,
 	ServiceEndDate		date not null,
-	BidID			SERIAL,
+	BidID			SERIAL not null,
 	BidTimestamp	timestamp not null ,
 	BidAmount		smallint not null,
-	PetID 			SERIAL not null,
+	PetName			VARCHAR(100) not null,
 	PetOwnerID		SERIAL not null,
 	CareTakerID		SERIAL not null,
-	ServiceID		serial not null,
+	service			VARCHAR(100) not null,
+	startdate		DATE not null,
 	bidrequest		text,
 	bidstatus		varchar(20) default 'pending' not null,
 	StatusTimestamp timestamp not null ,
-	foreign key (petid, petownerid) references pets(petid,oid) on delete cascade,
-	foreign key (CareTakerID,ServiceID) references services(cid,serviceid) on delete cascade,
-	primary key (PetID,BidID,CareTakerID)
+	foreign key (PetName, petownerid) references pets(name,oid) on delete cascade,
+	foreign key (CareTakerID,service,startdate) references services(cid,service,startdate) on delete cascade,
+	primary key (Petownerid,BidID,CareTakerID)
 );
+
+
+--create table History (
+--	BidID			Serial not null,
+--	caretakerid		serial not null,
+--	petownerid		serial not null,
+--	iscompleted		bool not null default 'false',
+--	HistoryID		serial not null,
+--		
+--);
 
 
 CREATE VIEW provides as 
 	select ct.name as caretaker, 
 	ct.cid, 
 	s.service as service, 
-	s.serviceid,
 	s.rate
 	from services s
 	join caretaker ct on ct.cid = s.cid;
@@ -124,8 +132,7 @@ CREATE VIEW provides as
 
 CREATE VIEW Owns as 
 	select pt.owner_name as owner, 
-	p.oid, p.name as petname, 
-	p.petid,
+	p.oid, p.name as petname,
 	p.pettype,
 	p.breed
 	from pets p
@@ -135,7 +142,6 @@ CREATE VIEW Owns as
 CREATE VIEW issues as 
 	select pt.oid,
 	pt.owner_name,
-	b.petid,
 	b.bidamount,
 	b.bidid,
 	b.bidstatus,
@@ -147,7 +153,6 @@ CREATE VIEW issues as
 CREATE VIEW receives as 
 	select ct.name as caretaker, 
 	ct.cid,
-	b.serviceid,
 	b.bidamount,
 	b.bidtimestamp,
 	b.bidstatus
