@@ -173,4 +173,9 @@ review = review_ctaker.append(review_owner, ignore_index = True)
 review.index += 1
 review.index.name = 'reviewid'
 review['ratings'] = review['reviewerid'].apply(lambda x: random.randint(0,5))
+<<<<<<< HEAD
 review.to_sql('review', engine, if_exists = 'append')
+=======
+review.to_sql('review', engine, if_exists = 'append')
+
+>>>>>>> 4fab157b608c5b01765cd9c4c709aa2a8bb26f26
