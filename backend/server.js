@@ -47,7 +47,7 @@ app.post('/user/profile', async (request, response) => {
     SELECT *,
     CASE 
       WHEN USERS.ID NOT IN (SELECT OID FROM PETOWNERS) THEN 'Caretaker' 
-      WHEN  USERS.ID NOT IN (SELECT OID FROM CARETAKERS) THEN 'Petowner' 
+      WHEN  USERS.ID NOT IN (SELECT CID FROM CARETAKER) THEN 'Petowner' 
       ELSE 'Both' END AS USERTYPE
     FROM USERS
     WHERE id=$1
@@ -56,7 +56,9 @@ app.post('/user/profile', async (request, response) => {
     return response.status(200).send({
       status: "success", data: {
         name: table.rows[0].name, email: table.rows[0].email,
-        type: table.rows[0].usertype, id: table.rows[0].id
+        type: table.rows[0].usertype, id: table.rows[0].id,
+        desc: table.rows[0].description, lastlogin: table.rows[0].lastlogintimestamp,
+        homeid: table.rows[0].homeid, img: table.rows[0].image
       }
     })
   } catch (e) {

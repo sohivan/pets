@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import {Button} from 'antd';
 import { withRouter } from "react-router";
 import './UserProfile.css';
 
@@ -18,6 +17,7 @@ function getPetOwnerProfile(id) {
     if (!id) {
         return;
     }
+
     return fetch('http://localhost:3001/user/petowner', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -32,6 +32,7 @@ function getCareTakerProfile(id) {
     if (!id) {
         return;
     }
+
     return fetch('http://localhost:3001/user/caretaker', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -48,7 +49,7 @@ function getCookie(name) {
     return match ? match[1] : null;
 }
 
-async function fetchUserProfile(email, setName, setType, setId, setDescription, setError, params) {
+async function fetchUserProfile(email, setName, setType, setId, setDesc, setImg, setError, params) {
     try {
         let id;
         if (params.id == null) {
@@ -63,7 +64,8 @@ async function fetchUserProfile(email, setName, setType, setId, setDescription, 
             setName(result.data.name)
             setType(result.data.type)
             setId(result.data.id)
-            setDescription(result.data.description)
+            setDesc(result.data.desc)
+            setImg(result.data.img)
         }
     } catch (e) {
         console.error(e)
@@ -73,7 +75,7 @@ async function fetchUserProfile(email, setName, setType, setId, setDescription, 
 
 
 async function fetchPetOwner(type, id, setError, setPets) {
-    if (type === "Petowner" || type === "Both") {
+    if (type === "Petowner") {
         try {
             let resp = await getPetOwnerProfile(id)
             let data = await resp.json()
@@ -89,7 +91,7 @@ async function fetchPetOwner(type, id, setError, setPets) {
 }
 
 async function fetchCareTaker(type, id, setError, setServices) {
-    if (type === "Caretaker" || type === "Both") {
+    if (type === "Caretaker") {
         try {
             let resp = await getCareTakerProfile(id)
             let data = await resp.json()
@@ -101,21 +103,28 @@ async function fetchCareTaker(type, id, setError, setServices) {
             setError(JSON.stringify(e))
         }
     }
+
 }
+
+// const goToAddBid = () => {
+//   console.log("yes")
+// }
 
 function Explore({ history, match, goToAddBid}) {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
-    const [description, setDescription] = useState('');
+    const [desc, setDesc] = useState('');
+    const [img, setImg] = useState('');
     const [anyErrors, setError] = useState('');
     const [pets, setPets] = useState([]);
     const [services, setServices] = useState([]);
     const email = localStorage.getItem("email");
 
 
+
     useEffect(() => {
-        fetchUserProfile(email, setName, setType, setId, setDescription, setError, match.params)
+        fetchUserProfile(email, setName, setType, setId, setDesc, setImg, setError, match.params)
     }, [email])
 
     useEffect(() => {
@@ -135,10 +144,10 @@ function Explore({ history, match, goToAddBid}) {
                         <div class="col-md-1 col-lg-2"></div>
                         <div class="col-md-10 col-lg-8">
                             <div class="intro">
-                                <div class="profile-img"><img src="https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg" alt="" /></div>
+                                <div class="profile-img"><img src={img} alt="" /></div>
                                 <h2 class="profile-name"><b>{name}</b></h2>
                                 <h4 class="font-yellow">{type}</h4>
-                                <h4 class="profile-desc">{description}</h4>
+                                <h4 class="profile-desc">{desc}</h4>
                             </div>
                         </div>
                     </div>
@@ -146,7 +155,7 @@ function Explore({ history, match, goToAddBid}) {
             </section>
 
             {/* Webpage for Caretakers */}
-            {(type === "Caretaker" || type === "Both") &&
+            {(type === "Caretaker") &&
             <section class="buttons-section">
                 <div class="container">
                   <div>
@@ -160,7 +169,7 @@ function Explore({ history, match, goToAddBid}) {
 
 
             {/* Webpage for Caretakers */}
-            {(type === "Caretaker" || type === "Both") &&
+            {(type === "Caretaker") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
@@ -174,7 +183,6 @@ function Explore({ history, match, goToAddBid}) {
                                 <p>Service end: {i['enddate']}</p>
                                 <p>Service Description: {i['description']}</p>
                                 <p>Service Rate: ${i['rate']}</p>
-
                                     {/* Links to service */}
                                     <a href="services" data-fluidbox>
                                         <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" /></a>
@@ -185,9 +193,8 @@ function Explore({ history, match, goToAddBid}) {
                 </div>
             </section>
             }
-
               {/* Webpage for PetOwners */}
-              {(type === "Petowner" || type === "Both") &&
+              {(type === "Petowner") &&
               <section class="buttons-section">
                   <div class="container">
                   <div>
@@ -196,10 +203,8 @@ function Explore({ history, match, goToAddBid}) {
                   </div>
               </section>
                 }
-
             {/* Webpage for PetOwners */}
-
-            {(type === "Petowner"  || type === "Both") &&
+            {(type === "Petowner") &&
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
@@ -211,9 +216,9 @@ function Explore({ history, match, goToAddBid}) {
                                     <p>Pet Breed: {i['breed']}</p>
                                     <p>Pet Age: {i['age']}</p>
 
-                                       {/* Links to pet page */}
-                                        <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" />
-                                         {/* <Button onCLick={checkMyPet(email, i['name'])}/> */}
+                                        {/* Links to pet page */}
+                                        <a href="pets" data-fluidbox>
+                                            <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" /></a>
                                     </div>
                                 )
                             })
