@@ -11,19 +11,24 @@ sql_script = open("pets.sql", "r")
 sql = sql_script.read()
 engine.connect().execute(sql)
 
+trigger_script = open('pets-triggers.sql','r')
+sql = trigger_script.read()
+engine.connect().execute(sql)
+
 # initialising the faker module
 fake = Faker()
-fake.seed(4321)
+fake.seed(431)
+random.seed(1)
 
 # specify the number of users, petowners, pets, caretakers and services
 # number of users >= petowners + caretakers
 # number of pets >= petowners (one petowner to many pets)
 # number of services >= caretakers (one caretakers to many services)
-no_users = 500
+no_users = 600
 no_petowners = 250
 no_pets = 300
-no_caretakers = 250
-no_services = 250
+no_caretakers = 350
+no_services = 270
 no_bids = 500
 no_homes = 600
 
@@ -76,11 +81,11 @@ pet_owners_df.to_sql('petowners', engine, if_exists='append')
 
 # create care_takers table
 care_takers = users[no_caretakers:][['id','name']].rename(columns={'id':'cid'})
-care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit','Hamster']))
-care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,4))
+care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Dog','Cat','Rabbit','Hamster']))
+care_takers['petsize'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=[1,1,1,1,2,3,4]))
 care_takers['numofpet'] = care_takers['cid'].apply(lambda x: random.randint(1,8))
-care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
-care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
+care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=[1,1,1,1,2,3,0]))
+care_takers['miscoptions'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=[1,1,1,1,2,3,0]))
 care_takers_df = care_takers.set_index(keys='cid', drop = True)
 care_takers_df.to_sql('caretaker', engine, if_exists='append')
 
@@ -116,11 +121,11 @@ pets_df.to_sql('pets', engine, if_exists='append')
 
 # create services table
 services = pd.DataFrame({'serviceid':range(1,1+no_services)})
-services['cid'] = care_takers['cid'].sample(len(services), replace = True, random_state=1).values
+services['cid'] = care_takers['cid'].sample(len(services), replace = True, random_state=2).values
 services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
 services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=["Pet Boarding", "Pet Boarding", "Pet Boarding", "Washing", "Walking", "Feeding", "Vet Visitation", "Overnight", "Drop In Visits","Pet Day Care"]))
-services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-20d', end_date='+10d'))
-services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(15,90)))
+services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-15d', end_date='+10d'))
+services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(15,200)))
 services_df = services.drop(columns=['serviceid']).set_index(keys = ['service','cid','startdate'], drop=True)
 services_df.to_sql('services', engine, if_exists='append')
 
@@ -135,6 +140,7 @@ bids['serviceid'] = services['serviceid'].sample(len(bids), replace = True).valu
 bids['caretakerid'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['cid'].values[0])
 bids['service'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['service'].values[0])
 bids['startdate'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['startdate'].values[0])
+# bids['rate'] = bids['serviceid'].apply(lambda x: services[services['serviceid'] == x]['rate'].values[0])
 bids['bidrequest'] = bids['bidid'].apply(lambda x: fake.sentence(nb_words=5, 
                                                                 variable_nb_words=True,
                                                                 ext_word_list=None))
