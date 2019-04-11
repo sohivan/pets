@@ -110,17 +110,15 @@ pets['description'] = pets['oid'].apply(lambda x: fake.sentence(nb_words=5,
                                                                         ext_word_list=None))
 pets['gender'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Male','Female']))
 pets['medical_conditions'] = pets['oid'].apply(lambda x: fake.word(ext_word_list=['Null','Chocolate','Teething']))
-pets['image1'] = 'https://placeimg.com/640/480/animals'
-pets['image2'] = 'https://placeimg.com/640/480/animals'
-pets['image3'] = 'https://placeimg.com/640/480/animals'
 pets_df = pets.drop(columns=['petid']).set_index(keys = ['name','oid'], drop=True)
 pets_df.to_sql('pets', engine, if_exists='append')
+
 
 # create services table
 services = pd.DataFrame({'serviceid':range(1,1+no_services)})
 services['cid'] = care_takers['cid'].sample(len(services), replace = True, random_state=1).values
 services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
-services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=["Pet Boarding", "Washing", "Walking", "Feeding", "Vet Visitation", "Overnight", "Drop In Visits","Pet Day Care"]))
+services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=["Pet Boarding", "Pet Boarding", "Pet Boarding", "Washing", "Walking", "Feeding", "Vet Visitation", "Overnight", "Drop In Visits","Pet Day Care"]))
 services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-20d', end_date='+10d'))
 services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(15,90)))
 services_df = services.drop(columns=['serviceid']).set_index(keys = ['service','cid','startdate'], drop=True)

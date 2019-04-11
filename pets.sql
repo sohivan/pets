@@ -34,6 +34,7 @@ CREATE TABLE users (
 	lastlogintimestamp	TIMESTAMP not null,
 	homeid				serial not null,
 	description 		text,
+	image 				text not null default 'http://lorempixel.com/400/200/people/',
 	FOREIGN key (homeid) REFERENCES homes(id),
 	unique(id,name)
 );
@@ -66,9 +67,9 @@ CREATE TABLE Pets (
 	description			text,
 	medical_conditions	text,
 	oid					SERIAL not null REFERENCES PetOwners(oid) on delete cascade,
-	image1				text not null,
-	image2				text not null,
-	image3				text not null,
+	image1				text not null default 'https://placeimg.com/640/480/animals',
+	image2				text not null default 'https://placeimg.com/640/480/animals',
+	image3				text not null default 'https://placeimg.com/640/480/animals',
 	primary key(name, oid)
 );
 
