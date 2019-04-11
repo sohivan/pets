@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import {Button} from 'antd';
 import './UserProfile.css';
 
 function getUserProfile(id) {
@@ -16,7 +17,6 @@ function getPetOwnerProfile(id) {
     if (!id) {
         return;
     }
-
     return fetch('http://localhost:3001/user/petowner', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -31,7 +31,6 @@ function getCareTakerProfile(id) {
     if (!id) {
         return;
     }
-
     return fetch('http://localhost:3001/user/caretaker', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -48,7 +47,7 @@ function getCookie(name) {
     return match ? match[1] : null;
 }
 
-async function fetchUserProfile(email, setName, setType, setId, setError, params) {
+async function fetchUserProfile(email, setName, setType, setId, setDescription, setError, params) {
     try {
         let id;
         if (params.id == null) {
@@ -63,6 +62,7 @@ async function fetchUserProfile(email, setName, setType, setId, setError, params
             setName(result.data.name)
             setType(result.data.type)
             setId(result.data.id)
+            setDescription(result.data.description)
         }
     } catch (e) {
         console.error(e)
@@ -73,7 +73,7 @@ async function fetchUserProfile(email, setName, setType, setId, setError, params
 
 
 async function fetchPetOwner(type, id, setError, setPets) {
-    if (type === "Petowner") {
+    if (type === "Petowner" || type === "Both") {
         try {
             let resp = await getPetOwnerProfile(id)
             let data = await resp.json()
@@ -89,7 +89,7 @@ async function fetchPetOwner(type, id, setError, setPets) {
 }
 
 async function fetchCareTaker(type, id, setError, setServices) {
-    if (type === "Caretaker") {
+    if (type === "Caretaker" || type === "Both") {
         try {
             let resp = await getCareTakerProfile(id)
             let data = await resp.json()
@@ -101,22 +101,22 @@ async function fetchCareTaker(type, id, setError, setServices) {
             setError(JSON.stringify(e))
         }
     }
-
 }
+
 
 function Explore({ history, match }) {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
+    const [description, setDescription] = useState('');
     const [anyErrors, setError] = useState('');
     const [pets, setPets] = useState([]);
     const [services, setServices] = useState([]);
     const email = localStorage.getItem("email");
 
 
-
     useEffect(() => {
-        fetchUserProfile(email, setName, setType, setId, setError, match.params)
+        fetchUserProfile(email, setName, setType, setId, setDescription, setError, match.params)
     }, [email])
 
     useEffect(() => {
@@ -139,8 +139,7 @@ function Explore({ history, match }) {
                                 <div class="profile-img"><img src="https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg" alt="" /></div>
                                 <h2 class="profile-name"><b>{name}</b></h2>
                                 <h4 class="font-yellow">{type}</h4>
-                                {/* TODO: Change to dynamic description */}
-                                <h4 class="profile-desc">Keane is a fun-loving person who loves animals! She can walk, sit, wash and bring your dog to the vet!</h4>
+                                <h4 class="profile-desc">{description}</h4>
                             </div>
                         </div>
                     </div>
@@ -148,7 +147,7 @@ function Explore({ history, match }) {
             </section>
 
             {/* Webpage for Caretakers */}
-            {(type === "Caretaker") &&
+            {(type === "Caretaker" || type === "Both") &&
             <section class="buttons-section">
                 <div class="container">
                   <div>
@@ -162,7 +161,7 @@ function Explore({ history, match }) {
 
 
             {/* Webpage for Caretakers */}
-            {(type === "Caretaker") &&
+            {(type === "Caretaker" || type === "Both") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
@@ -189,7 +188,7 @@ function Explore({ history, match }) {
             }
 
               {/* Webpage for PetOwners */}
-              {(type === "Petowner") &&
+              {(type === "Petowner" || type === "Both") &&
               <section class="buttons-section">
                   <div class="container">
                   <div>
@@ -201,7 +200,7 @@ function Explore({ history, match }) {
 
             {/* Webpage for PetOwners */}
 
-            {(type === "Petowner") &&
+            {(type === "Petowner"  || type === "Both") &&
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
@@ -213,9 +212,9 @@ function Explore({ history, match }) {
                                     <p>Pet Breed: {i['breed']}</p>
                                     <p>Pet Age: {i['age']}</p>
 
-                                        {/* Links to pet page */}
-                                        <a href="pets" data-fluidbox>
-                                            <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" /></a>
+                                       {/* Links to pet page */}
+                                        <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" />
+                                         {/* <Button onCLick={checkMyPet(email, i['name'])}/> */}
                                     </div>
                                 )
                             })
