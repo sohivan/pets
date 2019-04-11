@@ -188,19 +188,15 @@ create view review_caretaker as
 	select c.cid,
 	c."name",
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join caretaker c on c.cid = r.caretakerid
-	where r.reviewer = 'caretaker';
+	join caretaker c on c.cid = r.reviewerid;
 	
 
 create view review_petowner as 
 	select p.oid,
 	p.owner_name,
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join petowners p on p.oid = r.petownerid
-	where r.reviewer = 'petowner';
+	join petowners p on p.oid = r.reviewerid
