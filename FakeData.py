@@ -23,7 +23,7 @@ no_users = 500
 no_petowners = 250
 no_pets = 300
 no_caretakers = 250
-no_services = 280
+no_services = 250
 no_bids = 500
 no_homes = 600
 
@@ -32,6 +32,7 @@ home = pd.DataFrame({'id' :range(1, no_homes +1)})
 home['address'] = home['id'].apply(lambda x: fake.street_address())
 home['postcode'] = home['id'].apply(lambda x: fake.postalcode()).astype(int)
 home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
+home['suburb'] = home['id'].apply(lambda x: fake.word(ext_word_list=['AMK','Bishan','Yishun','YCK','Novena','Toa Payoh']))
 home_df = home.set_index(keys='id', drop = True)
 home_df.to_sql('homes', engine, if_exists='append')
 
@@ -66,6 +67,7 @@ users_df.to_sql('users', engine, if_exists='append')
 admin_df = admin.set_index(keys='id', drop = True)
 admin_df.to_sql('admins', engine, if_exists='append')
 
+
 # create pet_owners table
 pet_owners = users[:no_petowners][['id','name']].rename(columns ={'id':'oid','name':'owner_name'})
 pet_owners_df = pet_owners.set_index(keys='oid', drop = True)
@@ -74,7 +76,7 @@ pet_owners_df.to_sql('petowners', engine, if_exists='append')
 
 # create care_takers table
 care_takers = users[no_caretakers:][['id','name']].rename(columns={'id':'cid'})
-care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit']))
+care_takers['pettype'] = care_takers['cid'].apply(lambda x: fake.word(ext_word_list=['Dog','Cat','Rabbit','Hamster']))
 care_takers['petsize'] = care_takers['cid'].apply(lambda x: random.randint(1,4))
 care_takers['numofpet'] = care_takers['cid'].apply(lambda x: random.randint(1,8))
 care_takers['housingoptions'] = care_takers['cid'].apply(lambda x: random.randint(0,3))
@@ -84,9 +86,16 @@ care_takers_df.to_sql('caretaker', engine, if_exists='append')
 
 def pet_breed(x):
     if x == 'Dog':
-        return fake.word(ext_word_list=['Husky','Poodle','Corgi','Terrier','Shitzu'])
+        return fake.word(ext_word_list=['Beagle','Poodle','Border Collie','Dachshund','Shitzu','Golden Retriever','Chiwawa','Maltese','Pug'])
+    elif x == 'Cat':
+        return fake.word(ext_word_list=['Siamese','Persian','Munchkin','British Shorthair','Himalayan','Savannah'])
+    elif x == 'Hamster':
+        return fake.word(ext_word_list=['Winter White Dwarf','Chinese','Robo','Campbell Dwarf'])
+    elif x == 'Rabbit':
+        return fake.word(ext_word_list=['Lion Head','Flemish Giant','Holland Lop','Dutch','EnglishLop'])
     else:
         return 'Others'
+
 
 # create pets table
 pets = pd.DataFrame({'petid': range(1, 1 + no_pets)})
@@ -105,7 +114,6 @@ pets['image1'] = 'https://placeimg.com/640/480/animals'
 pets['image2'] = 'https://placeimg.com/640/480/animals'
 pets['image3'] = 'https://placeimg.com/640/480/animals'
 pets_df = pets.drop(columns=['petid']).set_index(keys = ['name','oid'], drop=True)
-# pets_df = pets.set_index(keys='petid', drop = True)
 pets_df.to_sql('pets', engine, if_exists='append')
 
 # create services table
@@ -113,10 +121,11 @@ services = pd.DataFrame({'serviceid':range(1,1+no_services)})
 services['cid'] = care_takers['cid'].sample(len(services), replace = True, random_state=1).values
 services['rate'] = services['cid'].apply(lambda x: random.randint(10,50))
 services['service'] = services['cid'].apply(lambda x: fake.word(ext_word_list=["Pet Boarding", "Washing", "Walking", "Feeding", "Vet Visitation", "Overnight", "Drop In Visits","Pet Day Care"]))
-services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-100d', end_date='+100d'))
-services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(30,90)))
+services['startdate'] = services['cid'].apply(lambda x: fake.date_between(start_date='-20d', end_date='+10d'))
+services['enddate'] = services['startdate'].apply(lambda x: x + timedelta(days = random.randint(15,90)))
 services_df = services.drop(columns=['serviceid']).set_index(keys = ['service','cid','startdate'], drop=True)
 services_df.to_sql('services', engine, if_exists='append')
+
 
 # create bid table
 bids = pd.DataFrame({'bidid':range(1, 1+no_bids)})
@@ -161,11 +170,11 @@ history = history_df.reset_index()
 
 
 # create reviews table
-no_reviews_owner = int(len(history) * 0.8)
+no_reviews_owner = int(len(history) * 0.9)
 review_owner = history[['historyid','caretakerid','petownerid']].sample(no_reviews_owner,random_state=1)
 review_owner.drop(columns = 'caretakerid', inplace = True)
 review_owner.rename(columns = {'petownerid':'reviewerid'}, inplace=True)
-no_reviews_ctaker = int(len(history) * 0.7)
+no_reviews_ctaker = int(len(history) * 0.9)
 review_ctaker = history[['historyid','caretakerid','petownerid']].sample(no_reviews_ctaker,random_state=2)
 review_ctaker.drop(columns = 'petownerid', inplace = True)
 review_ctaker.rename(columns = {'caretakerid':'reviewerid'}, inplace=True)
