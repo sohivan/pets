@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Divider, Tag, Input, Button, Popconfirm, Form } from 'antd';
+import { Table, Divider, Tag, Input, Button, Popconfirm, Form, Rate } from 'antd';
 import './BidTracker.css';
 import { withRouter } from "react-router";
 
@@ -29,6 +29,7 @@ class BidTracker extends Component {
       deletebid: 0,
       acceptbid: 0,
       editing: false,
+      value: 0,
     }
   };
 
@@ -201,8 +202,12 @@ class BidTracker extends Component {
             })
   }
 
-  render() {
+  handleRateChange = (value) => {
+  console.log(value);
+}
 
+  render() {
+     const { value } = this.state;
     return (
       <div className="bidtracker">
       <h1 className = "bidtracker-title">Your Bids</h1>
@@ -225,8 +230,8 @@ class BidTracker extends Component {
       />
       <Column
       title="Type"
-      dataIndex="typeofpet"
-      key="typeofpet"
+      dataIndex="pettype"
+      key="pettype"
       />
       <Column
       title="Breed"
@@ -240,13 +245,13 @@ class BidTracker extends Component {
       />
       <Column
       title="Start Date"
-      dataIndex="bidstartdate"
-      key="bidstartdate"
+      dataIndex="servicestartdate"
+      key="servicestartdate"
       />
       <Column
       title="End Date"
-      dataIndex="bidenddate"
-      key="bidenddate"
+      dataIndex="serviceenddate"
+      key="serviceenddate"
       />
     {/*<Column
       title="Address"
@@ -288,8 +293,8 @@ class BidTracker extends Component {
       />
     <Column
       title="Type"
-      dataIndex="typeofpet"
-      key="typeofpet"
+      dataIndex="pettype"
+      key="pettype"
     />
     <Column
       title="Breed"
@@ -303,13 +308,13 @@ class BidTracker extends Component {
     />
     <Column
       title="Start Date"
-      dataIndex="bidstartdate"
-      key="bidstartdate"
+      dataIndex="servicestartdate"
+      key="servicestartdate"
     />
     <Column
       title="End Date"
-      dataIndex="bidenddate"
-      key="bidenddate"
+      dataIndex="serviceenddate"
+      key="serviceenddate"
     />
 
     <Column
@@ -345,8 +350,8 @@ class BidTracker extends Component {
       />
     <Column
       title="Type"
-      dataIndex="typeofpet"
-      key="typeofpet"
+      dataIndex="pettype"
+      key="pettype"
     />
     <Column
       title="Breed"
@@ -360,14 +365,25 @@ class BidTracker extends Component {
     />
     <Column
       title="Start Date"
-      dataIndex="bidstartdate"
-      key="bidstartdate"
+      dataIndex="servicestartdate"
+      key="servicestartdate"
     />
     <Column
       title="End Date"
-      dataIndex="bidenddate"
-      key="bidenddate"
+      dataIndex="serviceenddate"
+      key="serviceenddate"
     />
+    <Column
+      title="Ratings"
+      key="action"
+      render={(text, record) => (
+        <a href="/rating">Rate</a>
+        )}
+      // render={(text, record) => (
+      //  <Rate onChange={this.handleRateChange} value={value} />
+      // )}
+    />
+
   </Table>
     </div>
 

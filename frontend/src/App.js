@@ -14,6 +14,7 @@ import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
 import Admin from './components/Admin';
+import Rating from './components/Rating';
 import history from './history';
 import { Menu, Icon, Button, Dropdown, message } from 'antd';
 
@@ -134,6 +135,7 @@ class App extends Component {
          <Route path="/bid-tracker" component={BidTracker} />
          <Route path="/pet-profile" component={PetProfile} />
          <Route path="/admin" component={Admin} />
+         <Route path="/rating" component={Rating} />
          </div>
       </Router>
     );
