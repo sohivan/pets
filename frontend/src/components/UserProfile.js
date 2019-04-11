@@ -1,13 +1,19 @@
 import React, { useState, useCallback, useEffect } from 'react';
+<<<<<<< HEAD
+import {Button} from 'antd';
+=======
+import { withRouter } from "react-router";
+>>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
 import './UserProfile.css';
 
-function getUserProfile(email) {
+function getUserProfile(id) {
     return fetch('http://localhost:3001/user/profile', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         body: JSON.stringify({
-            email
-        })
+            id
+        }),
+        credentials: 'include'
     })
 }
 
@@ -15,13 +21,13 @@ function getPetOwnerProfile(id) {
     if (!id) {
         return;
     }
-
     return fetch('http://localhost:3001/user/petowner', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         body: JSON.stringify({
             id
-        })
+        }),
+        credentials: 'include'
     })
 }
 
@@ -29,40 +35,48 @@ function getCareTakerProfile(id) {
     if (!id) {
         return;
     }
-
     return fetch('http://localhost:3001/user/caretaker', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         body: JSON.stringify({
             id
-        })
+        }),
+        credentials: 'include'
     })
 }
 
-async function fetchUserProfile(email, setName, setType, setId, setError) {
-    try {
-        if (!email) {
-            alert("No email detected")
-        }
+function getCookie(name) {
+    function escape(s) { return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1'); };
+    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    return match ? match[1] : null;
+}
 
-        let resp = await getUserProfile(email)
+async function fetchUserProfile(email, setName, setType, setId, setDescription, setError, params) {
+    try {
+        let id;
+        if (params.id == null) {
+          id = getCookie("userId");
+        } else {
+          id = params.id;
+        }
+        let resp = await getUserProfile(id)
         let result = await resp.json()
 
         if (result.status === "success") {
             setName(result.data.name)
             setType(result.data.type)
             setId(result.data.id)
+            setDescription(result.data.description)
         }
     } catch (e) {
         console.error(e)
-
         setError(e)
     }
 }
 
 
 async function fetchPetOwner(type, id, setError, setPets) {
-    if (type === "Petowner") {
+    if (type === "Petowner" || type === "Both") {
         try {
             let resp = await getPetOwnerProfile(id)
             let data = await resp.json()
@@ -78,7 +92,7 @@ async function fetchPetOwner(type, id, setError, setPets) {
 }
 
 async function fetchCareTaker(type, id, setError, setServices) {
-    if (type === "Caretaker") {
+    if (type === "Caretaker" || type === "Both") {
         try {
             let resp = await getCareTakerProfile(id)
             let data = await resp.json()
@@ -90,22 +104,30 @@ async function fetchCareTaker(type, id, setError, setServices) {
             setError(JSON.stringify(e))
         }
     }
-
 }
 
-function Explore({ history }) {
+<<<<<<< HEAD
+
+function Explore({ history, match }) {
+=======
+// const goToAddBid = () => {
+//   console.log("yes")
+// }
+
+function Explore({ history, match, goToAddBid}) {
+>>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
+    const [description, setDescription] = useState('');
     const [anyErrors, setError] = useState('');
     const [pets, setPets] = useState([]);
     const [services, setServices] = useState([]);
     const email = localStorage.getItem("email");
 
 
-
     useEffect(() => {
-        fetchUserProfile(email, setName, setType, setId, setError)
+        fetchUserProfile(email, setName, setType, setId, setDescription, setError, match.params)
     }, [email])
 
     useEffect(() => {
@@ -128,8 +150,7 @@ function Explore({ history }) {
                                 <div class="profile-img"><img src="https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg" alt="" /></div>
                                 <h2 class="profile-name"><b>{name}</b></h2>
                                 <h4 class="font-yellow">{type}</h4>
-                                {/* TODO: Change to dynamic description */}
-                                <h4 class="profile-desc">Keane is a fun-loving person who loves animals! She can walk, sit, wash and bring your dog to the vet!</h4>
+                                <h4 class="profile-desc">{description}</h4>
                             </div>
                         </div>
                     </div>
@@ -137,13 +158,13 @@ function Explore({ history }) {
             </section>
 
             {/* Webpage for Caretakers */}
-            {(type === "Caretaker") &&
+            {(type === "Caretaker" || type === "Both") &&
             <section class="buttons-section">
                 <div class="container">
                   <div>
                     <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
                     {/* TODO: Need to link button add-bid */}
-                    <button className="email-button">Make A Bid</button>
+                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Make A Bid</button>
                   </div>
                 </div>
             </section>
@@ -151,7 +172,7 @@ function Explore({ history }) {
 
 
             {/* Webpage for Caretakers */}
-            {(type === "Caretaker") &&
+            {(type === "Caretaker" || type === "Both") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
@@ -178,7 +199,7 @@ function Explore({ history }) {
             }
 
               {/* Webpage for PetOwners */}
-              {(type === "Petowner") &&
+              {(type === "Petowner" || type === "Both") &&
               <section class="buttons-section">
                   <div class="container">
                   <div>
@@ -190,7 +211,7 @@ function Explore({ history }) {
 
             {/* Webpage for PetOwners */}
 
-            {(type === "Petowner") &&
+            {(type === "Petowner"  || type === "Both") &&
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
@@ -202,9 +223,9 @@ function Explore({ history }) {
                                     <p>Pet Breed: {i['breed']}</p>
                                     <p>Pet Age: {i['age']}</p>
 
-                                        {/* Links to pet page */}
-                                        <a href="pets" data-fluidbox>
-                                            <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" /></a>
+                                       {/* Links to pet page */}
+                                        <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" />
+                                         {/* <Button onCLick={checkMyPet(email, i['name'])}/> */}
                                     </div>
                                 )
                             })
@@ -217,4 +238,4 @@ function Explore({ history }) {
 }
 
 
-export default Explore;
+export default withRouter(Explore);

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Button, Card, Rate, Pagination} from 'antd';
 import AlgoliaPlaces from 'algolia-places-react';
 import './SearchForm.css';
+import { NavLink , withRouter } from 'react-router-dom';
+
 
 const Option = Select.Option;
 const services = [
@@ -31,7 +33,7 @@ class SearchForm extends Component {
         return (
             <div className="login-container">
                 <div className="login-content">
-                    <AntWrappedLoginForm />
+                    <AntWrappedLoginForm  {...this.props}/>
                 </div>
             </div>
         );
@@ -42,6 +44,7 @@ class SearchForm extends Component {
 class Search extends Component {
   constructor(props) {
     super(props);
+    console.log(props);
     this.myRef = React.createRef();
     this.state = {
      marks: {
@@ -103,7 +106,8 @@ class Search extends Component {
     var request = new Request("http://localhost:3001/getCaretakers", {
       method: 'POST',
       headers: new Headers({'Content-Type': 'application/json'}),
-      body: JSON.stringify(selection)
+      body: JSON.stringify(selection),
+      credentials: 'include'
     });
   let results = []
   fetch(request)
@@ -120,7 +124,13 @@ class Search extends Component {
       })
     }
 
-displayResults(results){
+    cardClick = (id) => {
+      console.log("hello" + id);
+      let url = "/user-profile/" + id;
+      this.props.history.push(url);
+    }
+
+displayResults = (results) => {
   let totalResultsDisplay = [];
   let currentResultsDisplay = [];
     results.map((result, i, array) =>  {
@@ -129,17 +139,19 @@ displayResults(results){
         totalResultsDisplay.push(
           <Row key={i}>
            <Col span={12}>
-             <Card className="results-card"
+             <Card
+              hoverable
+              className="results-card"
                bordered={false}
                style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+              >
              <Card.Meta
                title= {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
                      <p className="results-location">{"Bishan"}</p>
-
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -180,9 +192,11 @@ displayResults(results){
           <Row key={i}>
            <Col span={12}>
              <Card className="results-card"
+               hoverable
                bordered={false}
                style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+               onClick={() => this.cardClick(array[i].cid)}>
              <Card.Meta
                title= {
                  <div>
@@ -467,4 +481,4 @@ displayResults(results){
 }
 
 
-export default SearchForm;
+export default withRouter(SearchForm);

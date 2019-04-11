@@ -20,6 +20,7 @@ const pool = new pg.Pool({
 function rollback(client) {
     client.query('ROLLBACK', function() {
         client.end();
+        response.status(400).send(err);
     });
 }
 
@@ -37,16 +38,20 @@ app.use(function(req, res, next){
   next();
 })
 
-app.post('/user/profile', async (request, response) => {
-  const { email } = request.body;
 
+app.post('/user/profile', async (request, response) => {
+  const { id } = request.body;
+  console.log(request.body);
   try {
     const table = await pool.query(`
     SELECT *,
-    CASE WHEN USERS.ID IN (SELECT OID FROM PETOWNERS) THEN 'Petowner' ELSE 'Caretaker' END AS USERTYPE
+    CASE 
+      WHEN USERS.ID NOT IN (SELECT OID FROM PETOWNERS) THEN 'Caretaker' 
+      WHEN  USERS.ID NOT IN (SELECT OID FROM CARETAKERS) THEN 'Petowner' 
+      ELSE 'Both' END AS USERTYPE
     FROM USERS
-    WHERE EMAIL=$1
-  `, [email])
+    WHERE id=$1
+  `, [id])
 
     return response.status(200).send({
       status: "success", data: {
@@ -74,6 +79,7 @@ app.post('/user/petowner', async (request, response) => {
     return response.status(400).send(e);
   }
 })
+
 
 app.post('/user/caretaker', async (request, response) => {
   const { id } = request.body;
@@ -106,15 +112,15 @@ app.post('/login', (request, response) => {
         if (err) {
           return response.status(400).send(err);
         }
-
         if (table.rows.length < 1) {
           return response.status(403).send({ status: "failed", message: "No user found" })
         }
         id = table.rows[0].id;
-        bcrypt.compare(password, table.rows[0].password, function(err, res) {
-          if (res==true) {
-            console.log("success!");
-            var dateNow = new Date();
+        // bcrypt.compare(password, table.rows[0].password, function(err, res) {
+        //   console.log(res)
+        //   if (res==true) {
+        //     console.log("success!");
+             var dateNow = new Date();
             db.query(`
               UPDATE USERS
               SET lastlogintimestamp=$1
@@ -126,13 +132,14 @@ app.post('/login', (request, response) => {
                   return response.status(403).send({ status: "failed", message: "Something went wrong" });
                 }
               })
-          } else {
-            return response.status(403).send({ status: "failed", message: "Wrong username/password" })
-          }
+          // }
+          //  else {
+          //   return response.status(403).send({ status: "failed", message: "Wrong username/password" })
+          // }
         });
       })
   })
-});
+// });
 
 app.post('/logout', function(request, response) {
   var cookie = request.cookies.userId;
@@ -171,6 +178,30 @@ app.post('/signup', function(request, response) {
     .catch(err => console.error(err.message));
     })
   })
+
+app.post('/makeABidCheck', function(request, response) {
+    var id = request.cookies.userId;
+    pool.connect((err, db, done) => {
+      if(err) {
+        return response.status(400).send(err);
+      }
+      else {
+        db.query(`
+      SELECT *
+      FROM PETOWNERS
+      WHERE oid=$1`, [id], (err, results) => {
+      done();
+      if (err) {
+        console.log(err)
+        return response.status(400).send(err);
+      }
+      else {
+        response.status(200).send({isValidBidder: results.rows.length > 0});
+      }
+     })
+    }
+  })
+})
 
 
 
@@ -239,6 +270,68 @@ app.post('/addService', function(request, response) {
     }
   })
 })
+
+
+app.post('/addCaretakerPrefsAndServices', function(request, response) {
+  var service = request.body.service[0];
+  var startDate = request.body.date[0];
+  var endDate = request.body.date[1];
+  var rate = request.body.rate;
+  var userId = request.cookies.userId;
+  var pettype =  request.body.pettype;
+  var petsize = request.body.petsize;
+  var numofpet =  request.body.numofpet;
+  var housingopt = request.body.housingopt;
+  var miscopt = request.body.miscopt;
+
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    }
+    else {
+      db.query('BEGIN', function(err) {
+           if(err) {
+                console.log('Problem starting transaction', err);
+             	   response.status(400).send(err);
+                return rollback(db);
+            }
+            db.query(`
+              INSERT INTO Services(service, startDate, enddate, rate, cid)
+              VALUES($1, $2, $3, $4, $5)`, [service, startDate, endDate, rate, userId], (err, result) => {
+               if (err) {
+                 return rollback(db);
+               }
+                 console.log("i have been inserted into caretakers");
+                 db.query(`
+                     UPDATE CARETAKER
+                     SET PetType = $1,
+      	             PetSize = $2,
+      	             housingOptions	=$3,
+      	             miscOptions	= $4,
+      	             NumOfPet	= $5
+                     WHERE cid = $6`, [pettype, petsize, housingopt, miscopt, numofpet, userId], (err, result) => {
+                       if (err) {
+                         console.error(err);
+                         return rollback(db);
+                       }
+                       db.query('COMMIT', (err) => {
+                          db.end.bind(db);
+                          if (err) {
+                            console.error('Error committing transaction', err.stack)
+                            return rollback(db);
+                          }
+                          response.status(200).send({message:"new service added"});
+                        })
+                  })
+                })
+              })
+    }
+  })
+})
+
+
+
+
 
 
 app.post('/addbid', function(request, response) {
@@ -354,7 +447,7 @@ app.post('/getCaretakers', function(request, response) {
   })
 });
 
-app.get('/getPendingBids', function(request, response) {
+app.post('/getPendingBids', function(request, response) {
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
@@ -372,12 +465,13 @@ app.get('/getPendingBids', function(request, response) {
   })
 });
 
-app.get('/getUpcomingBids', function(request, response) {
+app.post('/getUpcomingBids', function(request, response) {
+
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'accept' and P2.servicestartdate > now()", function(err, table) {
+      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'accept' and P2.servicestartdate > now() ", function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -390,7 +484,7 @@ app.get('/getUpcomingBids', function(request, response) {
   })
 });
 
-app.get('/getPastBids', function(request, response) {
+app.post('/getPastBids', function(request, response) {
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);

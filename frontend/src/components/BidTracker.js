@@ -36,15 +36,15 @@ class BidTracker extends Component {
   // Gets data from the table when the page first launches
   componentWillMount () {
       var upcomingbidrequest = new Request("http://localhost:3001/getUpcomingBids", {
-        method: 'GET',
+        method: 'POST',
         headers: new Headers({'Content-Type': 'application/json'})
       });
       var pendingbidrequest = new Request("http://localhost:3001/getPendingBids", {
-        method: 'GET',
+        method: 'POST',
         headers: new Headers({'Content-Type': 'application/json'})
       });
       var pastbidrequest = new Request("http://localhost:3001/getPastBids", {
-        method: 'GET',
+        method: 'POST',
         headers: new Headers({'Content-Type': 'application/json'})
       });
           fetch(pendingbidrequest)
@@ -106,11 +106,12 @@ class BidTracker extends Component {
     });
 
     fetch(request)
-    .then(function(response) {
+    .then((response) => {
       console.log(request)
       response.json()
-      .then(function(data) {
+      .then((data) => {
         console.log(data)
+        this.updateBidTable();
       })
     })
     .catch(function(err) {
@@ -137,31 +138,31 @@ class BidTracker extends Component {
     });
 
     fetch(request)
-    .then(function(response) {
+    .then((response) => {
       console.log(request)
       response.json()
-      .then(function(data) {
+      .then((data) => {
         console.log(data)
+        this.updateBidTable();
       })
     })
     .catch(function(err) {
       console.log(err);
     })
-    this.updateBidTable();
   }
 
   // TO BE DONE: front end needs to reflect the updated data. it now only do this after 2 clicks....
   updateBidTable = () => {
     var upcomingbidrequest = new Request("http://localhost:3001/getUpcomingBids", {
-      method: 'GET',
+      method: 'POST',
       headers: new Headers({'Content-Type': 'application/json'})
     });
     var pendingbidrequest = new Request("http://localhost:3001/getPendingBids", {
-      method: 'GET',
+      method: 'POST',
       headers: new Headers({'Content-Type': 'application/json'})
     });
     var pastbidrequest = new Request("http://localhost:3001/getPastBids", {
-      method: 'GET',
+      method: 'POST',
       headers: new Headers({'Content-Type': 'application/json'})
     });
         fetch(pendingbidrequest)
