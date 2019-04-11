@@ -97,7 +97,7 @@ class SignupForm extends Component {
       let addressPostCode = data.address.postcode;
       let suburb = data.address.suburb;
       let address = {name: addressName, postcode: addressPostCode, suburb: suburb};
-      data  = Object.assign({}, data, {address: address}, selection);
+      data  = Object.assign({}, data, {address: address});
       var request = new Request("http://localhost:3001/signup", {
          method: 'POST',
          headers: new Headers({'Content-Type': 'application/json'}),
