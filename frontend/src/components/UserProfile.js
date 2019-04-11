@@ -1,9 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-<<<<<<< HEAD
 import {Button} from 'antd';
-=======
 import { withRouter } from "react-router";
->>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
 import './UserProfile.css';
 
 function getUserProfile(id) {
@@ -106,16 +103,7 @@ async function fetchCareTaker(type, id, setError, setServices) {
     }
 }
 
-<<<<<<< HEAD
-
-function Explore({ history, match }) {
-=======
-// const goToAddBid = () => {
-//   console.log("yes")
-// }
-
 function Explore({ history, match, goToAddBid}) {
->>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
