@@ -63,6 +63,40 @@ class App extends Component {
     history.push("/add-service");
   }
 
+  checkIfPetOwner() {
+    var request = new Request("http://localhost:3001/makeABidCheck", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       credentials: 'include',
+     });
+
+     fetch(request)
+     .then((response) => {
+       if (!response.ok) {
+         message.error('An error occurred. Please try again.');
+       } else {
+         response.json()
+         .then((data) => {
+           console.log(data.isValidBidder);
+           if (data.isValidBidder) {
+             this.props.history.push('/add-bid');
+           } else {
+             message.error('You must be a pet owner to make a bid.');
+           }
+         })
+       }
+     })
+  }
+
+  goToAddBid() {
+    console.log("check for add bid");
+    if (this.state.isAuthenticated) {
+      this.checkIfPetOwner();
+    } else {
+      message.error('Please login to make a bid.');
+    }
+  }
+
   logout() {
     var request = new Request("http://localhost:3001/logout", {
        method: 'POST',
@@ -140,13 +174,18 @@ class App extends Component {
             onGoToAddService={this.onGoToAddService.bind(this)}
             />
          <PrivateRoute exact path="/add-service" component={AddService} authenticated={this.state.isAuthenticated}/>
-         <PrivateRoute exact path="/add-bid" component={AddBid} authenticated={this.state.isAuthenticated}/>
-         <Route exact path="/user-profile/:id" component={UserProfile}/>
+        {/*<PrivateRoute exact path="/add-bid" component={AddBid} authenticated={this.state.isAuthenticated}/>*/}
+        <Route exact path='/add-bid' component={AddBid}/>
+         <Route
+            exact path="/user-profile/:id"
+            render={({props}) => <UserProfile goToAddBid={this.goToAddBid.bind(this)}/>}/>
          <PrivateRoute exact path="/my-user-profile" component={UserProfile} authenticated={this.state.isAuthenticated}/>
          <Route
             path="/login"
             render={({props}) => <Login loginSuccess= {this.loginSuccess.bind(this)}/>}/>
-         <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>
+        {/* <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>*/}
+
+        <Route exact path ="/bid-tracker"component={BidTracker} />
          <PrivateRoute exact path="/pet-profile" component={PetProfile} authenticated={this.state.isAuthenticated}/>
          </Switch>
          </div>

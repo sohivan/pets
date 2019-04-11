@@ -119,8 +119,8 @@ class AddBid extends Component {
           <Input className="addbid-petowner" placeholder="Pet Owner" />
 
           {/* depends on the caretaker */}
-          <h3 className="addbid-label">Select Service</h3>
-              <Form.Item>
+          <h3 className="addbid-label">Selected Service</h3>
+              {/*<Form.Item>
               <Select
                 mode="multiple"
                 size="large"
@@ -134,7 +134,7 @@ class AddBid extends Component {
               </Form.Item>
 
               <h3 className="addbid-label">Average rate that other pet owners are offering:</h3>
-              <h3>$24</h3>
+              <h3>$24</h3>*/}
 
           <h3 className="addbid-label">Amount per day</h3>
           <InputNumber
@@ -161,14 +161,14 @@ class AddBid extends Component {
             </Select>
             </Form.Item>
 
-        <h3 className="addbid-label">Select Dates</h3>
-            <Form.Item className="date-picker">
+        <h3 className="addbid-label">Selected Dates</h3>
+            {/*<Form.Item className="date-picker">
                <DatePicker.RangePicker
                   className="addbid-petowner"
                   style={{ fontSize: '14px' }}
                   onChange={this.onDateChange.bind(this)}
                   placeholder={['Drop off', 'Pick up']}/>
-            </Form.Item>
+            </Form.Item>*/}
 
 
         <h3 className="addbid-label">Special Requests</h3>
