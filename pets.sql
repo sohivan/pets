@@ -32,12 +32,8 @@ CREATE TABLE users (
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
 	homeid				serial not null,
-<<<<<<< HEAD
-	description 	text,
-=======
 	description 		text,
 	image 				text not null default 'http://lorempixel.com/400/200/people/',
->>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
 	FOREIGN key (homeid) REFERENCES homes(id),
 	unique(id,name)
 );
@@ -102,19 +98,6 @@ CREATE TABLE Services (
 CREATE TABLE Bid (
 	ServiceStartDate	date not null,
 	ServiceEndDate		date not null,
-<<<<<<< HEAD
-	BidID			SERIAL not null,
-	BidTimestamp	timestamp not null ,
-	BidAmount		smallint not null,
-	PetName			VARCHAR(100) not null,
-	PetOwnerID		SERIAL not null,
-	CareTakerID		SERIAL not null,
-	service			VARCHAR(100) not null,
-	startdate		DATE not null,
-	bidrequest		text,
-	bidstatus		varchar(20) default 'pending' not null,
-	StatusTimestamp timestamp not null ,
-=======
 	BidID				SERIAL primary key,
 	BidTimestamp		timestamp not null ,
 	BidAmount			smallint not null,
@@ -126,7 +109,6 @@ CREATE TABLE Bid (
 	bidrequest			text,
 	bidstatus			varchar(20) default 'pending' not null,
 	StatusTimestamp 	timestamp not null ,
->>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
 	foreign key (PetName, petownerid) references pets(name,oid) on delete cascade,
 	foreign key (CareTakerID,service,startdate) references services(cid,service,startdate) on delete cascade,
 	unique (Petownerid,BidID,CareTakerID,serviceenddate)
@@ -136,43 +118,20 @@ create table History (
 	BidID			Serial not null,
 	caretakerid		serial not null,
 	petownerid		serial not null,
-<<<<<<< HEAD
-	paymentmade		bool not null default False,
-	paymentdate		date,
-	HistoryID		serial not null,
-	serviceenddate	date not null,
-	primary key (HistoryID),
-	FOREIGN key (bidid,caretakerid,petownerid,serviceenddate) REFERENCES bid(bidid,caretakerid,petownerid,ServiceEndDate) on delete cascade,
-	unique(historyid, caretakerid, petownerid)
-=======
 	isreviewmade	bool not null default False,
 	reviewdate		date,
 	HistoryID		serial primary key,
 	serviceenddate	date not null,
 	FOREIGN key (bidid,caretakerid,petownerid,serviceenddate) REFERENCES bid(bidid,caretakerid,petownerid,ServiceEndDate) on delete cascade
->>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
 );
 
 
 create table review (
-<<<<<<< HEAD
-	reviewid 			serial not null,
-	reviewer			text not null,
-	HistoryID			serial not null,
-	caretakerid			serial not null,
-	petownerid			serial not null,
-	responsiveness		int not null,
-	friendliness		int not null,
-	check(reviewer in ('caretaker','petowner')),
-	primary key (reviewid),
-	foreign key (historyid, caretakerid, petownerid) REFERENCES history(historyid, caretakerid, petownerid)
-=======
 	reviewid 			serial primary key,
 	reviewerid			serial not null,
 	HistoryID			serial not null,
 	ratings				int not null,
 	foreign key (historyid) REFERENCES history(historyid)
->>>>>>> fef2361b28ce5eadee37a427fae0d4f718e2f9a6
 );
 
 
@@ -229,19 +188,15 @@ create view review_caretaker as
 	select c.cid,
 	c."name",
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join caretaker c on c.cid = r.caretakerid
-	where r.reviewer = 'caretaker';
+	join caretaker c on c.cid = r.reviewerid;
 	
 
 create view review_petowner as 
 	select p.oid,
 	p.owner_name,
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join petowners p on p.oid = r.petownerid
-	where r.reviewer = 'petowner';
+	join petowners p on p.oid = r.reviewerid
