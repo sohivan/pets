@@ -178,14 +178,10 @@ function Explore({ history, match, goToAddBid}) {
                             return (
                                 // Could be good to group by service and within the own website, differentiate by time instead of the current format
                                 <div class="p-item web-design">
-                                <p>Service name: {i['service']}</p>
-                                <p>Service start: {i['startdate']}</p>
-                                <p>Service end: {i['enddate']}</p>
-                                <p>Service Description: {i['description']}</p>
+                                <p>Service: {i['service']}</p>
+                                <p>Start Day/Time: {i['startdate'].slice(0, 10) + ' ' + i['startdate'].slice(11,16)}</p>
+                                <p>End Day/Time: {i['enddate'].slice(0, 10) + ' ' + i['enddate'].slice(11,16)}</p>
                                 <p>Service Rate: ${i['rate']}</p>
-                                    {/* Links to service */}
-                                    <a href="services" data-fluidbox>
-                                        <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" /></a>
                                 </div>
                             )
                         })
@@ -218,7 +214,7 @@ function Explore({ history, match, goToAddBid}) {
 
                                         {/* Links to pet page */}
                                         <a href="pets" data-fluidbox>
-                                            <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/2018-02/vicious_dog_0.png?itok=nsghKOHs" alt="" /></a>
+                                            <img src={i['image1']} alt="" /></a>
                                     </div>
                                 )
                             })
