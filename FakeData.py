@@ -142,7 +142,7 @@ bids_df.to_sql('bid', engine, if_exists='append')
 
 
 def paymentdate(x):
-    if x['paymentmade']:
+    if x['isreviewmade']:
         return x['serviceenddate'] + timedelta(days = random.randint(1,100))
     else:
         return None
@@ -153,8 +153,8 @@ def paymentdate(x):
 history = bids[(bids['bidstatus']=='accept') & (pd.to_datetime(bids['serviceenddate']) < datetime.now())]
 history_df = history[['bidid','caretakerid','petownerid','serviceenddate']].reset_index(drop=True)
 history_df.index +=1
-history_df['paymentmade'] = history_df['bidid'].apply(lambda x: fake.word(ext_word_list=[False,True]))
-history_df['paymentdate'] = history_df[['paymentmade','serviceenddate']].apply(paymentdate, axis=1)
+history_df['isreviewmade'] = history_df['bidid'].apply(lambda x: fake.word(ext_word_list=[False,True]))
+history_df['reviewdate'] = history_df[['isreviewmade','serviceenddate']].apply(paymentdate, axis=1)
 history_df.index.name = 'historyid'
 history_df.to_sql('history', engine, if_exists='append')
 history = history_df.reset_index()
@@ -163,14 +163,15 @@ history = history_df.reset_index()
 # create reviews table
 no_reviews_owner = int(len(history) * 0.8)
 review_owner = history[['historyid','caretakerid','petownerid']].sample(no_reviews_owner,random_state=1)
-review_owner['reviewer'] = 'petowner'
+review_owner.drop(columns = 'caretakerid', inplace = True)
+review_owner.rename(columns = {'petownerid':'reviewerid'}, inplace=True)
 no_reviews_ctaker = int(len(history) * 0.7)
 review_ctaker = history[['historyid','caretakerid','petownerid']].sample(no_reviews_ctaker,random_state=2)
-review_ctaker['reviewer'] = 'caretaker'
+review_ctaker.drop(columns = 'petownerid', inplace = True)
+review_ctaker.rename(columns = {'caretakerid':'reviewerid'}, inplace=True)
 review = review_ctaker.append(review_owner, ignore_index = True)
 review.index += 1
 review.index.name = 'reviewid'
-review['responsiveness'] = review['reviewer'].apply(lambda x: random.randint(0,5))
-review['friendliness'] = review['reviewer'].apply(lambda x: random.randint(0,5))
+review['ratings'] = review['reviewerid'].apply(lambda x: random.randint(0,5))
 review.to_sql('review', engine, if_exists = 'append')
 

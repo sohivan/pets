@@ -16,9 +16,10 @@ drop view if exists lives CASCADE;
 drop view if exists review_caretaker cascade;
 drop view if exists review_petowner cascade;
 
+
 CREATE TABLE Homes (
 	id 				serial PRIMARY key,
-	address 	VARCHAR(100) not null unique,
+	address 		VARCHAR(100) not null unique,
 	postcode		bigint not null,
 	hometype		text not null 
 );
@@ -31,16 +32,16 @@ CREATE TABLE users (
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
 	homeid				serial not null,
-	description 	text,
+	description 		text,
 	FOREIGN key (homeid) REFERENCES homes(id),
 	unique(id,name)
 );
 
 
 CREATE TABLE admins (
-	id 			SERIAL PRIMARY KEY,
-	name		text not null,
-	email		VARCHAR(100) not null unique,
+	id 					SERIAL PRIMARY KEY,
+	name				text not null,
+	email				VARCHAR(100) not null unique,
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
 	foreign key (id, name) references users(id,name)
@@ -96,17 +97,17 @@ CREATE TABLE Services (
 CREATE TABLE Bid (
 	ServiceStartDate	date not null,
 	ServiceEndDate		date not null,
-	BidID			SERIAL not null,
-	BidTimestamp	timestamp not null ,
-	BidAmount		smallint not null,
-	PetName			VARCHAR(100) not null,
-	PetOwnerID		SERIAL not null,
-	CareTakerID		SERIAL not null,
-	service			VARCHAR(100) not null,
-	startdate		DATE not null,
-	bidrequest		text,
-	bidstatus		varchar(20) default 'pending' not null,
-	StatusTimestamp timestamp not null ,
+	BidID				SERIAL not null,
+	BidTimestamp		timestamp not null ,
+	BidAmount			smallint not null,
+	PetName				VARCHAR(100) not null,
+	PetOwnerID			SERIAL not null,
+	CareTakerID			SERIAL not null,
+	service				VARCHAR(100) not null,
+	startdate			DATE not null,
+	bidrequest			text,
+	bidstatus			varchar(20) default 'pending' not null,
+	StatusTimestamp 	timestamp not null ,
 	foreign key (PetName, petownerid) references pets(name,oid) on delete cascade,
 	foreign key (CareTakerID,service,startdate) references services(cid,service,startdate) on delete cascade,
 	primary key (Petownerid,BidID,CareTakerID,serviceenddate)
@@ -116,37 +117,32 @@ create table History (
 	BidID			Serial not null,
 	caretakerid		serial not null,
 	petownerid		serial not null,
-	paymentmade		bool not null default False,
-	paymentdate		date,
+	isreviewmade	bool not null default False,
+	reviewdate		date,
 	HistoryID		serial not null,
 	serviceenddate	date not null,
 	primary key (HistoryID),
-	FOREIGN key (bidid,caretakerid,petownerid,serviceenddate) REFERENCES bid(bidid,caretakerid,petownerid,ServiceEndDate) on delete cascade,
-	unique(historyid, caretakerid, petownerid)
+	FOREIGN key (bidid,caretakerid,petownerid,serviceenddate) REFERENCES bid(bidid,caretakerid,petownerid,ServiceEndDate) on delete cascade
 );
 
 
 create table review (
 	reviewid 			serial not null,
-	reviewer			text not null,
+	reviewerid			serial not null,
 	HistoryID			serial not null,
-	caretakerid			serial not null,
-	petownerid			serial not null,
-	responsiveness		int not null,
-	friendliness		int not null,
-	check(reviewer in ('caretaker','petowner')),
+	ratings				int not null,
 	primary key (reviewid),
-	foreign key (historyid, caretakerid, petownerid) REFERENCES history(historyid, caretakerid, petownerid)
+	foreign key (historyid) REFERENCES history(historyid)
 );
 
 
 CREATE VIEW provides as 
-	select ct.name as caretaker, 
+	(select ct.name as caretaker, 
 	ct.cid, 
 	s.service as service, 
 	s.rate
 	from services s
-	join caretaker ct on ct.cid = s.cid;
+	join caretaker ct on ct.cid = s.cid);
 
 
 CREATE VIEW Owns as 
@@ -193,19 +189,15 @@ create view review_caretaker as
 	select c.cid,
 	c."name",
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join caretaker c on c.cid = r.caretakerid
-	where r.reviewer = 'caretaker';
+	join caretaker c on c.cid = r.reviewerid;
 	
 
 create view review_petowner as 
 	select p.oid,
 	p.owner_name,
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join petowners p on p.oid = r.petownerid
-	where r.reviewer = 'petowner';
+	join petowners p on p.oid = r.reviewerid;
