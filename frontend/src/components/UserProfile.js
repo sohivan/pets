@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { withRouter } from "react-router";
 import './UserProfile.css';
 
 function getUserProfile(id) {
@@ -66,7 +67,6 @@ async function fetchUserProfile(email, setName, setType, setId, setError, params
         }
     } catch (e) {
         console.error(e)
-
         setError(e)
     }
 }
@@ -104,7 +104,11 @@ async function fetchCareTaker(type, id, setError, setServices) {
 
 }
 
-function Explore({ history, match }) {
+// const goToAddBid = () => {
+//   console.log("yes")
+// }
+
+function Explore({ history, match, goToAddBid}) {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
@@ -154,7 +158,7 @@ function Explore({ history, match }) {
                   <div>
                     <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
                     {/* TODO: Need to link button add-bid */}
-                    <button className="email-button">Make A Bid</button>
+                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Make A Bid</button>
                   </div>
                 </div>
             </section>
@@ -228,4 +232,4 @@ function Explore({ history, match }) {
 }
 
 
-export default Explore;
+export default withRouter(Explore);

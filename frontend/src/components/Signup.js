@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Form, Input, Select, Button, message} from 'antd';
 import './Signup.css';
 import { withRouter } from "react-router";
+import AlgoliaPlaces from 'algolia-places-react';
 
 
 const Option = Select.Option;
@@ -73,10 +74,30 @@ class SignupForm extends Component {
     return validated;
   }
 
+  onLocationChange(suggestion) {
+    this.setState({
+      location: suggestion
+    })
+    this.props.form.setFieldsValue({
+      address: suggestion
+    })
+  }
+
+  onLocationClear() {
+    this.props.form.setFieldsValue({
+      address: ''
+    })
+  }
+
   goToAddPet = (event) => {
     event.preventDefault();
     if (this.validateFields()) {
       let data = this.props.form.getFieldsValue();
+      let addressName = data.address.name;
+      let addressPostCode = data.address.postcode;
+      let suburb = data.address.suburb;
+      let address = {name: addressName, postcode: addressPostCode, suburb: suburb};
+      data  = Object.assign({}, data, {address: address}, selection);
       var request = new Request("http://localhost:3001/signup", {
          method: 'POST',
          headers: new Headers({'Content-Type': 'application/json'}),
@@ -185,11 +206,11 @@ class SignupForm extends Component {
         <Form.Item>
         {getFieldDecorator('username', {
             rules: [{
-              required: true, message: 'Please input your username!',
+              required: true, message: 'Please input your name!',
             }],
           })(
             <Input
-              placeholder="Username*"
+              placeholder="Name*"
               onChange={this.onUsernameChange.bind(this)}/>
           )}
         </Form.Item>
@@ -204,6 +225,33 @@ class SignupForm extends Component {
               onChange={this.onPasswordChange.bind(this)}/>
           )}
         </Form.Item>
+        <div className="algolia">
+        <Form.Item>
+        {getFieldDecorator('address', {
+            rules: [{
+              required: true, message: 'Please input your address!',
+            }],
+          })(
+        <AlgoliaPlaces
+            placeholder='Address*'
+            options={{
+             appId: 'pl4X3CET64PO',
+             apiKey: '810117f3a4fd4815c33232c31f02cf48',
+             countries: ['sg']
+            }}
+            onChange={({ query, rawAnswer, suggestion, suggestionIndex }) => {
+             this.onLocationChange(suggestion);
+            }}
+            onClear={() => {
+              this.onLocationClear({});
+            }}
+            onLimit={({ message }) =>
+             console.log('Fired when you reached your current rate limit.')}
+          />
+        )}
+       </Form.Item>
+       </div>
+
         <div>
         <p className="service-label">Sign up as a:</p>
         </div>
@@ -225,6 +273,7 @@ class SignupForm extends Component {
             </Select>
           )}
         </Form.Item>
+
         <Button className= "search-button" type="primary" htmlType="submit" onClick={this.goToAddPet.bind(this)}>
             Next
         </Button>
