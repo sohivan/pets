@@ -49,6 +49,7 @@ admin['email'] = 'admin@admin.com'
 admin['password'] = 'cs2102rocks'
 admin['lastlogintimestamp'] = admin['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
+admin['homeid'] = 1
 
 # creating users table
 users = pd.DataFrame({'id': range(1+ no_users, 1 + 2*no_users)})
