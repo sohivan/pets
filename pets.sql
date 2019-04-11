@@ -21,7 +21,8 @@ CREATE TABLE Homes (
 	id 				serial PRIMARY key,
 	address 		VARCHAR(100) not null unique,
 	postcode		bigint not null,
-	hometype		text not null 
+	hometype		text not null,
+	suburb			VARCHAR(100) not null
 );
 
 
@@ -97,7 +98,7 @@ CREATE TABLE Services (
 CREATE TABLE Bid (
 	ServiceStartDate	date not null,
 	ServiceEndDate		date not null,
-	BidID				SERIAL not null,
+	BidID				SERIAL primary key,
 	BidTimestamp		timestamp not null ,
 	BidAmount			smallint not null,
 	PetName				VARCHAR(100) not null,
@@ -110,7 +111,7 @@ CREATE TABLE Bid (
 	StatusTimestamp 	timestamp not null ,
 	foreign key (PetName, petownerid) references pets(name,oid) on delete cascade,
 	foreign key (CareTakerID,service,startdate) references services(cid,service,startdate) on delete cascade,
-	primary key (Petownerid,BidID,CareTakerID,serviceenddate)
+	unique (Petownerid,BidID,CareTakerID,serviceenddate)
 );
 
 create table History (
@@ -119,19 +120,17 @@ create table History (
 	petownerid		serial not null,
 	isreviewmade	bool not null default False,
 	reviewdate		date,
-	HistoryID		serial not null,
+	HistoryID		serial primary key,
 	serviceenddate	date not null,
-	primary key (HistoryID),
 	FOREIGN key (bidid,caretakerid,petownerid,serviceenddate) REFERENCES bid(bidid,caretakerid,petownerid,ServiceEndDate) on delete cascade
 );
 
 
 create table review (
-	reviewid 			serial not null,
+	reviewid 			serial primary key,
 	reviewerid			serial not null,
 	HistoryID			serial not null,
 	ratings				int not null,
-	primary key (reviewid),
 	foreign key (historyid) REFERENCES history(historyid)
 );
 
