@@ -1,4 +1,3 @@
-
 DROP TABLE if exists users cascade;
 DROP TABLE if exists PetOwners cascade;
 DROP TABLE if exists Pets cascade;
@@ -132,7 +131,7 @@ create table review (
 	reviewerid			serial not null,
 	HistoryID			serial not null,
 	ratings				int not null,
-	foreign key (historyid) REFERENCES history(historyid)
+	foreign key (historyid) REFERENCES history(historyid) on delete cascade
 );
 
 
