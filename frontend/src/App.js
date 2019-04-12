@@ -36,7 +36,8 @@ class App extends Component {
       collapsed: true,
       cookie: null,
       isAuthenticated: document.cookie ? true : false,
-      isCareTaker: false
+      isCareTaker: false,
+      searchFilters: {serviceType: '', startdate: '', enddate: ''}
     }
   }
 
@@ -81,7 +82,8 @@ class App extends Component {
          .then((data) => {
            console.log(data.isValidBidder);
            if (data.isValidBidder) {
-             this.props.history.push('/add-bid');
+             let urlToPush = history.location.pathname + '/add-bid';
+             history.push(urlToPush);
            } else {
              message.error('You must be a pet owner to make a bid.');
            }
@@ -117,6 +119,13 @@ class App extends Component {
            this.refreshLoginState();
          })
        }
+     })
+   }
+
+   onSearchFilter(serviceType, startdate, enddate, disp) {
+     this.setState({
+       searchFilters: {serviceType: serviceType, startdate: startdate,  enddate: enddate},
+       currentResultsDisplay: disp,
      })
    }
 
@@ -162,8 +171,12 @@ class App extends Component {
           </div>
 
           <Switch>
-          <Route exact path="/" component={SearchForm} />
-
+          <Route exact path="/"
+          render={({props}) =>
+            <SearchForm
+              onSearchFilter={this.onSearchFilter.bind(this)}
+              currentResultsDisplay= {this.state.currentResultsDisplay}
+              />}/>
           <Route
             exact path="/signup"
             render={({props}) => <Signup onGoToAddPet= {this.onGoToAddPet.bind(this)} onGoToAddService={this.onGoToAddService.bind(this)}/>}/>
@@ -176,7 +189,13 @@ class App extends Component {
             onGoToAddService={this.onGoToAddService.bind(this)}
             />
          <PrivateRoute exact path="/add-service" component={AddService} authenticated={this.state.isAuthenticated}/>
-        {/*<PrivateRoute exact path="/add-bid" component={AddBid} authenticated={this.state.isAuthenticated}/>*/}
+        <PrivateRoute
+          exact path="/user-profile/:id/add-bid"
+          authenticated={this.state.isAuthenticated}
+          component={AddBid}
+          searchFilters={this.state.searchFilters}
+          />
+
         <Route exact path='/add-bid' component={AddBid}/>
          <Route
             exact path="/user-profile/:id"

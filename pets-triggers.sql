@@ -114,15 +114,20 @@ newStartDate date; newEndDate date; initialStartDate date; initialenddate date;
 begin
 newStartDate:=new.startDate;
 newEndDate:=new.endDate;
+with allServices as 
+( select * 
+  from services
+  where cid = new.cid
+)
 SELECT count(*) into count 
-from Services S
+from allServices S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day');
 if count <= 0 then return new;
 else 
 SELECT startdate into initialstartdate
-from Services S
+from allServices S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day')
@@ -131,7 +136,7 @@ limit 1;
 if newstartdate < initialstartdate then initialstartdate:=newstartdate;
 end if;
 SELECT enddate into initialenddate
-from Services S
+from allServices S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day')
@@ -140,7 +145,7 @@ limit 1;
 if initialenddate < newenddate then initialenddate:=newenddate;
 end if;
 delete 
-from Services S
+from allServices S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day');
