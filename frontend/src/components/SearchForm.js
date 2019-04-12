@@ -152,6 +152,7 @@ displayResults = (results) => {
               className="results-card"
                bordered={false}
                style={{ width: 240 }}
+               onClick={() => this.cardClick(array[i].cid)}
                cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
               >
              <Card.Meta
@@ -176,6 +177,7 @@ displayResults = (results) => {
                hoverable
                bordered={false}
                style={{ width: 240 }}
+               onClick={() => this.cardClick(array[i+1].cid)}
                cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
              <Card.Meta
                title= {
