@@ -156,6 +156,7 @@ function UserProfile({ history, match, goToAddBid}) {
                 </div>
             </section>
 
+            {/* Own page option - Edit my own profile */}
             {(pageEmail === email) && 
             <section class="buttons-section">
                 <div class="container">
@@ -183,6 +184,14 @@ function UserProfile({ history, match, goToAddBid}) {
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
+                {/* Edit service if own profile page */}
+                {(pageEmail === email) && 
+                <section class="buttons-section">
+                    <div class="container">
+                        <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Services</button>
+                    </div>
+                </section>
+                }
                     {
                         services.map(i => {
                             return (
@@ -216,6 +225,14 @@ function UserProfile({ history, match, goToAddBid}) {
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
+                    {/* Edit Pets Option if Own Profile */}
+                    {(pageEmail === email) && 
+                        <section class="buttons-section">
+                            <div class="container">
+                                <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Pets</button>
+                            </div>
+                        </section>
+                        }
                         {
                             pets.map(i => {
                                 return (
