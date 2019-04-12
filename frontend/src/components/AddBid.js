@@ -97,8 +97,6 @@ class AddBid extends Component {
                 data.map((obj) => pets.push(obj.name));
               }
               this.state.pets = pets;
-              petsGlobal = pets;
-              console.log(petsGlobal);
             })
           .catch(function(err) {
             console.log(err);
@@ -110,7 +108,6 @@ class AddBid extends Component {
               .then((data) => {
                 var date1 = new Date(data[0].startdate);
                 var date = moment(date1).format("YYYY-MM-DD");
-                serviceStartDateGlobal = date;
                  this.state.servicestartdate =  date
               })
             .catch(function(err) {

@@ -117,10 +117,10 @@ app.post('/login', (request, response) => {
           return response.status(403).send({ status: "failed", message: "No user found" })
         }
         id = table.rows[0].id;
-        // bcrypt.compare(password, table.rows[0].password, function(err, res) {
-        //   console.log(res)
-        //   if (res==true) {
-        //     console.log("success!");
+        bcrypt.compare(password, table.rows[0].password, function(err, res) {
+          console.log(res)
+          if (res==true) {
+            console.log("success!");
              var dateNow = new Date();
             db.query(`
               UPDATE USERS
@@ -133,14 +133,14 @@ app.post('/login', (request, response) => {
                   return response.status(403).send({ status: "failed", message: "Something went wrong" });
                 }
               })
-          // }
-          //  else {
-          //   return response.status(403).send({ status: "failed", message: "Wrong username/password" })
-          // }
+          }
+           else {
+            return response.status(403).send({ status: "failed", message: "Wrong username/password" })
+          }
         });
       })
   })
-// });
+});
 
 app.post('/logout', function(request, response) {
   var cookie = request.cookies.userId;
