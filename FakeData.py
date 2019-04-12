@@ -33,10 +33,10 @@ no_bids = 500
 no_homes = 600
 
 # creating home table
-home = pd.DataFrame({'id' :range(1, no_homes +1)})
+home = pd.DataFrame({'id' :range(10, no_homes +10)})
 home['address'] = home['id'].apply(lambda x: fake.street_address())
 home['postcode'] = home['id'].apply(lambda x: fake.postalcode()).astype(int)
-home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
+# home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
 home['suburb'] = home['id'].apply(lambda x: fake.word(ext_word_list=['AMK','Bishan','Yishun','YCK','Novena','Toa Payoh']))
 home_df = home.set_index(keys='id', drop = True)
 home_df.to_sql('homes', engine, if_exists='append')
@@ -49,7 +49,7 @@ admin['email'] = 'admin@admin.com'
 admin['password'] = 'cs2102rocks'
 admin['lastlogintimestamp'] = admin['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
-admin['homeid'] = 1
+admin['homeid'] = 10
 
 # creating users table
 users = pd.DataFrame({'id': range(1+ no_users, 1 + 2*no_users)})
@@ -175,12 +175,13 @@ history = history_df.reset_index()
 
 
 # create reviews table
-no_reviews_owner = int(len(history) * 0.9)
-review_owner = history[['historyid','caretakerid','petownerid']].sample(no_reviews_owner,random_state=1)
+history_reviewed_df = history[history['isreviewmade']==True]
+no_reviews_owner = int(len(history_reviewed_df) * 0.9)
+review_owner = history_reviewed_df[['historyid','caretakerid','petownerid']].sample(no_reviews_owner,random_state=1)
 review_owner.drop(columns = 'caretakerid', inplace = True)
 review_owner.rename(columns = {'petownerid':'reviewerid'}, inplace=True)
-no_reviews_ctaker = int(len(history) * 0.9)
-review_ctaker = history[['historyid','caretakerid','petownerid']].sample(no_reviews_ctaker,random_state=2)
+no_reviews_ctaker = int(len(history_reviewed_df) * 0.9)
+review_ctaker = history_reviewed_df[['historyid','caretakerid','petownerid']].sample(no_reviews_ctaker,random_state=2)
 review_ctaker.drop(columns = 'petownerid', inplace = True)
 review_ctaker.rename(columns = {'caretakerid':'reviewerid'}, inplace=True)
 review = review_ctaker.append(review_owner, ignore_index = True)
