@@ -173,6 +173,7 @@ displayResults = (results) => {
              </Col>
              <Col span={12}>
              <Card className="results-card"
+               hoverable
                bordered={false}
                style={{ width: 240 }}
                cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>

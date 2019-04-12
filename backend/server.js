@@ -422,7 +422,7 @@ app.post('/getCaretakers', function(request, response) {
                   	from caretaker natural join services natural join bid
                   	group by cid
                   	order by NumOfBid desc)
-                SELECT distinct * from PopCareTaker natural join caretaker natural join services
+                SELECT distinct * from (PopCareTaker natural join caretaker natural join services) inner join users on services.cid=users.id inner join homes on users.homeid=homes.id
                 where service = $1 and PetType = $2 and PetSize = $3
                 and numofpet >= $4 and rate <= $5
                 and housingoptions = $6
