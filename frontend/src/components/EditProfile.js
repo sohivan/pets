@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { withRouter } from "react-router";
-import { Route, NavLink } from 'react-router-dom';
+import { AutoComplete, Button, Input } from 'antd';
+
 import './UserProfile.css';
-import PetProfile from './PetProfile';
 
 function getUserProfile(id) {
     return fetch('http://localhost:3001/user/profile', {
@@ -109,15 +109,23 @@ async function fetchCareTaker(type, id, setError, setServices) {
 
 }
 
-// const goToAddBid = () => {
-//   console.log("yes")
-// }
+function changeDetails(changedName, changedDesc){
+    return fetch('http://localhost:3001/change_details',{
+        headers: { 'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({
+            changedName, changedDesc
+        })
+    })
+}
 
-function UserProfile({ history, match, goToAddBid}) {
+function EditProfile({ history, match, goToAddBid}) {
     const [name, setName] = useState('');
+    const [changedName, setChangedName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
     const [desc, setDesc] = useState('');
+    const [changedDesc, setChangedDesc] = useState('');
     const [img, setImg] = useState('');
     const [anyErrors, setError] = useState('');
     const [pets, setPets] = useState([]);
@@ -125,7 +133,21 @@ function UserProfile({ history, match, goToAddBid}) {
     const [pageEmail, setPageEmail] = useState([]);
     const email = localStorage.getItem("email");
 
+    const nameChanged = useCallback((e) => {
+        setChangedName(e.target.value);
+    }, [])
 
+    const descChanged = useCallback((e) => {
+        setChangedDesc(e.target.value);
+    }, [])
+
+    const submit = useCallback(async (e) =>{
+        try {
+            changeDetails(changedName, changedDesc, id)
+        } catch(e){
+            setError("unexpected error")
+        }
+    })
 
     useEffect(() => {
         fetchUserProfile(setName, setType, setId, setDesc, setImg, setPageEmail, setError, match.params)
@@ -139,6 +161,8 @@ function UserProfile({ history, match, goToAddBid}) {
         fetchCareTaker(type, id, setError,  setServices)
     }, [type, id])
 
+    console.log(img)
+
     return (
         <html>
             <section class="intro-section">
@@ -148,51 +172,32 @@ function UserProfile({ history, match, goToAddBid}) {
                         <div class="col-md-10 col-lg-8">
                             <div class="intro">
                                 <div class="profile-img"><img src={img} alt="" /></div>
-                                <h2 class="profile-name"><b>{name}</b></h2>
-                                <h4 class="font-yellow">{type}</h4>
-                                <h4 class="profile-desc">{desc}</h4>
+                                <h2 class="profile-name"><b>Name</b></h2>
+                                <Input
+                                    style={{ width: 200 }}
+                                    placeholder={name}
+                                    onChange={nameChanged}
+                                />
+                                <h4 class="profile-desc">Description</h4>
+                                <Input
+                                    style={{ width: 200 }}
+                                    placeholder={desc}
+                                    onChange={descChanged}
+                                />
                             </div>
+                            <Button onClick={submit}> Submit </Button>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Own page option - Edit my own profile */}
-            {(pageEmail === email) && 
-            <section class="buttons-section">
-                <div class="container">
-                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Edit My Profile</button>
-                </div>
-            </section>
             }
-
-            {/* Webpage for Caretakers - Email option available if not the user themselves*/}
-            {(type === "Caretaker") && (pageEmail != email) &&
-            <section class="buttons-section">
-                <div class="container">
-                  <div>
-                    <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
-                    {/* TODO: Need to link button add-bid */}
-                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Make A Bid</button>
-                  </div>
-                </div>
-            </section>
-              }
-
 
             {/* Webpage for Caretakers */}
             {(type === "Caretaker") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
-                {/* Edit service if own profile page */}
-                {(pageEmail === email) && 
-                <section class="buttons-section">
-                    <div class="container">
-                        <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Services</button>
-                    </div>
-                </section>
-                }
+                <Button> Add more services </Button>
                     {
                         services.map(i => {
                             return (
@@ -201,22 +206,11 @@ function UserProfile({ history, match, goToAddBid}) {
                                 <p>Service: {i['service']}</p>
                                 <p>Start Day/Time: {i['startdate'].slice(0, 10) + ' ' + i['startdate'].slice(11,16)}</p>
                                 <p>End Day/Time: {i['enddate'].slice(0, 10) + ' ' + i['enddate'].slice(11,16)}</p>
-                                <p>Service Rate: ${i['rate']}</p>
+                                <Button> Delete {i['service']} </Button>
                                 </div>
                             )
                         })
                     }
-                </div>
-            </section>
-            }
-
-            {/* Webpage for PetOwners  - Email option if not the own user*/}
-            {(type === "Petowner") && (pageEmail != email) &&
-            <section class="buttons-section">
-                <div class="container">
-                <div>
-                <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
-                </div>
                 </div>
             </section>
             }
@@ -226,27 +220,14 @@ function UserProfile({ history, match, goToAddBid}) {
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
-                    {/* Edit Pets Option if Own Profile */}
-                    {(pageEmail === email) && 
-                        <section class="buttons-section">
-                            <div class="container">
-                                <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Pets</button>
-                            </div>
-                        </section>
-                        }
+                    <Button> Add more pets </Button>
                         {
                             pets.map(i => {
                                 return (
                                     <div class="p-item web-design">
                                     <p>Pet Name: {i['name']}</p>
-                                    <p>Pet Breed: {i['breed']}</p>
-                                    <p>Pet Age: {i['age']}</p>
-
-                                        {/* Links to pet page */}
-                                        <NavLink to={"/PetProfile/"+i['oid']+'/'+i['name']} style={{textDecoration: 'none'}}>
-                                            <img src={i['image1']} alt="" /> </NavLink>
-                                        <Route exact path={"/pet_profile/:id/:"} component={PetProfile}></Route>
-                                        
+                                    <img src={i['image1']} alt="" />
+                                    <Button> Delete - {i['name']} </Button>
                                     </div>
                                 )
                             })
@@ -259,4 +240,4 @@ function UserProfile({ history, match, goToAddBid}) {
 }
 
 
-export default withRouter(UserProfile);
+export default withRouter(EditProfile);

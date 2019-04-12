@@ -13,6 +13,7 @@ import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
 import AddService from './components/AddService';
 import PetProfile from './components/PetProfile';
+import EditProfile from './components/EditProfile';
 import Admin from './components/Admin';
 import Rating from './components/Rating';
 import history from './history';
@@ -189,6 +190,7 @@ class App extends Component {
         {/* <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>*/}
 
         <Route exact path ="/bid-tracker"component={BidTracker} />
+        <Route exact path ="/edit_profile"component={EditProfile} />
          <PrivateRoute exact path="/pet-profile" component={PetProfile} authenticated={this.state.isAuthenticated}/>
          </Switch>
          </div>
