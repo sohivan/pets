@@ -33,10 +33,10 @@ no_bids = 500
 no_homes = 600
 
 # creating home table
-home = pd.DataFrame({'id' :range(1, no_homes +1)})
+home = pd.DataFrame({'id' :range(10, no_homes +10)})
 home['address'] = home['id'].apply(lambda x: fake.street_address())
 home['postcode'] = home['id'].apply(lambda x: fake.postalcode()).astype(int)
-home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
+# home['hometype'] = home['id'].apply(lambda x: fake.word(ext_word_list=['Bungalow','Semi-D','Terrace','Condominium','Flat','Apartment']))
 home['suburb'] = home['id'].apply(lambda x: fake.word(ext_word_list=['AMK','Bishan','Yishun','YCK','Novena','Toa Payoh']))
 home_df = home.set_index(keys='id', drop = True)
 home_df.to_sql('homes', engine, if_exists='append')
@@ -49,6 +49,7 @@ admin['email'] = 'admin@admin.com'
 admin['password'] = 'cs2102rocks'
 admin['lastlogintimestamp'] = admin['id'].apply(lambda x: fake.date_time_between(start_date='-200d', 
                                                                                     end_date='now'))
+admin['homeid'] = 10
 
 # creating users table
 users = pd.DataFrame({'id': range(1+ no_users, 1 + 2*no_users)})

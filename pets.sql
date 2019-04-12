@@ -18,10 +18,9 @@ drop view if exists review_petowner cascade;
 
 CREATE TABLE Homes (
 	id 				serial PRIMARY key,
-	address 	VARCHAR(100) not null unique,
+	address 		VARCHAR(100) not null unique,
 	postcode		bigint not null,
-	hometype		text not null,
-	suburb			VARCHAR(100) not null
+	suburb			VARCHAR(100) 
 );
 
 
@@ -45,6 +44,7 @@ CREATE TABLE admins (
 	email		VARCHAR(100) not null unique,
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
+	homeid		serial not null references homes(id),
 	foreign key (id, name) references users(id,name)
 );
 

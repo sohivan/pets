@@ -20,7 +20,6 @@ const pool = new pg.Pool({
 function rollback(client) {
     client.query('ROLLBACK', function() {
         client.end();
-        response.status(400).send(err);
     });
 }
 
@@ -155,6 +154,9 @@ app.post('/signup', function(request, response) {
   var name = request.body.username;
   var email = request.body.email;
   var password = request.body.password;
+  var addressName = request.body.address.name;
+  let addressPostCode = request.body.address.postcode;
+  var suburb = request.body.address.suburb;
   var dateNow = new Date();
   var hashedPw, id;
   pool.connect((err, db, done) => {
@@ -166,20 +168,43 @@ app.post('/signup', function(request, response) {
     .then(hash => {
       console.log(`Hash: ${hash}`);
       hashedPw=hash;
-        db.query(`
-          INSERT INTO USERS(name, email, password, lastlogintimestamp)
-          VALUES($1, $2, $3, $4) RETURNING id`, [name, email, hashedPw, dateNow], (err, result) => {
-          if (err) {
-            console.log(err);
-            return response.status(400).send(err);
-          }
-          response.cookie('userId', result.rows[0].id, {expires: new Date(Date.now() + 60*60*60*24*5) });
-          return response.status(200).send({id: result.rows[0].id});
-        })
-      })
-    .catch(err => console.error(err.message));
-    })
+      db.query('BEGIN', function(err) {
+           if(err) {
+                console.log('Problem starting transaction', err);
+                response.status(400).send(err);
+                return rollback(db);
+            }
+            db.query(`
+              INSERT INTO HOMES(address, postcode, suburb)
+              VALUES($1, $2, $3) RETURNING id`, [addressName, addressPostCode, suburb], (err, result) => {
+              if (err) {
+                console.log(err);
+                response.status(400).send(err);
+                return rollback(db);
+              }
+                db.query(`
+                  INSERT INTO USERS(name, email, password, homeid, lastlogintimestamp)
+                  VALUES($1, $2, $3, $4, $5) RETURNING id`, [name, email, hashedPw,result.rows[0].id, dateNow], (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    return response.status(400).send(err);
+                    return rollback(db);
+                  }
+                  db.query('COMMIT', (err) => {
+                     db.end.bind(db);
+                     if (err) {
+                       console.error('Error committing transaction', err.stack)
+                       return rollback(db);
+                     }
+                     response.cookie('userId', result.rows[0].id, {expires: new Date(Date.now() + 60*60*60*24*5) });
+                     return response.status(200).send({id: result.rows[0].id});
+                  })
+                })
+            })
+          })
+    }).catch(err => console.error(err.message));
   })
+})
 
 app.post('/makeABidCheck', function(request, response) {
     var id = request.cookies.userId;

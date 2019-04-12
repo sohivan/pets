@@ -7,6 +7,11 @@ class Rating extends Component {
   constructor(props) {
     super(props);
   }
+
+  onRateChange = (value) => {
+    console.log(value);
+  }
+
   render() {
   return (
     <div className="rating">
@@ -15,9 +20,9 @@ class Rating extends Component {
     <h1 className = "rate-title">Rate the Service</h1>
     <h2 className = "rate-subtitle">How was the overall experience?</h2>
     <div className = "rate">
-    <Rate />
+    <Rate onChange={this.onRateChange}/>
     </div>
-    <Button className="rate-button" type="primary"> Submit
+    <Button className="rate-button" type="primary" onClick={this.onRateChange}> Submit
     </Button>
     </div>
   );
