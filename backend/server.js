@@ -46,7 +46,7 @@ app.post('/user/profile', async (request, response) => {
     SELECT *,
     CASE
       WHEN USERS.ID NOT IN (SELECT OID FROM PETOWNERS) THEN 'Caretaker'
-      WHEN  USERS.ID NOT IN (SELECT OID FROM CARETAKERS) THEN 'Petowner'
+      WHEN  USERS.ID NOT IN (SELECT CID FROM CARETAKER) THEN 'Petowner'
       ELSE 'Both' END AS USERTYPE
     FROM USERS
     WHERE id=$1
@@ -117,10 +117,10 @@ app.post('/login', (request, response) => {
           return response.status(403).send({ status: "failed", message: "No user found" })
         }
         id = table.rows[0].id;
-        // bcrypt.compare(password, table.rows[0].password, function(err, res) {
-        //   console.log(res)
-        //   if (res==true) {
-        //     console.log("success!");
+        bcrypt.compare(password, table.rows[0].password, function(err, res) {
+          console.log(res)
+          if (res==true) {
+            console.log("success!");
              var dateNow = new Date();
             db.query(`
               UPDATE USERS
@@ -133,14 +133,14 @@ app.post('/login', (request, response) => {
                   return response.status(403).send({ status: "failed", message: "Something went wrong" });
                 }
               })
-          // }
-          //  else {
-          //   return response.status(403).send({ status: "failed", message: "Wrong username/password" })
-          // }
+          }
+           else {
+            return response.status(403).send({ status: "failed", message: "Wrong username/password" })
+          }
         });
       })
   })
-// });
+});
 
 app.post('/logout', function(request, response) {
   var cookie = request.cookies.userId;
@@ -422,7 +422,7 @@ app.post('/getCaretakers', function(request, response) {
                   	from caretaker natural join services natural join bid
                   	group by cid
                   	order by NumOfBid desc)
-                SELECT distinct * from PopCareTaker natural join caretaker natural join services
+                SELECT distinct * from (PopCareTaker natural join caretaker natural join services) inner join users on services.cid=users.id inner join homes on users.homeid=homes.id
                 where service = $1 and PetType = $2 and PetSize = $3
                 and numofpet >= $4 and rate <= $5
                 and housingoptions = $6

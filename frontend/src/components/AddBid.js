@@ -24,10 +24,12 @@ function onChange(value) {
 }
 
 
+
 class AddBid extends Component {
   constructor() {
     super();
     this.state = {
+      pets: [],
       result: [],
       bidstartdate: '',
       bidenddate: '',
@@ -39,10 +41,10 @@ class AddBid extends Component {
       bidservice: "Pet Boarding",
       bidreq: '',
       avgbid: 'No bids yet',
-      pets: [],
+      startdate: '',
     }
   }
-  componentWillMount () {
+  componentDidMount () {
     console.log(this.props.computedMatch.params.id);
     let dataForAvgBids = {cid: this.props.computedMatch.params.id, service: this.props.searchFilters.serviceType};
     let dataForService = {cid: this.props.computedMatch.params.id, service:"Pet Boarding", startdate: this.props.searchFilters.startdate, enddate: this.props.searchFilters.enddate};
@@ -73,9 +75,11 @@ class AddBid extends Component {
         .then((response) =>
           response.json())
           .then((data) => {
-              this.setState({
-                avgbid: data.length != 0 ? data : "No bids yet"
-              })
+            this.state.avgbid = data.length != 0 ? data : "No bids yet";
+              // this.setState({
+              //   avgbid: data.length != 0 ? data : "No bids yet"
+              // })
+
             console.log(data)
           })
         .catch(function(err) {
@@ -86,14 +90,13 @@ class AddBid extends Component {
           .then((response) =>
             response.json())
             .then((data) => {
+              console.log(data);
+              console.log(data.length==0);
               let pets = [];
               if(data.length != 0) {
                 data.map((obj) => pets.push(obj.name));
               }
-              this.setState({
-                pets: pets
-              })
-              console.log(this.state.pets);
+              this.state.pets = pets;
             })
           .catch(function(err) {
             console.log(err);
@@ -105,14 +108,11 @@ class AddBid extends Component {
               .then((data) => {
                 var date1 = new Date(data[0].startdate);
                 var date = moment(date1).format("YYYY-MM-DD");
-                  this.setState({
-                    servicestartdate: date
-                  })
+                 this.state.servicestartdate =  date
               })
             .catch(function(err) {
               console.log(err);
             })
-
 
   }
 
@@ -194,6 +194,7 @@ class AddBid extends Component {
 
 
   render() {
+
     return (
       <div className = "addbid">
           <h1 className = "addbid-title"> Make a Bid </h1>
