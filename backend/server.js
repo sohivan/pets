@@ -44,9 +44,9 @@ app.post('/user/profile', async (request, response) => {
   try {
     const table = await pool.query(`
     SELECT *,
-    CASE 
-      WHEN USERS.ID NOT IN (SELECT OID FROM PETOWNERS) THEN 'Caretaker' 
-      WHEN  USERS.ID NOT IN (SELECT CID FROM CARETAKER) THEN 'Petowner' 
+    CASE
+      WHEN USERS.ID NOT IN (SELECT OID FROM PETOWNERS) THEN 'Caretaker'
+      WHEN  USERS.ID NOT IN (SELECT OID FROM CARETAKERS) THEN 'Petowner'
       ELSE 'Both' END AS USERTYPE
     FROM USERS
     WHERE id=$1
@@ -480,11 +480,13 @@ app.post('/getCaretakers', function(request, response) {
 });
 
 app.post('/getPendingBids', function(request, response) {
+  var id = request.cookies.userId;
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'pending' and P2.servicestartdate > now()", function(err, table) {
+      db.query(`SELECT * from Users inner join (PetOwners inner join (Bid B inner join Pets P on B.PetOwnerID = P.oid and B.PetName = P.name) B2 on PetOwners.oid = B2.PetOwnerID) P2 on P2.petownerid = Users.id
+                where bidstatus = 'pending' and servicestartdate > now() and serviceenddate > now() and caretakerid = $1`, [id], function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -498,12 +500,33 @@ app.post('/getPendingBids', function(request, response) {
 });
 
 app.post('/getUpcomingBids', function(request, response) {
-
+  var id = request.cookies.userId;
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.serviceid where P2.bidstatus = 'accept' and P2.servicestartdate > now() ", function(err, table) {
+      db.query(`SELECT * from Users inner join (PetOwners inner join (Bid B inner join Pets P on B.PetOwnerID = P.oid and B.PetName = P.name) B2 on PetOwners.oid = B2.PetOwnerID) P2 on P2.petownerid = Users.id
+                where bidstatus = 'accept' and servicestartdate > now() and serviceenddate > now() and caretakerid = $1`, [id], function(err, table) {
+        done();
+        if (err) {
+          return response.status(400).send(err);
+        }
+        else {
+          return response.status(200).send(table.rows);
+        }
+      })
+    }
+  })
+});
+
+app.post('/getPastBidsToRate', function(request, response) {
+  var id = request.cookies.userId;
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    } else {
+      db.query(`SELECT * from History H inner join (PetOwners inner join (Bid B inner join Pets P on B.PetOwnerID = P.oid and B.PetName = P.name) B2 on PetOwners.oid = B2.PetOwnerID) P2 on H.BidID = P2.BidID
+                where P2.bidstatus = 'accept' and P2.servicestartdate < now() and P2.serviceenddate < now() and P2.caretakerid = $1 and H.isreviewmade = false`, [id], function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -517,11 +540,13 @@ app.post('/getUpcomingBids', function(request, response) {
 });
 
 app.post('/getPastBids', function(request, response) {
+  var id = request.cookies.userId;
   pool.connect((err, db, done) => {
     if(err) {
       return response.status(400).send(err);
     } else {
-      db.query("SELECT * from Services S inner join (PetOwners inner join (Bid B inner join Pets P on B.PetID = P.PetID) B2 on PetOwners.oid = B2.PetOwnerID) P2 on S.serviceid = P2.ServiceID where P2.bidstatus = 'accept' and P2.servicestartdate < now()", function(err, table) {
+      db.query(`SELECT * from History H inner join (PetOwners inner join (Bid B inner join Pets P on B.PetOwnerID = P.oid and B.PetName = P.name) B2 on PetOwners.oid = B2.PetOwnerID) P2 on H.BidID = P2.BidID
+                where P2.bidstatus = 'accept' and P2.servicestartdate < now() and P2.serviceenddate < now() and P2.caretakerid = $1 and H.isreviewmade = true`, [id], function(err, table) {
         done();
         if (err) {
           return response.status(400).send(err);
@@ -618,6 +643,79 @@ app.post('/getAvgBid', function(request, response) {
   })
 });
 
+
+//write review: to be done
+app.post('/addReview', function(request, response) {
+  var rating = request.body.value;
+  var historyid = request.body.historyid;
+  var id = request.cookies.userId;
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    } else {
+        db.query(`INSERT INTO REVIEW(reviewerid, historyid, ratings)
+        VALUES($1, $2, $3)`, [id, historyid, rating], function(err, table) {
+          done();
+          if (err) {
+            return response.status(400).send(err);
+          }
+          else {
+            return response.status(200).send(table.rows);
+          }
+        })
+        db.query(`update history set isreviewmade = true where historyid = $2 and reviewerid = $3`, [historyid, id], function(err, table) {
+          done();
+          if (err) {
+            return response.status(400).send(err);
+          }
+          else {
+            return response.status(200).send(table.rows);
+          }
+        })
+      }
+
+  })
+});
+
+// find caretakers that are making a loss
+app.get('/getLossCaretakers', function(request, response) {
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    } else {
+      db.query(`with LossServices as
+                         (select caretakerid, service,
+                                 count(bidid), avg(rate),
+                                 avg(bidamount)
+                                 from Bid natural join services
+                                 group by CareTakerID, service
+                                 having (avg(rate) > avg(bidamount))),
+                     NumLossServices as
+                         (select caretakerid,
+                                 count(service) as numoflosses
+                                 from LossServices
+                                 group by caretakerid),
+                     NumServices as
+                         (select caretakerid,
+                                 count(distinct service) as numofservices
+                                 from bid
+                                 group by caretakerid),
+                     LossCareTakers as
+                             (select *
+                             from NumLossServices N1 natural join NumServices N2
+                             where N1.numoflosses = N2.numofservices)
+            select L2.name, L2.caretakerid, users.email
+            from (LossCareTakers L
+            inner join Caretaker C on L.caretakerid = C.cid) L2 inner join users on users.id =  L2.caretakerid
+`, function(err, table) {
+        done();
+        if (err) {
+          console.log("I am this error here")
+          return response.status(400).send(err);
+        }
+        else {
+          return response.status(200).send(table.rows);
+
 app.post('/getPets', function(request, response) {
   var userId = request.cookies.userId;
   pool.connect((err, db, done) => {
@@ -640,7 +738,7 @@ app.post('/getPets', function(request, response) {
       })
     }
   })
-})
+});
 
 app.post('/getServiceStartDate', function(request, response) {
   var servicetype = request.body.service;
@@ -668,4 +766,5 @@ app.post('/getServiceStartDate', function(request, response) {
       })
     }
   })
-})
+});
+

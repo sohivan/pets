@@ -1,4 +1,3 @@
-
 -- Trigger on addition of pet
 CREATE OR REPLACE FUNCTION mustBe_petOwner()
 RETURNS TRIGGER as $$
@@ -164,7 +163,4 @@ ON services
 FOR EACH row
 WHEN (pg_trigger_depth() = 0)
 EXECUTE PROCEDURE check_date();
-
-
-
 

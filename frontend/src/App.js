@@ -204,7 +204,8 @@ class App extends Component {
          <Route
             path="/login"
             render={({props}) => <Login loginSuccess= {this.loginSuccess.bind(this)}/>}/>
-         <Route path="/rating" component={Rating} />
+         <Route path="/rating/:id" component={Rating} />
+          <Route path="/admin" component={Admin} />
         {/* <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>*/}
 
         <Route exact path ="/bid-tracker"component={BidTracker} />
