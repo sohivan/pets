@@ -20,7 +20,6 @@ CREATE TABLE Homes (
 	id 				serial PRIMARY key,
 	address 		VARCHAR(100) not null unique,
 	postcode		bigint not null,
-	-- hometype		text not null,
 	suburb			VARCHAR(100) not null
 );
 
