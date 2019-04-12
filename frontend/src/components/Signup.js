@@ -93,9 +93,9 @@ class SignupForm extends Component {
     event.preventDefault();
     if (this.validateFields()) {
       let data = this.props.form.getFieldsValue();
-      let addressName = data.address.name;
-      let addressPostCode = data.address.postcode;
-      let suburb = data.address.suburb;
+      let addressName = data.address.suggestion.name;
+      let addressPostCode = data.address.suggestion.postcode;
+      let suburb = data.address.suggestion.suburb;
       let address = {name: addressName, postcode: addressPostCode, suburb: suburb};
       data  = Object.assign({}, data, {address: address});
       var request = new Request("http://localhost:3001/signup", {
