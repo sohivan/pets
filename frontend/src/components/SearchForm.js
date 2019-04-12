@@ -49,7 +49,7 @@ class Search extends Component {
     this.state = {
      marks: {
         0: 10,
-        100: 150
+        100: 100
       },
       location: {},
       results:[],
