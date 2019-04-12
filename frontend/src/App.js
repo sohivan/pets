@@ -11,7 +11,9 @@ import AddBid from './components/AddBid';
 import Logo from './image/pet-bay-sands-logo.svg';
 import UserProfile from './components/UserProfile';
 import BidTracker from './components/BidTracker';
-import AddService from './components/AddService';
+import AddService from './components/SignupAsCaretakerForm';
+import AddServiceInEditProfile from './components/AddServiceForm';
+
 import PetProfile from './components/PetProfile';
 import Admin from './components/Admin';
 import Rating from './components/Rating';
@@ -149,6 +151,9 @@ class App extends Component {
               <Menu.Item key="0">
                   <NavLink to="/my-user-profile" style={{textDecoration: 'none'}}> Edit Profile </NavLink>
               </Menu.Item>
+              <Menu.Item key="0">
+                  <NavLink to="/my-user-profile" style={{textDecoration: 'none'}}> View Profile </NavLink>
+              </Menu.Item>
               <Menu.Divider/>
               <Menu.Item key="3" onClick={this.logout.bind(this)}>Logout</Menu.Item>
             </Menu>
@@ -195,8 +200,6 @@ class App extends Component {
           component={AddBid}
           searchFilters={this.state.searchFilters}
           />
-
-        <Route exact path='/add-bid' component={AddBid}/>
          <Route
             exact path="/user-profile/:id"
             render={({props}) => <UserProfile goToAddBid={this.goToAddBid.bind(this)}/>}/>
@@ -206,8 +209,8 @@ class App extends Component {
             render={({props}) => <Login loginSuccess= {this.loginSuccess.bind(this)}/>}/>
          <Route path="/rating/:id" component={Rating} />
           <Route path="/admin" component={Admin} />
+         <Route path="/add-service-edit" component={AddServiceInEditProfile} />
         {/* <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>*/}
-
         <Route exact path ="/bid-tracker"component={BidTracker} />
          <PrivateRoute exact path="/pet-profile" component={PetProfile} authenticated={this.state.isAuthenticated}/>
          </Switch>
