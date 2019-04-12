@@ -49,7 +49,7 @@ function getCookie(name) {
     return match ? match[1] : null;
 }
 
-async function fetchUserProfile(email, setName, setType, setId, setDesc, setImg, setError, params) {
+async function fetchUserProfile(setName, setType, setId, setDesc, setImg, setPageEmail, setError, params) {
     try {
         let id;
         if (params.id == null) {
@@ -66,6 +66,7 @@ async function fetchUserProfile(email, setName, setType, setId, setDesc, setImg,
             setId(result.data.id)
             setDesc(result.data.desc)
             setImg(result.data.img)
+            setPageEmail(result.data.pageEmail)
         }
     } catch (e) {
         console.error(e)
@@ -110,7 +111,7 @@ async function fetchCareTaker(type, id, setError, setServices) {
 //   console.log("yes")
 // }
 
-function Explore({ history, match, goToAddBid}) {
+function UserProfile({ history, match, goToAddBid}) {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
@@ -119,12 +120,13 @@ function Explore({ history, match, goToAddBid}) {
     const [anyErrors, setError] = useState('');
     const [pets, setPets] = useState([]);
     const [services, setServices] = useState([]);
+    const [pageEmail, setPageEmail] = useState([]);
     const email = localStorage.getItem("email");
 
 
 
     useEffect(() => {
-        fetchUserProfile(email, setName, setType, setId, setDesc, setImg, setError, match.params)
+        fetchUserProfile(setName, setType, setId, setDesc, setImg, setPageEmail, setError, match.params)
     }, [email])
 
     useEffect(() => {
@@ -154,8 +156,16 @@ function Explore({ history, match, goToAddBid}) {
                 </div>
             </section>
 
-            {/* Webpage for Caretakers */}
-            {(type === "Caretaker") &&
+            {(pageEmail === email) && 
+            <section class="buttons-section">
+                <div class="container">
+                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Profile</button>
+                </div>
+            </section>
+            }
+
+            {/* Webpage for Caretakers - Email option available if not the user themselves*/}
+            {(type === "Caretaker") && (pageEmail != email) &&
             <section class="buttons-section">
                 <div class="container">
                   <div>
@@ -189,16 +199,18 @@ function Explore({ history, match, goToAddBid}) {
                 </div>
             </section>
             }
-              {/* Webpage for PetOwners */}
-              {(type === "Petowner") &&
-              <section class="buttons-section">
-                  <div class="container">
-                  <div>
-                    <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
-                  </div>
-                  </div>
-              </section>
-                }
+
+            {/* Webpage for PetOwners  - Email option if not the own user*/}
+            {(type === "Petowner") && (pageEmail != email) &&
+            <section class="buttons-section">
+                <div class="container">
+                <div>
+                <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
+                </div>
+                </div>
+            </section>
+            }
+
             {/* Webpage for PetOwners */}
             {(type === "Petowner") &&
                 <section class="portfolio-section section">
@@ -227,4 +239,4 @@ function Explore({ history, match, goToAddBid}) {
 }
 
 
-export default withRouter(Explore);
+export default withRouter(UserProfile);

@@ -55,7 +55,7 @@ app.post('/user/profile', async (request, response) => {
 
     return response.status(200).send({
       status: "success", data: {
-        name: table.rows[0].name, email: table.rows[0].email,
+        name: table.rows[0].name, pageEmail: table.rows[0].email,
         type: table.rows[0].usertype, id: table.rows[0].id,
         desc: table.rows[0].description, lastlogin: table.rows[0].lastlogintimestamp,
         homeid: table.rows[0].homeid, img: table.rows[0].image
