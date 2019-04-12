@@ -152,8 +152,8 @@ displayResults = (results) => {
               className="results-card"
                bordered={false}
                style={{ width: 240 }}
-               onClick={() => this.cardClick(array[i].cid)}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+               cover={<img alt="example" src="https://i.pinimg.com/originals/74/6d/ab/746dab017f2d7f3c5da3aa7b1995d706.jpg" />}
+
               >
              <Card.Meta
                title= {
@@ -177,6 +177,7 @@ displayResults = (results) => {
                hoverable
                bordered={false}
                style={{ width: 240 }}
+               cover={<img alt="example" src="https://us.123rf.com/450wm/warrengoldswain/warrengoldswain1603/warrengoldswain160300008/54380987-hipster-man-petting-and-rubbing-his-dog-loving-affection-relationship-bond-between-owner-and-pet.jpg?ver=6" />}>
                onClick={() => this.cardClick(array[i+1].cid)}
                cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
              <Card.Meta
