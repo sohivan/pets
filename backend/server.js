@@ -714,7 +714,12 @@ app.get('/getLossCaretakers', function(request, response) {
           return response.status(400).send(err);
         }
         else {
-          return response.status(200).send(table.rows);
+          return response.status(200).send(table.rows)
+          }
+        })
+      }
+    })
+  });
 
 app.post('/getPets', function(request, response) {
   var userId = request.cookies.userId;
@@ -738,7 +743,7 @@ app.post('/getPets', function(request, response) {
       })
     }
   })
-});
+})
 
 app.post('/getServiceStartDate', function(request, response) {
   var servicetype = request.body.service;
@@ -766,5 +771,4 @@ app.post('/getServiceStartDate', function(request, response) {
       })
     }
   })
-});
-
+})
