@@ -1,3 +1,4 @@
+
 from faker import Faker
 import random
 import pandas as pd
@@ -188,4 +189,5 @@ review = review_ctaker.append(review_owner, ignore_index = True)
 review.index += 1
 review.index.name = 'reviewid'
 review['ratings'] = review['reviewerid'].apply(lambda x: random.randint(0,5))
+
 review.to_sql('review', engine, if_exists = 'append')

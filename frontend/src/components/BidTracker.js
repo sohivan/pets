@@ -125,12 +125,11 @@ class BidTracker extends Component {
     });
 
     fetch(request)
-    .then((response) => {
+    .then(function(response) {
       console.log(request)
       response.json()
-      .then((data) => {
+      .then(function(data) {
         console.log(data)
-        this.updateBidTable();
       })
     })
     .catch(function(err) {
@@ -156,17 +155,17 @@ class BidTracker extends Component {
     });
 
     fetch(request)
-    .then((response) => {
+    .then(function(response) {
       console.log(request)
       response.json()
-      .then((data) => {
+      .then(function(data) {
         console.log(data)
-        this.updateBidTable();
       })
     })
     .catch(function(err) {
       console.log(err);
     })
+    this.updateBidTable();
   }
 
   updateBidTable = () => {
