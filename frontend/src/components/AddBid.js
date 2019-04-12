@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Input, InputNumber, AutoComplete, Form, Select, DatePicker, Button} from 'antd';
 import './AddBid.css';
 import { withRouter } from "react-router";
+import moment from 'moment';
 
 
 const Timestamp = require('react-timestamp');
@@ -102,10 +103,11 @@ class AddBid extends Component {
             .then((response) =>
               response.json())
               .then((data) => {
+                var date1 = new Date(data[0].startdate);
+                var date = moment(date1).format("YYYY-MM-DD");
                   this.setState({
-                    servicestartdate: data[0].startdate
+                    servicestartdate: date
                   })
-                console.log(data)
               })
             .catch(function(err) {
               console.log(err);
