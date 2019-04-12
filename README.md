@@ -4,7 +4,7 @@
 ### Backend
 1. Run the pets.sql script in your postgresql database that is 'postgres'. 
 1. Run the pets-triggers.sql script in your postgresql database that is 'postgres'. 
-1. Run the Fakedata.py script.
+1. Run the Fakedata.py script and install any dependencies required as prompted.
 1. Navigate to the backend folder.
 1. Change the password to your password in server.js file.
 1. Run `npm install`
