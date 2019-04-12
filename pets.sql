@@ -18,7 +18,7 @@ drop view if exists review_petowner cascade;
 
 CREATE TABLE Homes (
 	id 				serial PRIMARY key,
-	address 	VARCHAR(100) not null unique,
+	address 		VARCHAR(100) not null unique,
 	postcode		bigint not null,
 	hometype		text not null,
 	suburb			VARCHAR(100) not null
@@ -45,6 +45,7 @@ CREATE TABLE admins (
 	email		VARCHAR(100) not null unique,
 	password 			text not null,
 	lastlogintimestamp	TIMESTAMP not null,
+	homeid		serial not null references homes(id),
 	foreign key (id, name) references users(id,name)
 );
 
@@ -188,19 +189,15 @@ create view review_caretaker as
 	select c.cid,
 	c."name",
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join caretaker c on c.cid = r.caretakerid
-	where r.reviewer = 'caretaker';
+	join caretaker c on c.cid = r.reviewerid;
 	
 
 create view review_petowner as 
 	select p.oid,
 	p.owner_name,
 	r.historyid,
-	r.responsiveness,
-	r.friendliness
+	r.ratings
 	from review r 
-	join petowners p on p.oid = r.petownerid
-	where r.reviewer = 'petowner';
+	join petowners p on p.oid = r.reviewerid
