@@ -319,13 +319,14 @@ app.post('/addCaretakerPrefsAndServices', function(request, response) {
       db.query('BEGIN', function(err) {
            if(err) {
                 console.log('Problem starting transaction', err);
-             	   response.status(400).send(err);
+             	  response.status(400).send(err);
                 return rollback(db);
             }
             db.query(`
               INSERT INTO Services(service, startDate, enddate, rate, cid)
               VALUES($1, $2, $3, $4, $5)`, [service, startDate, endDate, rate, userId], (err, result) => {
                if (err) {
+                 response.status(400).send(err);
                  return rollback(db);
                }
                  console.log("i have been inserted into caretakers");
@@ -344,6 +345,7 @@ app.post('/addCaretakerPrefsAndServices', function(request, response) {
                        db.query('COMMIT', (err) => {
                           db.end.bind(db);
                           if (err) {
+                            response.status(400).send(err);
                             console.error('Error committing transaction', err.stack)
                             return rollback(db);
                           }
