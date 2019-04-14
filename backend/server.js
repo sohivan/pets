@@ -148,27 +148,6 @@ app.post('/logout', function(request, response) {
   return response.clearCookie('userId', {expires: new Date(Date.now())}).status(200).send({message: "cookie deleted"});
 })
 
-app.post('/change_details', function(request, response){
-  const { changedName, changedDesc } = request.body;
-  var id;
-  pool.connect((err, db, done) => {
-    if (err) {
-      return response.status(400).send(err);
-    }
-    else{
-    db.query(
-      `UPDATE users
-      SET name = $1, description = $2
-      WHERE id = $3`, [changedName, changedDesc, id], (err, results) => {
-        done();;
-        if (err) {
-          console.log(err)
-          return response.status(400).send(err);
-        }
-      })
-  }
-})
-
 
 app.post('/signup', function(request, response) {
   console.log(request.body);
