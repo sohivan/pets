@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { withRouter } from "react-router";
-import { Route, NavLink } from 'react-router-dom';
 import './UserProfile.css';
-import PetProfile from './PetProfile';
 
 function getUserProfile(id) {
     return fetch('http://localhost:3001/user/profile', {
@@ -139,6 +137,7 @@ function UserProfile({ history, match, goToAddBid}) {
         fetchCareTaker(type, id, setError,  setServices)
     }, [type, id])
 
+
     return (
         <html>
             <section class="intro-section">
@@ -161,7 +160,7 @@ function UserProfile({ history, match, goToAddBid}) {
             {(pageEmail === email) && 
             <section class="buttons-section">
                 <div class="container">
-                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Edit My Profile</button>
+                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Profile</button>
                 </div>
             </section>
             }
@@ -173,7 +172,7 @@ function UserProfile({ history, match, goToAddBid}) {
                   <div>
                     <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
                     {/* TODO: Need to link button add-bid */}
-                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Make A Bid</button>
+                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Make A Bid</button>
                   </div>
                 </div>
             </section>
@@ -243,10 +242,8 @@ function UserProfile({ history, match, goToAddBid}) {
                                     <p>Pet Age: {i['age']}</p>
 
                                         {/* Links to pet page */}
-                                        <NavLink to={"/PetProfile/"+i['oid']+'/'+i['name']} style={{textDecoration: 'none'}}>
-                                            <img src={i['image1']} alt="" /> </NavLink>
-                                        <Route exact path={"/pet_profile/:id/:"} component={PetProfile}></Route>
-                                        
+                                        <a href="pets" data-fluidbox>
+                                            <img src={i['image1']} alt="" /></a>
                                     </div>
                                 )
                             })

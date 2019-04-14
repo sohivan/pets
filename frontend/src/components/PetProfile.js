@@ -1,63 +1,13 @@
-import React, { Component, useState, useCallback, useEffect } from 'react';
+import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import './PetProfile.css';
 import {Form, Input, Button, Icon, Row, Col } from 'antd';
 
-
-// VERY PROBLEMATIC PAGE; NEEDS TO RESOLVE
-
-function getCookie(name) {
-  function escape(s) { return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1'); };
-  var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
-  return match ? match[1] : null;
-}
-
-function getPetOwnerProfile(id) {
-  if (!id) {
-      return;
+class PetProfile extends Component {
+  constructor(props) {
+    super(props);
   }
-
-  return fetch('http://localhost:3001/user/petowner', {
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-      body: JSON.stringify({
-          id
-      }),
-      credentials: 'include'
-  })
-}
-
-async function fetchPetOwner(type, id, setError, setPets, params) {
-  if (type === "Petowner") {
-      try {
-        let id;
-        if (params.id == null) {
-          id = getCookie("userId");
-        } else {
-          id = params.id;
-        }
-          let resp = await getPetOwnerProfile(id)
-          let data = await resp.json()
-
-          if(data.data && data.data.info) {
-              setPets(data.data.info)
-          }
-      } catch (e) {
-          setError(JSON.stringify(e))
-      }
-  }
-
-}
-
-function PetProfile({ history, match}) {
-  const [id, setId] = useState('');
-  const [anyErrors, setError] = useState('');
-  const [pets, setPets] = useState([]);
-
-  useEffect(() => {
-      fetchPetOwner(id, setError,  setPets, match.params)
-  }, [id])
-
+  render() {
       return (
         <div>
         <Button className="pet-profile-button" type="primary">
@@ -87,6 +37,6 @@ function PetProfile({ history, match}) {
         </div>
   );
 
-}
+}}
 
 export default withRouter(PetProfile);
