@@ -18,6 +18,7 @@ import PetProfile from './components/PetProfile';
 import Admin from './components/Admin';
 import Rating from './components/Rating';
 import history from './history';
+
 import { Menu, Icon, Button, Dropdown, message } from 'antd';
 
 const PrivateRoute = ({ component: Component, authenticated, ...rest}) => (
@@ -209,7 +210,7 @@ class App extends Component {
               <Menu.Item key="3" onClick={this.logout.bind(this)}>Logout</Menu.Item>
             </Menu>
           }>
-            <a className="ant-dropdown-link" href="#">
+            <a className="ant-dropdown-link" href=".">
               <Icon type="user" /> Profile
             </a>
             </Dropdown>
@@ -234,7 +235,7 @@ class App extends Component {
               <Menu.Item key="3" onClick={this.logout.bind(this)}>Logout</Menu.Item>
             </Menu>
           }>
-            <a className="ant-dropdown-link" href="#">
+            <a className="ant-dropdown-link" href=".">
               <Icon type="user" /> Profile
             </a>
             </Dropdown>
