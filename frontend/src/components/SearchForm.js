@@ -263,14 +263,14 @@ displayResults = (results) => {
                hoverable
                bordered={false}
                style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+               cover={<img alt="example" src={array[i].image} />}
                onClick={() => this.cardClick(array[i].cid)}>
              <Card.Meta
                title= {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
-                     <p className="results-location">{array[i].location}</p>
+                     <p className="results-location">{array[i].suburb}</p>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
