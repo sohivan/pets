@@ -240,14 +240,14 @@ app.post('/adminCheck', function(request, response) {
         db.query(`
       SELECT *
       FROM ADMINS
-      WHERE oid=$1`, [id], (err, results) => {
+      WHERE id=$1`, [id], (err, results) => {
       done();
       if (err) {
         console.log(err)
         return response.status(400).send(err);
       }
       else {
-        response.status(200).send({isValidBidder: results.rows.length > 0});
+        response.status(200).send({isAdmin: results.rows.length > 0});
       }
      })
     }

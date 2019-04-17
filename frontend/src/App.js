@@ -122,7 +122,7 @@ class App extends Component {
            response.json())
            .then((data) => {
              this.setState({
-               isAdmin: true,
+               isAdmin: data.isAdmin,
              })
              console.log("this is an admin")
            })
