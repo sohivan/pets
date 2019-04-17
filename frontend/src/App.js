@@ -39,10 +39,15 @@ class App extends Component {
       cookie: null,
       isAuthenticated: document.cookie ? true : false,
       isCareTaker: false,
-      searchFilters: {serviceType: '', startdate: '', enddate: ''}
+      searchFilters: {serviceType: '', startdate: '', enddate: ''},
+      isAdmin: false
     }
   }
 
+  componentWillMount = () => {
+    console.log("I am being called")
+    this.checkIfAdmin()
+  }
 
   onGoToAddPet (id, isCareTakerChosen) {
     this.setState({
@@ -94,6 +99,27 @@ class App extends Component {
      })
   }
 
+  checkIfAdmin() {
+    var request = new Request("http://localhost:3001/adminCheck", {
+       method: 'POST',
+       headers: new Headers({'Content-Type': 'application/json'}),
+       credentials: 'include',
+     });
+
+     fetch(request)
+         .then((response) =>
+           response.json())
+           .then((data) => {
+             this.setState({
+               isAdmin: true,
+             })
+             console.log("this is an admin")
+           })
+         .catch(function(err) {
+           console.log(err);
+         })
+  }
+
   goToAddBid() {
     console.log("check for add bid");
     if (this.state.isAuthenticated) {
@@ -140,6 +166,33 @@ class App extends Component {
           <NavLink to="/" style={{textDecoration: 'none'}}> <img src={Logo} className="App-logo"/></NavLink>
           {this.state.isAuthenticated ?
           <div>
+            {this.state.isAdmin ?
+              <div>
+           <Button color="inherit" className="Button-view-bids ">
+          <NavLink to="/admin" style={{textDecoration: 'none'}}> Admin View</NavLink>
+          </Button>
+          <Dropdown
+            className = "menu-button"
+            placement="bottomRight"
+            overlay={
+            <Menu>
+              <Menu.Item key="0">
+                  <NavLink to="/my-user-profile" style={{textDecoration: 'none'}}> Edit Profile </NavLink>
+              </Menu.Item>
+              <Menu.Item key="0">
+                  <NavLink to="/my-user-profile" style={{textDecoration: 'none'}}> View Profile </NavLink>
+              </Menu.Item>
+              <Menu.Divider/>
+              <Menu.Item key="3" onClick={this.logout.bind(this)}>Logout</Menu.Item>
+            </Menu>
+          }>
+            <a className="ant-dropdown-link" href="#">
+              <Icon type="user" /> Profile
+            </a>
+            </Dropdown>
+            </div>
+            :
+              <div>
            <Button color="inherit" className="Button-view-bids ">
           <NavLink to="/bid-tracker" style={{textDecoration: 'none'}}> View Bids</NavLink>
           </Button>
@@ -162,6 +215,8 @@ class App extends Component {
               <Icon type="user" /> Profile
             </a>
             </Dropdown>
+            </div>
+          }
             </div>
             :
             <div>
