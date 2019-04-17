@@ -634,7 +634,7 @@ app.post('/acceptBid', function(request, response) {
     }
     else {
       db.query(
-        `UPDATE Bid B set bidstatus = 'accepted'
+        `UPDATE Bid B set bidstatus = 'accept'
         where B.BidID = $1`, [acceptedbid], (err, table) => {
         done();
         if (err) {
