@@ -82,6 +82,7 @@ class Search extends Component {
       startdate: props.searchFilters.startdate,
       enddate: props.searchFilters.enddate,
       filter: props.searchFilters.filter,
+      filterDisp: ['Filter By'],
       dates: null,
     };
 
@@ -94,6 +95,16 @@ class Search extends Component {
    } else {
        this.state.petsizeDisp = "Giant: > 45kg"
    }
+
+   if(props.searchFilters.filter === 1 ){
+       this.state.filterDisp = ["Most Popular"];
+    }
+   else if(props.searchFilters.filter ===2 ){
+        this.state.filterDisp = ["Lowest-Highest Rate"]
+     }
+  else {
+    this.state.filterDisp = ['Filter By']
+  }
 
    if(props.searchFilters.housingopt === 0){
       this.state.housingoptDisp = [];
@@ -168,7 +179,7 @@ class Search extends Component {
         response.json())
         .then((data) => {
           results = data
-          console.log(results)
+          console.log(data)
           this.displayResults(results)
          this.props.onSearchFilter(selection, this.state.currentResultsDisplay);
         })
@@ -520,7 +531,7 @@ displayResults = (results) => {
                 name="role"
                 autoComplete="off"
                 style={{ width: '40%', float: 'right', fontSize: '14px' }}
-                defaultValue={['Filter By']}
+                defaultValue={this.state.filterDisp}
                 onChange = {event => this.onFilterChange(event)}>
                 {filters.map(filters => <Option key={filters}>{filters}</Option>)}
               </Select>
