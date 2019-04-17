@@ -39,10 +39,21 @@ class App extends Component {
       cookie: null,
       isAuthenticated: document.cookie ? true : false,
       isCareTaker: false,
-      searchFilters: {serviceType: '', startdate: '', enddate: ''},
-      isAdmin: false
+      isAdmin: false,
+      searchFilters: {
+        marks: 100,
+        service: 'Pet Boarding',
+        pettype: 'Dog',
+        petsize: 1,
+        numofpet: 1,
+        housingopt: 0,
+        miscopt: 0,
+        startdate: null,
+        enddate: null,
+        filter: 0
     }
   }
+}
 
   componentWillMount = () => {
     console.log("I am being called")
@@ -150,9 +161,19 @@ class App extends Component {
      })
    }
 
-   onSearchFilter(serviceType, startdate, enddate, disp) {
+   onSearchFilter(selection, disp) {
      this.setState({
-       searchFilters: {serviceType: serviceType, startdate: startdate,  enddate: enddate},
+       searchFilters: {
+         service: selection.service,
+         pettype: selection.pettype,
+         petsize: selection.petsize,
+         numofpet: selection.numofpet,
+         marks: selection.marks,
+         housingopt: selection.housingopt,
+         miscopt: selection.miscopt,
+         startdate: selection.startdate,
+         enddate: selection.enddate,
+         filter: selection.filter},
        currentResultsDisplay: disp,
      })
    }
@@ -236,6 +257,7 @@ class App extends Component {
             <SearchForm
               onSearchFilter={this.onSearchFilter.bind(this)}
               currentResultsDisplay= {this.state.currentResultsDisplay}
+              searchFilters = {this.state.searchFilters}
               />}/>
           <Route
             exact path="/signup"

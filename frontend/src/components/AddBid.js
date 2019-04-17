@@ -46,7 +46,7 @@ class AddBid extends Component {
   }
   componentDidMount () {
     console.log(this.props.computedMatch.params.id);
-    let dataForAvgBids = {cid: this.props.computedMatch.params.id, service: this.props.searchFilters.serviceType};
+    let dataForAvgBids = {cid: this.props.computedMatch.params.id, service: this.props.searchFilters.service};
     let dataForService = {cid: this.props.computedMatch.params.id, service:"Pet Boarding", startdate: this.props.searchFilters.startdate, enddate: this.props.searchFilters.enddate};
 
     var getAvgBidRequest = new Request("http://localhost:3001/getAvgBid", {
@@ -165,7 +165,7 @@ class AddBid extends Component {
      bidamt: this.state.bidamt,
      bidpet: this.state.bidpet,
      bidsitter: this.props.computedMatch.params.id,
-     bidservice: this.props.searchFilters.serviceType,
+     bidservice: this.props.searchFilters.service,
      bidreq: this.state.bidreq,
      servicestartdate: this.state.servicestartdate
    }
@@ -206,7 +206,7 @@ class AddBid extends Component {
 
           {/* depends on the caretaker */}
           <h3 className="addbid-label">Selected Service</h3>
-          <h4> {this.props.searchFilters.serviceType}</h4>
+          <h4> {this.props.searchFilters.service}</h4>
               {/*<Form.Item>
               <Select
                 mode="multiple"
