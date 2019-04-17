@@ -465,7 +465,7 @@ app.post('/getCaretakers', function(request, response) {
       })
     }
       else if(filter === 2) {
-        db.query(`SELECT distinct * from caretaker natural join services natural join users
+        db.query(`SELECT distinct * from caretaker natural join services natural join users inner join homes on users.homeid=homes.id
                 where service = $1 and PetType = $2 and PetSize = $3
                 and NumOfPet >= $4 and rate <= $5
                 and housingOptions = $6
@@ -483,7 +483,7 @@ app.post('/getCaretakers', function(request, response) {
       })
     }
       else {
-        db.query(`SELECT distinct * from caretaker natural join services natural join users
+        db.query(`SELECT distinct * from caretaker natural join services natural join users inner join homes on users.homeid=homes.id
                 where service = $1 and PetType = $2 and PetSize = $3
                 and NumOfPet >= $4 and rate <= $5
                 and housingOptions = $6

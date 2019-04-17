@@ -217,7 +217,7 @@ displayResults = (results) => {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
-                     <p className="results-location">{"Bishan"}</p>
+                     <p className="results-location">{array[i].suburb}</p>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -241,7 +241,7 @@ displayResults = (results) => {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i+1].name} </span>
-                     <p className="results-location">{"Pasir Ris"}</p>
+                     <p className="results-location">{array[i].suburb}</p>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
