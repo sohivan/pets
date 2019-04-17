@@ -55,10 +55,10 @@ class App extends Component {
   }
 }
 
-  componentWillMount = () => {
-    console.log("I am being called")
-    this.checkIfAdmin()
-  }
+  // componentWillMount = () => {
+  //   console.log("I am being called")
+  //   this.checkIfAdmin()
+  // }
 
   onGoToAddPet (id, isCareTakerChosen) {
     this.setState({
@@ -76,6 +76,7 @@ class App extends Component {
   }
 
   loginSuccess() {
+    this.checkIfAdmin()
     this.refreshLoginState();
   }
 
@@ -121,6 +122,7 @@ class App extends Component {
          .then((response) =>
            response.json())
            .then((data) => {
+             console.log(data);
              this.setState({
                isAdmin: data.isAdmin,
              })
