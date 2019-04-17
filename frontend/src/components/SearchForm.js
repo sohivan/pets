@@ -199,7 +199,7 @@ displayResults = (results) => {
                bordered={false}
                style={{ width: 240 }}
                cover={<img alt="example" src="https://i.pinimg.com/originals/74/6d/ab/746dab017f2d7f3c5da3aa7b1995d706.jpg" />}
-
+               onClick={() => this.cardClick(array[i].cid)}
               >
              <Card.Meta
                title= {
