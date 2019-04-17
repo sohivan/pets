@@ -159,6 +159,7 @@ class App extends Component {
          .then((data) => {
            localStorage.removeItem("email");
            this.refreshLoginState();
+           history.push("/")
          })
        }
      })
