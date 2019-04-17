@@ -1,3 +1,4 @@
+
 -- Trigger on addition of pet
 CREATE OR REPLACE FUNCTION mustBe_petOwner()
 RETURNS TRIGGER as $$
@@ -113,20 +114,15 @@ newStartDate date; newEndDate date; initialStartDate date; initialenddate date;
 begin
 newStartDate:=new.startDate;
 newEndDate:=new.endDate;
-with allServices as 
-( select * 
-  from services
-  where cid = new.cid
-)
 SELECT count(*) into count 
-from allServices S
+from Services S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day');
 if count <= 0 then return new;
 else 
 SELECT startdate into initialstartdate
-from allServices S
+from Services S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day')
@@ -135,7 +131,7 @@ limit 1;
 if newstartdate < initialstartdate then initialstartdate:=newstartdate;
 end if;
 SELECT enddate into initialenddate
-from allServices S
+from Services S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day')
@@ -144,7 +140,7 @@ limit 1;
 if initialenddate < newenddate then initialenddate:=newenddate;
 end if;
 delete 
-from allServices S
+from Services S
 where S.service=new.service and  
 (S.startdate, S.enddate + interval '1 day') OVERLAPS
 (newStartDate, newEnddate + interval '1 day');
@@ -163,4 +159,7 @@ ON services
 FOR EACH row
 WHEN (pg_trigger_depth() = 0)
 EXECUTE PROCEDURE check_date();
+
+
+
 
