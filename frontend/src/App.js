@@ -39,7 +39,7 @@ class App extends Component {
       cookie: null,
       isAuthenticated: document.cookie ? true : false,
       isCareTaker: false,
-      isAdmin: false
+      isAdmin: false,
       searchFilters: {
         marks: 100,
         service: 'Pet Boarding',
