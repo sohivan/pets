@@ -19,10 +19,9 @@ class Admin extends Component {
         method: 'GET',
         headers: new Headers({'Content-Type': 'application/json'}),
       });
-      var upcomingbidrequest = new Request("http://localhost:3001/getUpcomingBids", {
+      var upcomingbidrequest = new Request("http://localhost:3001/getAllUpcomingBids", {
         method: 'POST',
         headers: new Headers({'Content-Type': 'application/json'}),
-        credentials: 'include'
       });
       fetch(losscaretakers)
           .then((response) =>

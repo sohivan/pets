@@ -543,6 +543,25 @@ app.post('/getUpcomingBids', function(request, response) {
   })
 });
 
+app.post('/getAllUpcomingBids', function(request, response) {
+  pool.connect((err, db, done) => {
+    if(err) {
+      return response.status(400).send(err);
+    } else {
+      db.query(`SELECT * from Users inner join (PetOwners inner join (Bid B inner join Pets P on B.PetOwnerID = P.oid and B.PetName = P.name) B2 on PetOwners.oid = B2.PetOwnerID) P2 on P2.petownerid = Users.id
+                where bidstatus = 'accept' and servicestartdate > now() and serviceenddate > now()`, function(err, table) {
+        done();
+        if (err) {
+          return response.status(400).send(err);
+        }
+        else {
+          return response.status(200).send(table.rows);
+        }
+      })
+    }
+  })
+});
+
 app.post('/getPastBidsToRate', function(request, response) {
   var id = request.cookies.userId;
   pool.connect((err, db, done) => {
