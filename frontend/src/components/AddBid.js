@@ -26,8 +26,9 @@ function onChange(value) {
 
 
 class AddBid extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    console.log("hello");
     this.state = {
       pets: [],
       result: [],
@@ -40,12 +41,78 @@ class AddBid extends Component {
       bidsitter: 508,
       bidservice: "Pet Boarding",
       bidreq: '',
-      avgbid: 'No bids yet',
+      avgbid: "No bids yet",
       startdate: '',
+      service: props.searchFilters.service,
+      done: false,
     }
   }
+
+  fetchData(getPetsRequest, getAvgBidRequest, getServiceRequest) {
+    fetch(getPetsRequest)
+        .then((response) =>
+          response.json())
+          .then((data) => {
+            console.log(data);
+            console.log(data.length==0);
+             let pets = [];
+            if(data.length != 0) {
+              data.map((obj) => pets.push(obj.name));
+            }
+            console.log(pets);
+            this.setState({
+              pets: pets
+            })
+          })
+    fetch(getAvgBidRequest)
+    .then((response) =>
+      response.json())
+      .then((data) => {
+        console.log(data)
+          this.setState({
+            avgbid: data.length != 0 ? "$" + Math.floor(data[0].avgbid): "No bids yet"
+          })
+      })
+      fetch(getServiceRequest)
+          .then((response) =>
+            response.json())
+            .then((data) => {
+              var date1 = new Date(data[0].startdate);
+              var date = moment(date1).format("YYYY-MM-DD");
+              // if (this.state) {
+                this.setState({
+                  servicestartdate: date
+                })
+              // }
+            })
+          .catch(function(err) {
+            console.log(err);
+          })
+    .catch(function(err) {
+      console.log(err);
+    })
+        .catch(function(err) {
+          console.log(err);
+        })
+  }
+
+  // fetchData(getAvgBidRequest) {
+  //   fetch(getAvgBidRequest)
+  //       .then((response) =>
+  //         response.json())
+  //         .then((data) => {
+  //           console.log(data)
+  //             this.setState({
+  //               avgbid: data.length != 0 ? data[0].avgbid : "No bids yet"
+  //             })
+  //         })
+  //       .catch(function(err) {
+  //         console.log(err);
+  //       })
+  // }
+
   componentDidMount () {
-    console.log(this.props.computedMatch.params.id);
+    console.log(this.props);
     let dataForAvgBids = {cid: this.props.computedMatch.params.id, service: this.props.searchFilters.service};
     let dataForService = {cid: this.props.computedMatch.params.id, service:"Pet Boarding", startdate: this.props.searchFilters.startdate, enddate: this.props.searchFilters.enddate};
 
@@ -69,58 +136,19 @@ class AddBid extends Component {
       credentials: 'include',
     });
 
-
-
-    fetch(getAvgBidRequest)
-        .then((response) =>
-          response.json())
-          .then((data) => {
-            this.state.avgbid = data.length != 0 ? data : "No bids yet";
-              // this.setState({
-              //   avgbid: data.length != 0 ? data : "No bids yet"
-              // })
-
-            console.log(data)
-          })
-        .catch(function(err) {
-          console.log(err);
-        })
-
-      fetch(getPetsRequest)
-          .then((response) =>
-            response.json())
-            .then((data) => {
-              console.log(data);
-              console.log(data.length==0);
-              let pets = [];
-              if(data.length != 0) {
-                data.map((obj) => pets.push(obj.name));
-              }
-              this.state.pets = pets;
-              console.log('this is' + this.state.pets)
-            })
-          .catch(function(err) {
-            console.log(err);
-          })
-
-        fetch(getServiceRequest)
-            .then((response) =>
-              response.json())
-              .then((data) => {
-                var date1 = new Date(data[0].startdate);
-                var date = moment(date1).format("YYYY-MM-DD");
-                 this.state.servicestartdate =  date
-              })
-            .catch(function(err) {
-              console.log(err);
-            })
+    let pets = [];
+    this.fetchData(getPetsRequest, getAvgBidRequest, getServiceRequest);
+    // this.fetchData(getAvgBidRequest);
 
   }
 
 
+
  onPetNameChange(value) {
+   console.log("whuut");
+   console.log(value);
    this.setState({
-     bidpet: value
+     pets: [value]
    })
  }
 
@@ -153,6 +181,10 @@ class AddBid extends Component {
    this.setState({
      [bidreq]: event.target.value
    })
+ }
+
+ onClickPets() {
+   console.log("clicked");
  }
 
 
@@ -207,7 +239,7 @@ class AddBid extends Component {
 
           {/* depends on the caretaker */}
           <h3 className="addbid-label">Selected Service</h3>
-          <h4> {this.props.searchFilters.service}</h4>
+          <h4> {this.state.service}</h4>
               {/*<Form.Item>
               <Select
                 mode="multiple"
@@ -222,7 +254,7 @@ class AddBid extends Component {
               </Form.Item>
               */}
               <h3 className="addbid-label">Average rate that other pet owners are offering:</h3>
-              <h3>{this.state.avgbid}</h3>
+              <p>{this.state.avgbid}</p>
 
           <h3 className="addbid-label">Amount per day</h3>
           <InputNumber
@@ -243,8 +275,10 @@ class AddBid extends Component {
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px' }}
               placeholder = "Select your pet"
-              onChange={this.onPetNameChange.bind(this)}>
-              {this.state.pets.map(petname => <Option key={petname}>{petname}</Option>)}
+              onChange={this.onPetNameChange.bind(this)}
+              onClick= {this.onClickPets.bind(this)}
+              defaultValue={this.state.pets[0]}>
+              {this.state.pets.map((petname) => <Option key={petname}>{petname}</Option>)}
             </Select>
             </Form.Item>
 
