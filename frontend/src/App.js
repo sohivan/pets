@@ -125,7 +125,7 @@ class App extends Component {
            .then((data) => {
              console.log(data);
              this.setState({
-               isAdmin: true,
+               isAdmin: data.isAdmin,
              })
              console.log("this is an admin")
            })

@@ -135,6 +135,7 @@ class BidTracker extends Component {
     .catch(function(err) {
       console.log(err);
     })
+    this.updateBidTable();
   }
 
   handleAccept = (key) => {

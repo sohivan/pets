@@ -97,6 +97,7 @@ class AddBid extends Component {
                 data.map((obj) => pets.push(obj.name));
               }
               this.state.pets = pets;
+              console.log('this is' + this.state.pets)
             })
           .catch(function(err) {
             console.log(err);
