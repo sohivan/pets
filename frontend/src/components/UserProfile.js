@@ -1,6 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { withRouter } from "react-router";
+import { Route, NavLink } from 'react-router-dom';
 import './UserProfile.css';
+import PetProfile from './PetProfile';
+import { Card } from 'antd';
+const { Meta } = Card;
 
 function getUserProfile(id) {
     return fetch('http://localhost:3001/user/profile', {
@@ -137,7 +141,6 @@ function UserProfile({ history, match, goToAddBid}) {
         fetchCareTaker(type, id, setError,  setServices)
     }, [type, id])
 
-
     return (
         <html>
             <section class="intro-section">
@@ -160,7 +163,7 @@ function UserProfile({ history, match, goToAddBid}) {
             {(pageEmail === email) && 
             <section class="buttons-section">
                 <div class="container">
-                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Profile</button>
+                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Edit My Profile</button>
                 </div>
             </section>
             }
@@ -172,7 +175,7 @@ function UserProfile({ history, match, goToAddBid}) {
                   <div>
                     <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
                     {/* TODO: Need to link button add-bid */}
-                    <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Make A Bid</button>
+                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Make A Bid</button>
                   </div>
                 </div>
             </section>
@@ -185,13 +188,6 @@ function UserProfile({ history, match, goToAddBid}) {
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
                 {/* Edit service if own profile page */}
-                {(pageEmail === email) && 
-                <section class="buttons-section">
-                    <div class="container">
-                        <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Services</button>
-                    </div>
-                </section>
-                }
                     {
                         services.map(i => {
                             return (
@@ -226,24 +222,24 @@ function UserProfile({ history, match, goToAddBid}) {
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
                     {/* Edit Pets Option if Own Profile */}
-                    {(pageEmail === email) && 
-                        <section class="buttons-section">
-                            <div class="container">
-                                <button className="email-button" onClick={() => goToAddBid(match.params.id)}>Edit My Pets</button>
-                            </div>
-                        </section>
-                        }
                         {
                             pets.map(i => {
                                 return (
                                     <div class="p-item web-design">
-                                    <p>Pet Name: {i['name']}</p>
-                                    <p>Pet Breed: {i['breed']}</p>
-                                    <p>Pet Age: {i['age']}</p>
 
                                         {/* Links to pet page */}
-                                        <a href="pets" data-fluidbox>
-                                            <img src={i['image1']} alt="" /></a>
+                                        <Card
+                                            hoverable
+                                            cover={<img src={i['image1']} alt="" />}
+                                            onClick={() => history.push({pathname:'/pet-profile', 
+                                            state:{userid:id, name: i['name'], weight: i['weight'], age:i['age'],
+                                            breed: i['breed'], type: i['pettype'], gender: i['gender'], description: i['description'],
+                                            med: i['medical_conditions'], im1: i['image1'], im2: i['image2'], im3: i['image3']}})}>
+                                            <Meta 
+                                            title = {i['name']}
+                                            description = {i['age'] + " years old " + i['breed']}
+                                            />
+                                        </Card>
                                     </div>
                                 )
                             })
