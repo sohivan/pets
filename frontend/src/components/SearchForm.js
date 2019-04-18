@@ -3,6 +3,8 @@ import {Form, Select, Slider, DatePicker, InputNumber, Row, Col, Checkbox, Butto
 import AlgoliaPlaces from 'algolia-places-react';
 import './SearchForm.css';
 import { NavLink , withRouter } from 'react-router-dom';
+import moment from 'moment';
+
 
 
 const Option = Select.Option;
@@ -42,30 +44,92 @@ class SearchForm extends Component {
 
 
 class Search extends Component {
+ //  shouldComponentUpdate(nextProps, nextState) {
+ //   if (this.props.location.pathname == nextProps.location.pathname && JSON.stringify({a: this.state.currentResultsDisplay}) === JSON.stringify({a: nextProps.currentResultsDisplay})) {
+ //     console.log("its falsee");
+ //     return false;
+ //   } else {
+ //     console.log("its true");
+ //
+ //     return true;
+ //   }
+ // }
+
   constructor(props) {
-    super(props);
     console.log(props);
+    console.log(props.searchFilters.housingopt);
+    super(props);
     this.myRef = React.createRef();
     this.state = {
      marks: {
         0: 10,
-        100: 150
+        100: props.searchFilters.marks
       },
       location: {},
       results:[],
       totalResultsDisplay:[],
-      currentResultsDisplay:[],
+      currentResultsDisplay: props.currentResultsDisplay,
       current: 1,
-      service: 'Pet Boarding',
-      pettype: 'Dog',
-      petsize: 1,
-      numofpet: 1,
-      housingopt: 0,
-      miscopt: 0,
-      startdate: '',
-      enddate: '',
-      filter: 0
-  };
+      service: props.searchFilters.service,
+      pettype: props.searchFilters.pettype,
+      petsize: props.searchFilters.petsize,
+      petsizeDisp: "Small: 0 - 5kg",
+      numofpet: props.searchFilters.numofpet,
+      housingopt: props.searchFilters.housingopt,
+      housingoptDisp: [],
+      miscopt: props.searchFilters.miscopt,
+      miscoptDisp: [],
+      startdate: props.searchFilters.startdate,
+      enddate: props.searchFilters.enddate,
+      filter: props.searchFilters.filter,
+      filterDisp: ['Filter By'],
+      dates: null,
+    };
+
+    if(props.searchFilters.petsize ==1) {
+      this.state.petsizeDisp = "Small: 0 - 5kg"
+    } else if(props.searchFilters.petsize ==2){
+         this.state.petsizeDisp = "Medium: 6 - 15kg"
+    } else if(props.searchFilters.petsize == 3 ){
+        this.state.petsizeDisp = "Large: 16 - 45kg"
+   } else {
+       this.state.petsizeDisp = "Giant: > 45kg"
+   }
+
+   if(props.searchFilters.filter === 1 ){
+       this.state.filterDisp = ["Most Popular"];
+    }
+   else if(props.searchFilters.filter ===2 ){
+        this.state.filterDisp = ["Lowest-Highest Rate"]
+     }
+  else {
+    this.state.filterDisp = ['Filter By']
+  }
+
+   if(props.searchFilters.housingopt === 0){
+      this.state.housingoptDisp = [];
+    } else if(props.searchFilters.housingopt === 1){
+        this.state.housingoptDisp = ["Do not have other pets in their house"];
+   } else if(props.searchFilters.housingopt === 2){
+        this.state.housingoptDisp = ["Do not cage pets"];
+  } else {
+       this.state.housingoptDisp = ["Do not have other pets in their house", "Do not cage pets"];
+    }
+
+    if(props.searchFilters.miscopt === 0){
+       this.state.miscoptDisp = [];
+     } else if(props.searchFilters.miscopt === 1){
+         this.state.miscoptDisp = ["Takes care of one client at a time"];
+    } else if(props.searchFilters.miscopt === 2){
+         this.state.miscoptDisp = ["Pet First-Aid certified"];
+   } else {
+        this.state.miscoptDisp = ["Takes care of one client at a time", "Pet First-Aid certified"];
+     }
+
+   if (props.searchFilters.startdate!= null && props.searchFilters.enddate!= null ) {
+     this.state.dates =  [moment(props.searchFilters.startdate, 'YYYY-MM-DD'),moment(props.searchFilters.enddate, 'YYYY-MM-DD')]
+   }
+
   }
 
   onPageChange = (page) => {
@@ -115,8 +179,9 @@ class Search extends Component {
         response.json())
         .then((data) => {
           results = data
-          console.log(results)
+          console.log(data)
           this.displayResults(results)
+         this.props.onSearchFilter(selection, this.state.currentResultsDisplay);
         })
 
       .catch(function(err) {
@@ -144,14 +209,15 @@ displayResults = (results) => {
               className="results-card"
                bordered={false}
                style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+               cover={<img alt="example" src={array[i].image} />}
+               onClick={() => this.cardClick(array[i].cid)}
               >
              <Card.Meta
                title= {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
-                     <p className="results-location">{"Bishan"}</p>
+                     <p className="results-location">{array[i].suburb}</p>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -165,15 +231,17 @@ displayResults = (results) => {
              </Col>
              <Col span={12}>
              <Card className="results-card"
+               hoverable
                bordered={false}
                style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}>
+               onClick={() => this.cardClick(array[i+1].cid)}
+               cover={<img alt="example" src={array[i].image} />}>
              <Card.Meta
                title= {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i+1].name} </span>
-                     <p className="results-location">{"Pasir Ris"}</p>
+                     <p className="results-location">{array[i].suburb}</p>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -195,14 +263,14 @@ displayResults = (results) => {
                hoverable
                bordered={false}
                style={{ width: 240 }}
-               cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+               cover={<img alt="example" src={array[i].image} />}
                onClick={() => this.cardClick(array[i].cid)}>
              <Card.Meta
                title= {
                  <div>
                    <div className="results-name-div">
                      <span> {array[i].name} </span>
-                     <p className="results-location">{array[i].location}</p>
+                     <p className="results-location">{array[i].suburb}</p>
                    </div>
                    <div className="results-rate-div">
                      <p className="results-from"> from </p>
@@ -350,7 +418,7 @@ displayResults = (results) => {
               name="role"
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px' }}
-              defaultValue={['Pet Boarding']}
+              defaultValue={[this.state.service]}
               onChange = {event => this.onServiceChange(event)}>
               {services.map(service => <Option key={service}>{service}</Option>)}
             </Select>
@@ -382,7 +450,7 @@ displayResults = (results) => {
           <Form.Item>
             <Slider
               marks={this.state.marks}
-              defaultValue={150}
+              defaultValue={this.state.marks[100]}
               tipFormatter={(value) => `$${value}`}
               onChange={this.onRateChange.bind(this)}/>
           </Form.Item>
@@ -393,7 +461,8 @@ displayResults = (results) => {
              <DatePicker.RangePicker
                 style={{ fontSize: '14px' }}
                 onChange={this.onDateChange.bind(this)}
-                placeholder={['Drop off', 'Pick up']}/>
+                placeholder={['Drop off', 'Pick up']}
+                defaultValue={this.state.dates}/>
           </Form.Item>
           <div className="slider-label">
             <p>Pet Type</p>
@@ -404,7 +473,7 @@ displayResults = (results) => {
               name="role"
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px'  }}
-              defaultValue={['Dog']}
+              defaultValue={[this.state.pettype]}
               onChange = {event => this.onPetTypeChange(event)}>
               {pettype.map(pettype => <Option key={pettype}>{pettype}</Option>)}
             </Select>
@@ -418,7 +487,7 @@ displayResults = (results) => {
               name="role"
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px' }}
-              defaultValue={['Small: 0 - 5kg']}
+              defaultValue={[this.state.petsizeDisp]}
               onChange={event => this.onPetSizeChange(event)}>
               {petsize.map(petsize => <Option key={petsize}>{petsize}</Option>)}
             </Select>
@@ -429,7 +498,7 @@ displayResults = (results) => {
           <InputNumber
               min={1}
               max={10}
-              defaultValue={1}
+              defaultValue={this.state.numofpet}
               style={{ width: '100%', marginBottom: '25px', fontSize: '14px' }}
               onChange={event => this.onPetNoChange(event)} />
           <div className="slider-label">
@@ -437,6 +506,7 @@ displayResults = (results) => {
           </div>
           <CheckboxGroup
             options={houseOptions}
+            defaultValue={this.state.housingoptDisp}
             onChange={event => this.onHousingChange(event)} />
             <br /><br />
           <div className="slider-label">
@@ -444,6 +514,7 @@ displayResults = (results) => {
           </div>
           <CheckboxGroup
             options={miscOptions}
+              defaultValue={this.state.miscoptDisp}
             onChange={event => this.onMiscChange(event)} />
             <br /><br />
           <Button className= "search-button" type="primary" htmlType="submit" onClick={this.handleSubmit.bind(this)}>
@@ -460,7 +531,7 @@ displayResults = (results) => {
                 name="role"
                 autoComplete="off"
                 style={{ width: '40%', float: 'right', fontSize: '14px' }}
-                defaultValue={['Filter By']}
+                defaultValue={this.state.filterDisp}
                 onChange = {event => this.onFilterChange(event)}>
                 {filters.map(filters => <Option key={filters}>{filters}</Option>)}
               </Select>

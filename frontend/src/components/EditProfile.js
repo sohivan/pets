@@ -1,10 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { withRouter } from "react-router";
-import { Route, NavLink } from 'react-router-dom';
+import { message, Button, Input } from 'antd';
+
 import './UserProfile.css';
-import PetProfile from './PetProfile';
-import { Card } from 'antd';
-const { Meta } = Card;
 
 function getUserProfile(id) {
     return fetch('http://localhost:3001/user/profile', {
@@ -111,23 +109,102 @@ async function fetchCareTaker(type, id, setError, setServices) {
 
 }
 
-// const goToAddBid = () => {
-//   console.log("yes")
-// }
+function changeDetails(changedName, changedDesc, id){
+    return fetch('http://localhost:3001/change_details',{
+        headers: { 'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({
+            changedName, changedDesc, id
+        })
+    })
+}
 
-function UserProfile({ history, match, goToAddBid}) {
+async function fetchChangedDetails(changedName, changedDesc, id, setError){
+    try{
+        let resp = await changeDetails(changedName, changedDesc, id)
+        let data = await resp.json()
+    } catch(e) {setError(JSON.stringify(e))}
+}
+
+function deleteService(serviceName, id, startDate, endDate){
+    return fetch('http://localhost:3001/delete_pets', {
+        headers: { 'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({
+            serviceName, id, startDate, endDate
+        })
+    })
+}
+
+function deletePet(petName, id){
+    return fetch('http://localhost:3001/delete_pets', {
+        headers: { 'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({
+            petName, id
+        })
+    })
+}
+
+function EditProfile({ history, match,}) {
     const [name, setName] = useState('');
+    const [changedName, setChangedName] = useState('');
     const [type, setType] = useState('');
     const [id, setId] = useState('');
     const [desc, setDesc] = useState('');
+    const [changedDesc, setChangedDesc] = useState('');
     const [img, setImg] = useState('');
     const [anyErrors, setError] = useState('');
     const [pets, setPets] = useState([]);
     const [services, setServices] = useState([]);
     const [pageEmail, setPageEmail] = useState([]);
     const email = localStorage.getItem("email");
+    const [petName, setPetName] = useState([]);
+    const [serviceName, setServiceName] = useState([]);
+    const [startDate, setStartDate] = useState([]);
+    const [endDate, setEndDate] = useState([]);
+    const popup =  useState();
+
+    const nameChanged = useCallback((e) => {
+        setChangedName(e.target.value);
+    }, [])
+
+    const descChanged = useCallback((e) => {
+        setChangedDesc(e.target.value);
+    }, [])
+
+    const submit = useCallback(async (e) =>{
+        try {
+            fetchChangedDetails(changedName, changedDesc, id)
+        } catch(e){
+            setError("unexpected error")
+        }
+    })
 
 
+    const deleteSelectedService = useCallback(async (e) => {
+        try {
+            let resp = await deleteService(serviceName, id, startDate, endDate)
+            let data = await resp.json()
+            if (data.status === 'failed') message.warning(data.message);
+            else message.success("Successfully Deleted");
+        } catch(e){
+            message.warning(e)
+        }
+    })
+
+    const deleteSelectedPet = useCallback(async (e) => {
+        try {
+            let resp = await deletePet(petName, id)
+            let data = await resp.json()
+            console.log(data.status+" ");
+            console.log(data.message);
+            if (data.status === 'failed') message.warning(data.message);
+            else message.success("Successfully Deleted");
+        } catch(e){
+            message.warning(e)
+        }
+    })
 
     useEffect(() => {
         fetchUserProfile(setName, setType, setId, setDesc, setImg, setPageEmail, setError, match.params)
@@ -141,6 +218,8 @@ function UserProfile({ history, match, goToAddBid}) {
         fetchCareTaker(type, id, setError,  setServices)
     }, [type, id])
 
+    console.log(img)
+
     return (
         <html>
             <section class="intro-section">
@@ -150,68 +229,48 @@ function UserProfile({ history, match, goToAddBid}) {
                         <div class="col-md-10 col-lg-8">
                             <div class="intro">
                                 <div class="profile-img"><img src={img} alt="" /></div>
-                                <h2 class="profile-name"><b>{name}</b></h2>
-                                <h4 class="font-yellow">{type}</h4>
-                                <h4 class="profile-desc">{desc}</h4>
+                                <h2 class="profile-name"><b>Name</b></h2>
+                                <Input
+                                    style={{ width: 200 }}
+                                    placeholder={name}
+                                    onChange={nameChanged}
+                                />
+                                <h3 class="profile-desc"><b>Description</b></h3>
+                                <Input
+                                    style={{ width: 200 }}
+                                    placeholder={desc}
+                                    onChange={descChanged}
+                                />
+                            </div>
+                            <div class="intro">
+                                <Button className="email-button" onClick={submit}> Submit </Button>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Own page option - Edit my own profile */}
-            {(pageEmail === email) && 
-            <section class="buttons-section">
-                <div class="container">
-                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Edit My Profile</button>
-                </div>
-            </section>
             }
-
-            {/* Webpage for Caretakers - Email option available if not the user themselves*/}
-            {(type === "Caretaker") && (pageEmail != email) &&
-            <section class="buttons-section">
-                <div class="container">
-                  <div>
-                    <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
-                    {/* TODO: Need to link button add-bid */}
-                    <button className="email-button" onClick={() => history.push('/edit_profile')}>Make A Bid</button>
-                  </div>
-                </div>
-            </section>
-              }
-
 
             {/* Webpage for Caretakers */}
             {(type === "Caretaker") &&
                 <section class="portfolio-section section">
                 <div class="portfolioContainer  margin-b-50">
                 <h1 className="petowner-pets">{name}'s Services & Available Dates</h1>
-                {/* Edit service if own profile page */}
+                
+                <Button className="email-button" onClick={() => history.push('/add-service')}> Add more services </Button>
                     {
                         services.map(i => {
                             return (
                                 // Could be good to group by service and within the own website, differentiate by time instead of the current format
                                 <div class="p-item web-design">
-                                <p>Service: {i['service']}</p>
+                                <p><b>{i['service']}</b></p>
                                 <p>Start Day/Time: {i['startdate'].slice(0, 10) + ' ' + i['startdate'].slice(11,16)}</p>
                                 <p>End Day/Time: {i['enddate'].slice(0, 10) + ' ' + i['enddate'].slice(11,16)}</p>
-                                <p>Service Rate: ${i['rate']}</p>
+                                <Button onClick={() => deleteSelectedService(i['service'], id, i['startdate'], i['enddate'])}> Delete {i['service']} </Button>
                                 </div>
                             )
                         })
                     }
-                </div>
-            </section>
-            }
-
-            {/* Webpage for PetOwners  - Email option if not the own user*/}
-            {(type === "Petowner") && (pageEmail != email) &&
-            <section class="buttons-section">
-                <div class="container">
-                <div>
-                <button className="email-button"><a className="email-link"href={"mailto:" + email}>Contact {name}</a></button>
-                </div>
                 </div>
             </section>
             }
@@ -221,25 +280,14 @@ function UserProfile({ history, match, goToAddBid}) {
                 <section class="portfolio-section section">
                     <div class="portfolioContainer  margin-b-50">
                     <h1 className="petowner-pets">{name}'s pets</h1>
-                    {/* Edit Pets Option if Own Profile */}
+                    <Button className="email-button" onClick={() => history.push('/add-pet')}> Add more pets </Button>
                         {
                             pets.map(i => {
                                 return (
                                     <div class="p-item web-design">
-
-                                        {/* Links to pet page */}
-                                        <Card
-                                            hoverable
-                                            cover={<img src={i['image1']} alt="" />}
-                                            onClick={() => history.push({pathname:'/pet-profile', 
-                                            state:{userid:id, name: i['name'], weight: i['weight'], age:i['age'],
-                                            breed: i['breed'], type: i['pettype'], gender: i['gender'], description: i['description'],
-                                            med: i['medical_conditions'], im1: i['image1'], im2: i['image2'], im3: i['image3']}})}>
-                                            <Meta 
-                                            title = {i['name']}
-                                            description = {i['age'] + " years old " + i['breed']}
-                                            />
-                                        </Card>
+                                    <p>Pet Name: {i['name']}</p>
+                                    <img src={i['image1']} alt="" />
+                                    <Button onClick={() => deleteSelectedPet(i['name'], id)}> Delete - {i['name']} </Button>
                                     </div>
                                 )
                             })
@@ -252,4 +300,4 @@ function UserProfile({ history, match, goToAddBid}) {
 }
 
 
-export default withRouter(UserProfile);
+export default withRouter(EditProfile);
