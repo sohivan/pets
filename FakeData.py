@@ -29,7 +29,7 @@ no_petowners = 250
 no_pets = 250
 # no_caretakers = 350
 no_services = 350
-no_bids = 500
+no_bids = 1200
 no_homes = 600
 
 # creating home table
@@ -131,7 +131,7 @@ services_df.to_sql('services', engine, if_exists='append')
 
 
 # create bid table
-bids = pd.DataFrame({'bidid':range(1, 1+no_bids)})
+bids = pd.DataFrame({'bidid':range(100, 100+no_bids)})
 bids['petid'] = pets['petid'].sample(len(bids), replace = True, random_state=1).values
 bids['petname'] = bids['petid'].apply(lambda x: pets[pets['petid'] == x]['name'].values[0])
 bids['petownerid'] = bids['petid'].apply(lambda x: pets[pets['petid'] == x]['oid'].values[0])
