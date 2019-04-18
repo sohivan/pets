@@ -148,7 +148,7 @@ class AddBid extends Component {
    console.log("whuut");
    console.log(value);
    this.setState({
-     pets: [value]
+     bidpet: value
    })
  }
 
@@ -275,9 +275,7 @@ class AddBid extends Component {
               autoComplete="off"
               style={{ width: '100%', fontSize: '14px' }}
               placeholder = "Select your pet"
-              onChange={this.onPetNameChange.bind(this)}
-              onClick= {this.onClickPets.bind(this)}
-              defaultValue={this.state.pets[0]}>
+              onChange={this.onPetNameChange.bind(this)}>
               {this.state.pets.map((petname) => <Option key={petname}>{petname}</Option>)}
             </Select>
             </Form.Item>
