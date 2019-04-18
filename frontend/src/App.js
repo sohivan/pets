@@ -15,6 +15,7 @@ import AddService from './components/SignupAsCaretakerForm';
 import AddServiceInEditProfile from './components/AddServiceForm';
 
 import PetProfile from './components/PetProfile';
+import EditProfile from './components/EditProfile';
 import Admin from './components/Admin';
 import Rating from './components/Rating';
 import history from './history';
@@ -293,6 +294,7 @@ class App extends Component {
          <Route path="/add-service-edit" component={AddServiceInEditProfile} />
         {/* <PrivateRoute exact path="/bid-tracker" component={BidTracker} authenticated={this.state.isAuthenticated}/>*/}
         <Route exact path ="/bid-tracker"component={BidTracker} />
+        <Route exact path ="/edit_profile"component={EditProfile} />
          <PrivateRoute exact path="/pet-profile" component={PetProfile} authenticated={this.state.isAuthenticated}/>
          </Switch>
          </div>
